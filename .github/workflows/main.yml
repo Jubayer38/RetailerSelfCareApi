@@ -28,8 +28,7 @@ jobs:
 
       - name: Run Coverity Build
         run: |
-          export PATH=$PWD/cov-analysis/bin:$PATH  # Ensure cov-build is in PATH
-          cov-build --dir cov-int dotnet build RetailerSelfCareApi.sln --configuration Release
+          ./cov-analysis*/bin/cov-build --dir cov-int dotnet build RetailerSelfCareApi.sln --configuration Release
 
       - name: Compress analysis
         run: tar czvf cov-int.tgz cov-int
