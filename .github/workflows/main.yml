@@ -23,7 +23,7 @@ jobs:
 
       - name: Download Coverity
         run: |
-          curl -fsSL "https://scan.coverity.com/download/linux64" --data "token=${{ secrets.RETAILERSELFCAREAPI_COVERITYTOKEN }}&project=RetailerSelfCareApi" -o coverity_tool.tgz
+          wget --post-data "token=${{ secrets.RETAILERSELFCAREAPI_COVERITYTOKEN }}&project=${{ github.repository }}" -O coverity_tool.tgz https://scan.coverity.com/download/linux64
           tar -xvzf coverity_tool.tgz
 
       - name: Run Coverity Build
