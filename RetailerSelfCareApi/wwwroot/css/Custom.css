@@ -1,0 +1,68 @@
+﻿.center-block {
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+
+.notValid {
+    border: 1px solid red;
+}
+
+.err {
+    padding-left: 1.5rem;
+    text-align: left;
+    color: red;
+    margin-bottom: .5rem;
+    display: flex;
+    align-items: center;
+}
+
+.hideError{
+    display: none;
+}
+
+.errCaution {
+    height: 20px;
+    width: 20px;
+    margin-left: -1px;
+}
+
+#surveyBody {
+    background: #eff3f6;
+}
+
+.lrPad {
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+}
+
+.customInput {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 2px solid #717171;
+    margin-bottom: 1rem;
+    border-radius: 10px 10px 0 0;
+    background: #f7f7f7;
+}
+
+    .customInput:focus {
+        border-bottom: 2px solid #f26f23;
+        background: #FFFFFF;
+    }
+
+.checkboxPad {
+    padding-left: 2.9rem;
+}
+
+.dateLabelPadding {
+    padding-left: 2.2rem !important;
+}
+
+.astericreq:after {
+    content: "*";
+    font-weight: 500;
+    color: red;
+    padding-left: 2px;
+}

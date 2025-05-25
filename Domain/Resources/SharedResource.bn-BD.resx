@@ -1,0 +1,570 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="11104" xml:space="preserve">
+    <value>পিনের দৈর্ঘ্য বৈধ নয়।</value>
+  </data>
+  <data name="17007" xml:space="preserve">
+    <value>আপনার অনুরুধটি এই মূহুর্তে প্রসেস করা সম্ভব হচ্ছে নাহ, দয়া করে আবার চেষ্টা করুন।</value>
+  </data>
+  <data name="17017" xml:space="preserve">
+    <value>আপনার অনুরুধটি এই মূহুর্তে প্রসেস করা সম্ভব হচ্ছে নাহ, দয়া করে আবার চেষ্টা করুন।</value>
+  </data>
+  <data name="2003" xml:space="preserve">
+    <value>দুঃখিত, এই সেবাটি বর্তমানে আপনার জন্ন্য এভেইলেবল নেই। দয়া করে আপনার RSO এর সাথে যোগাযোগ করুন।</value>
+  </data>
+  <data name="2020" xml:space="preserve">
+    <value>এই গ্রাহকের পূর্ববর্তী অনুরোধটি প্রক্রিয়া করা হচ্ছে ,অনুগ্রহ করে একটু পরে আবার চেষ্টা করুন।</value>
+  </data>
+  <data name="221" xml:space="preserve">
+    <value>গ্রাহকের নম্বর এ রিচার্জ ব্যর্থ হওয়ায় আপনার অ্যাকাউন্ট এ টাকা ফেরত দেয়া হয়েছে।</value>
+  </data>
+  <data name="25034" xml:space="preserve">
+    <value>ব্যবহারকারী বৈধ নয়।</value>
+  </data>
+  <data name="3006201" xml:space="preserve">
+    <value>এই গ্রাহকের কাছে পুনরায় একই পরিমাণ রিচার্জ করতে ৩ মিনিট পরে আবার চেষ্টা করুন।</value>
+  </data>
+  <data name="3006202" xml:space="preserve">
+    <value>এই গ্রাহকের কাছে পুনরায় একই পরিমাণ রিচার্জ করতে ৩ মিনিট পরে আবার চেষ্টা করুন।</value>
+  </data>
+  <data name="4354" xml:space="preserve">
+    <value>মোবাইল নম্বরটি সিস্টেমে নিবন্ধিত নয়।</value>
+  </data>
+  <data name="6010" xml:space="preserve">
+    <value>এই পরিমাণ টাকা রিচার্জ করার জন্ন্য আপনার পর্যাপ্ত পরিমাণ ব্যালেন্স নেই।</value>
+  </data>
+  <data name="6011" xml:space="preserve">
+    <value>এই পরিমাণ টাকা রিচার্জ করার জন্ন্য আপনার পর্যাপ্ত পরিমাণ ব্যালেন্স নেই।</value>
+  </data>
+  <data name="7002" xml:space="preserve">
+    <value>দুঃখিত, আপনাকে এই পরিষেবাটি ব্যবহার করা থেকে সাময়িকভাবে স্থগিত করা হয়েছে৷ দয়া করে আপনার RSO এর সাথে যোগাযোগ করুন।</value>
+  </data>
+  <data name="7015" xml:space="preserve">
+    <value>অবৈধ পিন।</value>
+  </data>
+  <data name="7042" xml:space="preserve">
+    <value>আপনার পিন ব্লক করা হয়েছে, দয়া করে আপনার RSO এর সাথে যোগাযোগ করুন।</value>
+  </data>
+  <data name="7048" xml:space="preserve">
+    <value>অন্য নেটওয়ার্ক এর মোবাইল নম্বর গ্রহনযোগ্য নয়।</value>
+  </data>
+  <data name="7065" xml:space="preserve">
+    <value>কোনো লেনদেন করার আগে, অনুগ্রহ করে আপনার নতুন/ মেয়াদ শেষ হয়ে যাওয়া পিন পরিবর্তন করুন।</value>
+  </data>
+  <data name="9007" xml:space="preserve">
+    <value>আপনার অনুরুধটি এই মূহুর্তে প্রসেস করা সম্ভব হচ্ছে নাহ। শীঘ্রই এটি সমাধান করা হবে। অনুগ্রহ করে একটু পরে আবার চেষ্টা করুন।</value>
+  </data>
+  <data name="9969" xml:space="preserve">
+    <value>দুঃখিত, আপনি নিজের বিল পরিশোধ করতে পারবেন না, গ্রাহক নম্বর আপনার নম্বরের মতো হতে পারে না।</value>
+  </data>
+  <data name="AmarOfferSmsSuccess" xml:space="preserve">
+    <value>সফলভাবে গ্রাহকের কাছে এসএমএস পাঠানো হয়েছে।</value>
+  </data>
+  <data name="AoriupPtas" xml:space="preserve">
+    <value>ইতিমধ্যেই একটি অনুরোধ প্রক্রিয়াধীন৷ অনুগ্রহ করে কিছুক্ষণ পরে আবার চেষ্টা করুন৷</value>
+  </data>
+  <data name="BadRequest" xml:space="preserve">
+    <value>কোথাও ভুল হয়েছে। দয়া করে আবার চেষ্টা করুন</value>
+  </data>
+  <data name="CampaignEnrollSuccessful" xml:space="preserve">
+    <value>সফলভাবে ক্যাম্পেইনে অন্তর্ভুক্ত হলেন</value>
+  </data>
+  <data name="CampaingKPIOverlap" xml:space="preserve">
+    <value>অনুগ্রহ করে নথিভুক্ত ক্যাম্পেইন শেষ হওয়ার পরে আবার চেষ্টা করুন</value>
+  </data>
+  <data name="CancelCampaignEnrollmentSuccessful" xml:space="preserve">
+    <value>সফলভাবে ক্যাম্পেইনে অন্তর্ভুক্তি বাতিল হল</value>
+  </data>
+  <data name="CanNotRaiseToSO" xml:space="preserve">
+    <value>সুপার অফিসে অভিযোগ পৌঁছানো সম্ভব হয়নি।</value>
+  </data>
+  <data name="ChangePWD" xml:space="preserve">
+    <value>পাসওয়ার্ড পরিবর্তন সফল হয়েছে। দয়াকরে পুনরায় লগইন করুন।</value>
+  </data>
+  <data name="ComplaintSubmitFailed" xml:space="preserve">
+    <value>অভিযোগ জমা দিতে ব্যর্থ হয়েছে। দয়া করে আবার চেষ্টা করুন।</value>
+  </data>
+  <data name="ComplaintSubmitSuccessful" xml:space="preserve">
+    <value>আপনার অভিযোগ সফলভাবে জমা দেওয়া হয়েছে।</value>
+  </data>
+  <data name="ContactExist" xml:space="preserve">
+    <value>এই পরিচিতি ইতিমধ্যেই বিদ্যমান</value>
+  </data>
+  <data name="ContactSaveFailed" xml:space="preserve">
+    <value>পরিচিতি সংরক্ষণ করতে ব্যর্থ হয়েছে</value>
+  </data>
+  <data name="DatabaseOperationFailed" xml:space="preserve">
+    <value>ড্যাটাবেইজ কার্যক্রম ব্যর্থ হয়েছে। আবার চেষ্টা করুন</value>
+  </data>
+  <data name="DataNotFound" xml:space="preserve">
+    <value>ড্যাটা পাওয়া যায়নি</value>
+  </data>
+  <data name="DBSSError" xml:space="preserve">
+    <value>কিছুক্ষণ পরে আবার চেষ্টা করুন। ডিবিএসএস ইস্যু</value>
+  </data>
+  <data name="DBSSResentIncorrectAPIErrorResponse" xml:space="preserve">
+    <value>কিছুক্ষণ পরে আবার চেষ্টা করুন। ডিবিএসএস এপিআই ইস্যু</value>
+  </data>
+  <data name="DeleteFailed" xml:space="preserve">
+    <value>ডেটা ডিলিট করা সম্ভব হচ্ছে না।</value>
+  </data>
+  <data name="DeviceLimitExceed" xml:space="preserve">
+    <value>আপনার ডিভাইস সীমা অতিক্রম হয়েছে। অনুগ্রহ করে প্রাথমিক ডিভাইস থেকে অতিরিক্ত ডিভাইস মুছে ফেলুন।</value>
+  </data>
+  <data name="DeviceNotEnabled" xml:space="preserve">
+    <value>ডিভাইসটিকে মূল ব্যবহারকারী করতে হলে আগে সক্ষম করতে হবে।</value>
+  </data>
+  <data name="DeviceValidateSuccess" xml:space="preserve">
+    <value>ডিভাইস যাচাইকরণ সফল হয়েছে।</value>
+  </data>
+  <data name="DeviceValidFailed" xml:space="preserve">
+    <value>ডিভাইস যাচাইকরণ ব্যর্থ হয়েছে</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>কোথাও ভুল হয়েছে। দয়া করে আবার চেষ্টা করুন</value>
+  </data>
+  <data name="ErrorConnectingToRemoteShare" xml:space="preserve">
+    <value>সংযোগ করা যাচ্ছে না। আবার চেষ্টা করুন</value>
+  </data>
+  <data name="EVPinResetReqSent" xml:space="preserve">
+    <value>আপনার পিন রিসেট এর অনুরোধ সফলভাবে পাঠানো হয়েছে</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>ব্যর্থ হয়েছে</value>
+  </data>
+  <data name="FailedSteps" xml:space="preserve">
+    <value>এক বা একাধিক অপারেশন ব্যর্থ হয়েছে</value>
+  </data>
+  <data name="FeedbackNotSaved" xml:space="preserve">
+    <value>আপনার প্রতিক্রিয়া বা ফিডব্যাক সংরক্ষণ করা যায়নি</value>
+  </data>
+  <data name="InvalidAmarOffer" xml:space="preserve">
+    <value>আমার অফারটি সঠিক নয়!</value>
+  </data>
+  <data name="InvalidAttempt" xml:space="preserve">
+    <value>ভুল প্রচেষ্টা</value>
+  </data>
+  <data name="InvalidMSISDN" xml:space="preserve">
+    <value>ভুল মোবাইল নম্বর</value>
+  </data>
+  <data name="InvalidOperationType" xml:space="preserve">
+    <value>দয়া করে আবার চেষ্টা করুন। ভুল অপারেশান্স টাইপ</value>
+  </data>
+  <data name="InvalidOTP" xml:space="preserve">
+    <value>ভুল ওটিপি!</value>
+  </data>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value>ভুল পাসওয়ার্ড!</value>
+  </data>
+  <data name="InvalidPin" xml:space="preserve">
+    <value>ভুল পিন। সঠিক পিন দিন।</value>
+  </data>
+  <data name="InvalidSecurityToken" xml:space="preserve">
+    <value>ভুল সিকিউরিটি টোকেন। আবার চেষ্টা করুন</value>
+  </data>
+  <data name="InvalidSession" xml:space="preserve">
+    <value>ভুল সেশন টোকেন। দয়া করে আবার চেষ্টা করুন</value>
+  </data>
+  <data name="InvalidUserCredentials" xml:space="preserve">
+    <value>আইডি বা পাসওয়ার্ড ভুল হয়েছে</value>
+  </data>
+  <data name="InvalidUsername" xml:space="preserve">
+    <value>ভুল ইউজার নেম</value>
+  </data>
+  <data name="IOI" xml:space="preserve">
+    <value>ভুল অফার আইডি।</value>
+  </data>
+  <data name="IP" xml:space="preserve">
+    <value>ভুল পাসওয়ার্ড।</value>
+  </data>
+  <data name="Iu" xml:space="preserve">
+    <value>ব্যবহারকারী বৈধ নয়।</value>
+  </data>
+  <data name="LMSRewardCouldNotRedeem" xml:space="preserve">
+    <value>পুরস্কার সক্রিয় করা যায়নি</value>
+  </data>
+  <data name="LoginFailed" xml:space="preserve">
+    <value>ডিভাইসে লগইন করা যাচ্ছেনা!</value>
+  </data>
+  <data name="LogoutFailed" xml:space="preserve">
+    <value>এই ডিভাইস থেকে লগ আউট করা সম্ভব হয়নি</value>
+  </data>
+  <data name="LogoutSuccess" xml:space="preserve">
+    <value>এই ডিভাইস থেকে সফলভাবে লগ আউট হয়েছে</value>
+  </data>
+  <data name="MailSentSuccessfully" xml:space="preserve">
+    <value>ইমেইল সফলভাবে পাঠানো হয়েছে</value>
+  </data>
+  <data name="MissingSOCategory" xml:space="preserve">
+    <value>ক্যাটাগরি তথ্য পাওয়া যায়নি।</value>
+  </data>
+  <data name="MobileAndSIMNoBothAreValid" xml:space="preserve">
+    <value>মোবাইল ও সিম নম্বর উভয়ই সঠিক</value>
+  </data>
+  <data name="MSISDNAlreadyActivated" xml:space="preserve">
+    <value>মোবাইল নম্বর ইতোমধ্যেই ব্যবহৃত হচ্ছে</value>
+  </data>
+  <data name="MSISDNIsAlreadyExistsInInventory" xml:space="preserve">
+    <value>স্টকে মোবাইল নম্বর আগে থেকেই আছে</value>
+  </data>
+  <data name="MSISDNIsInvalid" xml:space="preserve">
+    <value>মোবাইল নম্বর সঠিক নয়</value>
+  </data>
+  <data name="MSISDNIsNotYetRegistered" xml:space="preserve">
+    <value>মোবাইল নম্বর রেজিস্টার্ড নয়</value>
+  </data>
+  <data name="MSISDNIsNot_0" xml:space="preserve">
+    <value>সঠিকভাবে মোবাইল নম্বর দিতে হবে</value>
+  </data>
+  <data name="MSISDNIsValid" xml:space="preserve">
+    <value>সঠিক মোবাইল নম্বর</value>
+  </data>
+  <data name="MultipleAmarOfferAvailable" xml:space="preserve">
+    <value>একই টাকায় একাধিক আমার অফার পাওয়া গেছে।</value>
+  </data>
+  <data name="NewDeviceRequestFailed" xml:space="preserve">
+    <value>আপনার অনুরোধ গ্রহন করা সম্ভব হচ্ছে না, দয়া করে আবার চেষ্টা করুন।</value>
+  </data>
+  <data name="NewDeviceRequestPending" xml:space="preserve">
+    <value>আপনার ইতিমধ্যেই একটি অনুরোধ রয়েছে, দয়াকরে আপনার আরএসও এর সাথে যোগাযোগ করুন।</value>
+  </data>
+  <data name="NewDeviceRequestSuccess" xml:space="preserve">
+    <value>আপনার অনুরোধ সফলভাবে জমা দেওয়া হয়েছে।</value>
+  </data>
+  <data name="NoAmarOfferAvailable" xml:space="preserve">
+    <value>কোনো আমার অফার পাওয়া যায়নি।</value>
+  </data>
+  <data name="NoDataFound" xml:space="preserve">
+    <value>ড্যাটা পাওয়া যায়নি</value>
+  </data>
+  <data name="NoDataFoundForSendingMail" xml:space="preserve">
+    <value>ইমেইল পাঠানোর জন্যে তথ্য পাওয়া যায়নি</value>
+  </data>
+  <data name="NothingToExecute" xml:space="preserve">
+    <value>সঠিকভাবে ইনপুট দিন।</value>
+  </data>
+  <data name="NRDf" xml:space="preserve">
+    <value>চ্যানেল ম্যাপিং আপডেট করতে আপনার RSO এর সাথে যোগাযোগ করুন।</value>
+  </data>
+  <data name="OldSIMNumberNotFound" xml:space="preserve">
+    <value>পুরনো সিম নম্বর পাওয়া যায়নি</value>
+  </data>
+  <data name="OneOrMoreOperationFailed" xml:space="preserve">
+    <value>এক বা একাধিক অপারেশন্স ব্যর্থ হয়েছে। দয়া করে আবার চেষ্টা করুন</value>
+  </data>
+  <data name="Oomeo" xml:space="preserve">
+    <value>এক বা একাধিক ত্রুটি ঘটেছে৷</value>
+  </data>
+  <data name="OrderSubmittedSuccessfully" xml:space="preserve">
+    <value>অর্ডার প্রদান সম্পন্ন হয়েছে</value>
+  </data>
+  <data name="OTPGenerationFailed" xml:space="preserve">
+    <value>ওটিপি রিকুয়েস্ট ব্যর্থ হয়েছে!</value>
+  </data>
+  <data name="OTPHasBeenSentToYourMobileNumber" xml:space="preserve">
+    <value>ওটিপি আপনার মোবাইল নম্বরে পাঠানো হয়েছে</value>
+  </data>
+  <data name="OTPIsValid" xml:space="preserve">
+    <value>সঠিক ওটিপি</value>
+  </data>
+  <data name="OTPSendFailed" xml:space="preserve">
+    <value>ওটিপি পাঠানো সম্ভব হয়নি</value>
+  </data>
+  <data name="PasswordIsNotValid" xml:space="preserve">
+    <value>পাসওয়ার্ড ভুল হয়েছে</value>
+  </data>
+  <data name="PasswordNotMatched" xml:space="preserve">
+    <value>পাসওয়ার্ড মিলছে না।</value>
+  </data>
+  <data name="PDFFileAttachAsBase64String" xml:space="preserve">
+    <value>পিডিএফ ফাইল বেইস৬৪ স্ট্রিং হিসাবে সংযুক্ত করুন</value>
+  </data>
+  <data name="PhgoAbuAo" xml:space="preserve">
+    <value>অ্যাক্টিভ অফার ব্যবহার করার আগে অনুগ্রহ করে গেট অফার অনুরোধ করুন।</value>
+  </data>
+  <data name="PleaseTryAgain" xml:space="preserve">
+    <value>আবার চেষ্টা করুন</value>
+  </data>
+  <data name="POCInfoNotFound" xml:space="preserve">
+    <value>পয়েন্ট অব কন্টাক্টের তথ্য পাওয়া যায়নি</value>
+  </data>
+  <data name="PWDMinLength" xml:space="preserve">
+    <value>অনুগ্রহ করে ন্যূনতম {0} সংখ্যার দৈর্ঘ্য লিখুন।</value>
+  </data>
+  <data name="PWDNotNull" xml:space="preserve">
+    <value>পাসওয়ার্ড খালি হতে পারে না।</value>
+  </data>
+  <data name="PWDRepeatedNumberNotAllow" xml:space="preserve">
+    <value>পাসওয়ার্ডে একই সংখ্যা বা অক্ষর বারবার অনুমোদিত নয়।</value>
+  </data>
+  <data name="PWDSentToMobile" xml:space="preserve">
+    <value>পাসওয়ার্ড আপনার মোবাইল নম্বরে পাঠানো হয়েছে</value>
+  </data>
+  <data name="PWDSpecCharNotAllow" xml:space="preserve">
+    <value>পাসওয়ার্ডে বিশেষ অক্ষর অনুমোদিত নয়।</value>
+  </data>
+  <data name="PWDValidationFailed" xml:space="preserve">
+    <value>পাসওয়ার্ড যাচাই ব্যর্থ হয়েছে।</value>
+  </data>
+  <data name="RatingAlreadySubmitted" xml:space="preserve">
+    <value>আপনি ইতিমধ্যে এই পণ্য রেট করেছেন</value>
+  </data>
+  <data name="RatingSubmitted" xml:space="preserve">
+    <value>আপনার রেটিং সফলভাবে সংরক্ষণ করা হয়েছে।</value>
+  </data>
+  <data name="ReceiptSendViaEmail" xml:space="preserve">
+    <value>ইমেইলের মাধ্যমে রিসিট পাঠানো হয়েছে</value>
+  </data>
+  <data name="Recharge404" xml:space="preserve">
+    <value>রিমোট সার্ভার একটি ত্রুটি ফিরিয়ে দিয়েছে: (404) পাওয়া যায়নি।</value>
+  </data>
+  <data name="RechargeAmountFailed" xml:space="preserve">
+    <value>{0} এর রিচার্জ ব্যর্থ হয়েছে।</value>
+  </data>
+  <data name="RegeisterFailed" xml:space="preserve">
+    <value>এই ডিভাইসটি নিবন্ধন করতে সম্ভব হচ্ছে নাহ।</value>
+  </data>
+  <data name="ReportNotMatched" xml:space="preserve">
+    <value>রিপোর্টের ধরন মিলছে না</value>
+  </data>
+  <data name="ReportTypeNotMatched" xml:space="preserve">
+    <value>রিপোর্ট টাইপ মিলে নাই</value>
+  </data>
+  <data name="RRser" xml:space="preserve">
+    <value>এই মুহূর্তে রিচার্জ করা সম্ভব হচ্ছে না, দয়া করে আবার চেষ্টা করুন।</value>
+  </data>
+  <data name="RsoOrZmInfoNotFound" xml:space="preserve">
+    <value>{0} তথ্য পাওয়া যায়নি।</value>
+  </data>
+  <data name="SaveSuccessful" xml:space="preserve">
+    <value>সফলভাবে সংরক্ষণ করা হয়েছে</value>
+  </data>
+  <data name="SCSalesFailed" xml:space="preserve">
+    <value>এই স্ক্র্যাচ কার্ডটি বিক্রি সম্ভব হচ্ছে না, দয়া করে আবার চেষ্টা করুন!</value>
+  </data>
+  <data name="SCSalesSuccess" xml:space="preserve">
+    <value>স্ক্র্যাচ কার্ড সফলভাবে বিক্রি হয়েছে।</value>
+  </data>
+  <data name="SecurityTokenIsValid" xml:space="preserve">
+    <value>ভুল সিকিউরিটি টোকেন। আবার চেষ্টা করুন।</value>
+  </data>
+  <data name="Siib" xml:space="preserve">
+    <value>পোস্টপেইড নম্বর আমার অফারের জন্য যোগ্য নয়।</value>
+  </data>
+  <data name="SIMIsUsed" xml:space="preserve">
+    <value>সিম ইতোমধ্যেই ব্যবহৃত।</value>
+  </data>
+  <data name="SIMIsValid" xml:space="preserve">
+    <value>সঠিক সিম নম্বর।</value>
+  </data>
+  <data name="SMSSendFailed" xml:space="preserve">
+    <value>এসএমএস পাঠানো সম্ভব হয়নি</value>
+  </data>
+  <data name="SomethingWentWrong" xml:space="preserve">
+    <value>কোথাও ভুল হয়েছে। দয়া করে আবার চেষ্টা করুন!!</value>
+  </data>
+  <data name="SomethingWrongHappend" xml:space="preserve">
+    <value>কিছুক্ষণ পরে আবার চেষ্টা করুন। কোথাও ভুল হয়েছে</value>
+  </data>
+  <data name="SubmitDigitalServiceSuccessful" xml:space="preserve">
+    <value>আপনার অনুরোধ সফলভাবে জমা দেওয়া হয়েছে।</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>সফল হয়েছে</value>
+  </data>
+  <data name="SuccessfullyLogoutFromThisDevice" xml:space="preserve">
+    <value>সফলভাবে ডিভাইস থেকে লগ আউট করা হয়েছে</value>
+  </data>
+  <data name="ThisDeviceIsDe-Registered" xml:space="preserve">
+    <value>ডিভাইস নিবন্ধন বাতিল হয়েছে</value>
+  </data>
+  <data name="ThisDeviceIsNotEnable" xml:space="preserve">
+    <value>মূল ব্যবহারকারী ডিভাইসটি অক্ষম করে রেখেছেন</value>
+  </data>
+  <data name="ThisIsNotA_EV_SWAPSIM" xml:space="preserve">
+    <value>এটা আই-টপআপ রিপ্লেসমেন্ট সিম নয়</value>
+  </data>
+  <data name="ThisIsNotA_SWAP_SIM" xml:space="preserve">
+    <value>এটা রিপ্লেসমেন্ট সিম নয়</value>
+  </data>
+  <data name="ThisMSISDNIsNotAllowedForThisTypeOfSIM" xml:space="preserve">
+    <value>এই মোবাইল নম্বর এই সিম টাইপের জন্য প্রযোজ্য নয়</value>
+  </data>
+  <data name="ThisOrderIsAlreadyInProcess" xml:space="preserve">
+    <value>অর্ডারটি এখনও প্রসেস করা হচ্ছে।</value>
+  </data>
+  <data name="ThisSIMIsNotInYourInventory" xml:space="preserve">
+    <value>এই সিম নম্বর আপনার স্টকে নেই।</value>
+  </data>
+  <data name="TryNewPassword" xml:space="preserve">
+    <value>অনুগ্রহ করে, আবার নতুন পাসওয়ার্ড তৈরি করার চেষ্টা করুন।</value>
+  </data>
+  <data name="UnableToGenerateRequestToken" xml:space="preserve">
+    <value>টোকেন দেয়া যায়নি। আবার চেষ্টা করুন।</value>
+  </data>
+  <data name="UnableToSaveResponse" xml:space="preserve">
+    <value>আপনার উত্তর সংরক্ষণ করা সম্ভব হয়নি।</value>
+  </data>
+  <data name="UnableUpdatePWD" xml:space="preserve">
+    <value>পাসওয়ার্ড পরিবর্তন করা সম্ভব হচ্ছে না।</value>
+  </data>
+  <data name="UpdateFailed" xml:space="preserve">
+    <value>আপডেট করা যায়নি।</value>
+  </data>
+  <data name="UpdateSuccessful" xml:space="preserve">
+    <value>সফলভাবে সংরক্ষণ করা হয়েছে।</value>
+  </data>
+  <data name="UserNotActive" xml:space="preserve">
+    <value>ব্যবহারকারী সক্রিয় নয়।</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>ব্যবহারকারী পাওয়া যায়নি।</value>
+  </data>
+  <data name="UserSuccessfullyValidated" xml:space="preserve">
+    <value>ব্যবহারকারীকে সফলভাবে সনাক্ত করা হয়েছে।</value>
+  </data>
+  <data name="VoiceNotSaved" xml:space="preserve">
+    <value>আপনার ভয়েস সফল্ভাবে সংরক্ষণ করা যায়নি।</value>
+  </data>
+  <data name="Wmf" xml:space="preserve">
+    <value>চ্যানেল ম্যাপিং আপডেট করতে আপনার RSO এর সাথে যোগাযোগ করুন।</value>
+  </data>
+  <data name="WrongSIMOrNotInInventory" xml:space="preserve">
+    <value>সিমের তথ্য ভুল বা সিম আপনার স্টকে নেই।</value>
+  </data>
+  <data name="Yanatcob" xml:space="preserve">
+    <value>চ্যানেল ম্যাপিং আপডেট করতে আপনার RSO এর সাথে যোগাযোগ করুন।</value>
+  </data>
+  <data name="YouAlreadyHaveEnrolledForMaximumTimeForThisCampaign" xml:space="preserve">
+    <value>আপনি ইতোমধ্যেই সর্বোচ্চ সংখ্যক ক্যাম্পেইনের জন্য অন্তর্ভুক্ত হয়েছেন।</value>
+  </data>
+  <data name="YouAreNotAuthorizedForThisConnection" xml:space="preserve">
+    <value>আপনি এই কানেকশান ব্যবহার করার জন্য অনুমোদিত নন।</value>
+  </data>
+  <data name="YourFeedbackSavedSuccessfully" xml:space="preserve">
+    <value>আপনার প্রতিক্রিয়া বা ফিডব্যাক সংরক্ষণ করা হলো।</value>
+  </data>
+  <data name="YourVoiceSavedSuccessfully" xml:space="preserve">
+    <value>আপনার ভয়েস সফলভাবে সংরক্ষণ করা হলো।</value>
+  </data>
+  <data name="DBError" xml:space="preserve">
+    <value>ড্যাটাবেইজ কার্যক্রম ব্যর্থ হয়েছে। আবার চেষ্টা করুন</value>
+  </data>
+</root>

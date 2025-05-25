@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<NoWarn>1701;1702;IDE1006;</NoWarn>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<NoWarn>1701;1702;IDE1006;</NoWarn>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+
+	<Import Project="../SharedProjectFile.proj" />
+
+	<ItemGroup>
+	  <PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.5.95" />
+	  <PackageReference Include="Mapster" Version="7.4.0" />
+	  <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.0" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	  <PackageReference Include="System.Drawing.Common" Version="8.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Resources\SharedResource.bn-BD.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\SharedResource.en-US.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	  </EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+</Project>

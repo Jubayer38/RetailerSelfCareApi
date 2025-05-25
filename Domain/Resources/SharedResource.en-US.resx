@@ -1,0 +1,570 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="11104" xml:space="preserve">
+    <value>Invalid PIN length.</value>
+  </data>
+  <data name="17007" xml:space="preserve">
+    <value>Your request cannot be processed at this time, please try again later.</value>
+  </data>
+  <data name="17017" xml:space="preserve">
+    <value>Your request cannot be processed at this time, please try again later.</value>
+  </data>
+  <data name="2003" xml:space="preserve">
+    <value>Sorry, This service is currently unavailable for you. Please contact with your RSO.</value>
+  </data>
+  <data name="2020" xml:space="preserve">
+    <value>The previous request of this customer is being processed, please try again later.</value>
+  </data>
+  <data name="221" xml:space="preserve">
+    <value>Your account has been credited back for failed transaction.</value>
+  </data>
+  <data name="25034" xml:space="preserve">
+    <value>Invalid user</value>
+  </data>
+  <data name="3006201" xml:space="preserve">
+    <value>Please try after 3 minute for same recharge to this customer again.</value>
+  </data>
+  <data name="3006202" xml:space="preserve">
+    <value>Please try after 3 minute for same recharge to this customer again.</value>
+  </data>
+  <data name="4354" xml:space="preserve">
+    <value>The mobile number is not registered in system.</value>
+  </data>
+  <data name="6010" xml:space="preserve">
+    <value>You didn't have sifficient balance for recharge this amount.</value>
+  </data>
+  <data name="6011" xml:space="preserve">
+    <value>You didn't have sifficient balance for recharge this amount.</value>
+  </data>
+  <data name="7002" xml:space="preserve">
+    <value>Sorry, you are temporarily suspended from using this service. Please contact with your RSO.</value>
+  </data>
+  <data name="7015" xml:space="preserve">
+    <value>Invalid PIN</value>
+  </data>
+  <data name="7042" xml:space="preserve">
+    <value>Your PIN has been blocked, please contact with your RSO.</value>
+  </data>
+  <data name="7048" xml:space="preserve">
+    <value>Mobile number from others network not allowed.</value>
+  </data>
+  <data name="7065" xml:space="preserve">
+    <value>Before doing any transaction, please change your new/expired reset PIN first.</value>
+  </data>
+  <data name="9007" xml:space="preserve">
+    <value>An error occurred while processing your request. We will be solving it shortly. Please try again later.</value>
+  </data>
+  <data name="9969" xml:space="preserve">
+    <value>Sorry, you cannot pay your own  bill,  customer number cannot be same as yours.</value>
+  </data>
+  <data name="AmarOfferSmsSuccess" xml:space="preserve">
+    <value>Successfully sms sent to Customer.</value>
+  </data>
+  <data name="AoriupPtas" xml:space="preserve">
+    <value>Already one request is under process. Please try after sometime.</value>
+  </data>
+  <data name="BadRequest" xml:space="preserve">
+    <value>Bad Request</value>
+  </data>
+  <data name="CampaignEnrollSuccessful" xml:space="preserve">
+    <value>Campaign Enroll Successful</value>
+  </data>
+  <data name="CampaingKPIOverlap" xml:space="preserve">
+    <value>Please try again after the enrolled campaign ends</value>
+  </data>
+  <data name="CancelCampaignEnrollmentSuccessful" xml:space="preserve">
+    <value>Cancel Campaign Enrollment Successful</value>
+  </data>
+  <data name="CanNotRaiseToSO" xml:space="preserve">
+    <value>Could not raise the complaint to Super Office.</value>
+  </data>
+  <data name="ChangePWD" xml:space="preserve">
+    <value>Password changed successfully. Please Logout and Login with New Password.</value>
+  </data>
+  <data name="ComplaintSubmitFailed" xml:space="preserve">
+    <value>Complaint Submission Failed. Please Submit Again.</value>
+  </data>
+  <data name="ComplaintSubmitSuccessful" xml:space="preserve">
+    <value>Your Complaint Successfully Submitted</value>
+  </data>
+  <data name="ContactExist" xml:space="preserve">
+    <value>This contact already exist</value>
+  </data>
+  <data name="ContactSaveFailed" xml:space="preserve">
+    <value>Failed to save contact</value>
+  </data>
+  <data name="DatabaseOperationFailed" xml:space="preserve">
+    <value>Database operation failed!</value>
+  </data>
+  <data name="DataNotFound" xml:space="preserve">
+    <value>Data not found!</value>
+  </data>
+  <data name="DBSSError" xml:space="preserve">
+    <value>DBSS error!</value>
+  </data>
+  <data name="DBSSResentIncorrectAPIErrorResponse" xml:space="preserve">
+    <value>DBSS resent incorrect API error response!</value>
+  </data>
+  <data name="DeleteFailed" xml:space="preserve">
+    <value>Unable to delete data.</value>
+  </data>
+  <data name="DeviceLimitExceed" xml:space="preserve">
+    <value>Your Device limit exceeded. Please remove additional device from primary device.</value>
+  </data>
+  <data name="DeviceNotEnabled" xml:space="preserve">
+    <value>Device must be enabled to make primary</value>
+  </data>
+  <data name="DeviceValidateSuccess" xml:space="preserve">
+    <value>Device validation is successful.</value>
+  </data>
+  <data name="DeviceValidFailed" xml:space="preserve">
+    <value>Device validation failed</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error!!</value>
+  </data>
+  <data name="ErrorConnectingToRemoteShare" xml:space="preserve">
+    <value>Error connecting to remote share</value>
+  </data>
+  <data name="EVPinResetReqSent" xml:space="preserve">
+    <value>Your Pin Reset Request sent successfully</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>Failed!</value>
+  </data>
+  <data name="FailedSteps" xml:space="preserve">
+    <value>One or more operation failed</value>
+  </data>
+  <data name="FeedbackNotSaved" xml:space="preserve">
+    <value>Can't save your feedback</value>
+  </data>
+  <data name="InvalidAmarOffer" xml:space="preserve">
+    <value>Invalid Amar Offer!</value>
+  </data>
+  <data name="InvalidAttempt" xml:space="preserve">
+    <value>Invalid attempt</value>
+  </data>
+  <data name="InvalidMSISDN" xml:space="preserve">
+    <value>Invalid MSISDN.</value>
+  </data>
+  <data name="InvalidOperationType" xml:space="preserve">
+    <value>Invalid operation type</value>
+  </data>
+  <data name="InvalidOTP" xml:space="preserve">
+    <value>Invalid OTP!</value>
+  </data>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value>Invalid Password!</value>
+  </data>
+  <data name="InvalidPin" xml:space="preserve">
+    <value>Invalid Pin</value>
+  </data>
+  <data name="InvalidSecurityToken" xml:space="preserve">
+    <value>Invalid security token!</value>
+  </data>
+  <data name="InvalidSession" xml:space="preserve">
+    <value>Invalid session token , Please Login Again</value>
+  </data>
+  <data name="InvalidUserCredentials" xml:space="preserve">
+    <value>Invalid User Credentials!</value>
+  </data>
+  <data name="InvalidUsername" xml:space="preserve">
+    <value>Invalid username!</value>
+  </data>
+  <data name="IOI" xml:space="preserve">
+    <value>Invalid Offer ID.</value>
+  </data>
+  <data name="IP" xml:space="preserve">
+    <value>Incorrect Password.</value>
+  </data>
+  <data name="Iu" xml:space="preserve">
+    <value>Invalid user</value>
+  </data>
+  <data name="LMSRewardCouldNotRedeem" xml:space="preserve">
+    <value>Could Not Redeem Reward</value>
+  </data>
+  <data name="LoginFailed" xml:space="preserve">
+    <value>Unable to login in this device!</value>
+  </data>
+  <data name="LogoutFailed" xml:space="preserve">
+    <value>Unable to logout from this device.</value>
+  </data>
+  <data name="LogoutSuccess" xml:space="preserve">
+    <value>Successfully logged out from this device</value>
+  </data>
+  <data name="MailSentSuccessfully" xml:space="preserve">
+    <value>Mail Sent Successfully</value>
+  </data>
+  <data name="MissingSOCategory" xml:space="preserve">
+    <value>Missing Category Information</value>
+  </data>
+  <data name="MobileAndSIMNoBothAreValid" xml:space="preserve">
+    <value>Mobile and SIM no. both are valid.</value>
+  </data>
+  <data name="MSISDNAlreadyActivated" xml:space="preserve">
+    <value>MSISDN already Activated.</value>
+  </data>
+  <data name="MSISDNIsAlreadyExistsInInventory" xml:space="preserve">
+    <value>MSISDN is already exists in inventory!</value>
+  </data>
+  <data name="MSISDNIsInvalid" xml:space="preserve">
+    <value>MSISDN is invalid!</value>
+  </data>
+  <data name="MSISDNIsNotYetRegistered" xml:space="preserve">
+    <value>MSISDN is not yet registered.</value>
+  </data>
+  <data name="MSISDNIsNot_0" xml:space="preserve">
+    <value>MSISDN is not {0}</value>
+  </data>
+  <data name="MSISDNIsValid" xml:space="preserve">
+    <value>MSISDN is valid!</value>
+  </data>
+  <data name="MultipleAmarOfferAvailable" xml:space="preserve">
+    <value>Multiple Amar Offer found by the same amount.</value>
+  </data>
+  <data name="NewDeviceRequestFailed" xml:space="preserve">
+    <value>Unable to submit request. Please try again.</value>
+  </data>
+  <data name="NewDeviceRequestPending" xml:space="preserve">
+    <value>You already have one pending request. Please contact with your RSO.</value>
+  </data>
+  <data name="NewDeviceRequestSuccess" xml:space="preserve">
+    <value>Your request successfully submitted</value>
+  </data>
+  <data name="NoAmarOfferAvailable" xml:space="preserve">
+    <value>No Amar Offers Found.</value>
+  </data>
+  <data name="NoDataFound" xml:space="preserve">
+    <value>No data found!</value>
+  </data>
+  <data name="NoDataFoundForSendingMail" xml:space="preserve">
+    <value>No data found! for Sending Mail</value>
+  </data>
+  <data name="NothingToExecute" xml:space="preserve">
+    <value>Nothing to execute</value>
+  </data>
+  <data name="NRDf" xml:space="preserve">
+    <value>Please contact with your RSO to update channel mapping.</value>
+  </data>
+  <data name="OldSIMNumberNotFound" xml:space="preserve">
+    <value>Old SIM number not found!</value>
+  </data>
+  <data name="OneOrMoreOperationFailed" xml:space="preserve">
+    <value>One or more operation failed</value>
+  </data>
+  <data name="Oomeo" xml:space="preserve">
+    <value>One or more errors occurred.</value>
+  </data>
+  <data name="OrderSubmittedSuccessfully" xml:space="preserve">
+    <value>Order submitted successfully.</value>
+  </data>
+  <data name="OTPGenerationFailed" xml:space="preserve">
+    <value>OTP generation failed!</value>
+  </data>
+  <data name="OTPHasBeenSentToYourMobileNumber" xml:space="preserve">
+    <value>OTP has been sent to your mobile number.</value>
+  </data>
+  <data name="OTPIsValid" xml:space="preserve">
+    <value>OTP is valid!</value>
+  </data>
+  <data name="OTPSendFailed" xml:space="preserve">
+    <value>Faild to send OTP</value>
+  </data>
+  <data name="PasswordIsNotValid" xml:space="preserve">
+    <value>Password is not valid.</value>
+  </data>
+  <data name="PasswordNotMatched" xml:space="preserve">
+    <value>Password not matched.</value>
+  </data>
+  <data name="PDFFileAttachAsBase64String" xml:space="preserve">
+    <value>PDF file attach as Base64 string</value>
+  </data>
+  <data name="PhgoAbuAo" xml:space="preserve">
+    <value>Please hit get offer API before using Activate offer.</value>
+  </data>
+  <data name="PleaseTryAgain" xml:space="preserve">
+    <value>Please try again.</value>
+  </data>
+  <data name="POCInfoNotFound" xml:space="preserve">
+    <value>POC info not found!</value>
+  </data>
+  <data name="PWDMinLength" xml:space="preserve">
+    <value>Please enter a minimum {0} digit length</value>
+  </data>
+  <data name="PWDNotNull" xml:space="preserve">
+    <value>Password cann't be null or empty.</value>
+  </data>
+  <data name="PWDRepeatedNumberNotAllow" xml:space="preserve">
+    <value>Repeated number or character can’t allowed on password.</value>
+  </data>
+  <data name="PWDSentToMobile" xml:space="preserve">
+    <value>Password has been sent to your mobile number.</value>
+  </data>
+  <data name="PWDSpecCharNotAllow" xml:space="preserve">
+    <value>Special character not allowed on password.</value>
+  </data>
+  <data name="PWDValidationFailed" xml:space="preserve">
+    <value>Password validation failed.</value>
+  </data>
+  <data name="RatingAlreadySubmitted" xml:space="preserve">
+    <value>You already have rated this product</value>
+  </data>
+  <data name="RatingSubmitted" xml:space="preserve">
+    <value>Your rating submitted successfully</value>
+  </data>
+  <data name="ReceiptSendViaEmail" xml:space="preserve">
+    <value>Receipt send via e-mail.</value>
+  </data>
+  <data name="Recharge404" xml:space="preserve">
+    <value>The remote server returned an error: (404) Not Found.</value>
+  </data>
+  <data name="RechargeAmountFailed" xml:space="preserve">
+    <value>Recharge of {0} failed</value>
+  </data>
+  <data name="RegeisterFailed" xml:space="preserve">
+    <value>Unable to register this device.</value>
+  </data>
+  <data name="ReportNotMatched" xml:space="preserve">
+    <value>Report type not matched</value>
+  </data>
+  <data name="ReportTypeNotMatched" xml:space="preserve">
+    <value>Report type not matched</value>
+  </data>
+  <data name="RRser" xml:space="preserve">
+    <value>Unable ro recharge right now. Please try again.</value>
+  </data>
+  <data name="RsoOrZmInfoNotFound" xml:space="preserve">
+    <value>{0} Information not found</value>
+  </data>
+  <data name="SaveSuccessful" xml:space="preserve">
+    <value>Save Successful</value>
+  </data>
+  <data name="SCSalesFailed" xml:space="preserve">
+    <value>Unable to sale this Scratch Card, Please try again!</value>
+  </data>
+  <data name="SCSalesSuccess" xml:space="preserve">
+    <value>Scratch Card Sold Successfully.</value>
+  </data>
+  <data name="SecurityTokenIsValid" xml:space="preserve">
+    <value>Security token is valid.</value>
+  </data>
+  <data name="Siib" xml:space="preserve">
+    <value>Postpaid number is not eligible for Amar Offer.</value>
+  </data>
+  <data name="SIMIsUsed" xml:space="preserve">
+    <value>SIM is used!</value>
+  </data>
+  <data name="SIMIsValid" xml:space="preserve">
+    <value>SIM is valid.</value>
+  </data>
+  <data name="SMSSendFailed" xml:space="preserve">
+    <value>SMS send failed!</value>
+  </data>
+  <data name="SomethingWentWrong" xml:space="preserve">
+    <value>Something went wrong!!</value>
+  </data>
+  <data name="SomethingWrongHappend" xml:space="preserve">
+    <value>Something wrong happend!</value>
+  </data>
+  <data name="SubmitDigitalServiceSuccessful" xml:space="preserve">
+    <value>Your request successfully submitted</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Success!</value>
+  </data>
+  <data name="SuccessfullyLogoutFromThisDevice" xml:space="preserve">
+    <value>Successfully logout from this device.</value>
+  </data>
+  <data name="ThisDeviceIsDe-Registered" xml:space="preserve">
+    <value>This device is De-Registered.</value>
+  </data>
+  <data name="ThisDeviceIsNotEnable" xml:space="preserve">
+    <value>This device is not Enable.</value>
+  </data>
+  <data name="ThisIsNotA_EV_SWAPSIM" xml:space="preserve">
+    <value>This is not a EV-SWAP SIM!</value>
+  </data>
+  <data name="ThisIsNotA_SWAP_SIM" xml:space="preserve">
+    <value>This is not a SWAP SIM!</value>
+  </data>
+  <data name="ThisMSISDNIsNotAllowedForThisTypeOfSIM" xml:space="preserve">
+    <value>This MSISDN is not allowed for this type of SIM!</value>
+  </data>
+  <data name="ThisOrderIsAlreadyInProcess" xml:space="preserve">
+    <value>This order is already in process.</value>
+  </data>
+  <data name="ThisSIMIsNotInYourInventory" xml:space="preserve">
+    <value>This SIM is not in your inventory!</value>
+  </data>
+  <data name="TryNewPassword" xml:space="preserve">
+    <value>Please, try to create new password again.</value>
+  </data>
+  <data name="UnableToGenerateRequestToken" xml:space="preserve">
+    <value>Unable to generate request token.</value>
+  </data>
+  <data name="UnableToSaveResponse" xml:space="preserve">
+    <value>Unable to save response.</value>
+  </data>
+  <data name="UnableUpdatePWD" xml:space="preserve">
+    <value>Unable to update password.</value>
+  </data>
+  <data name="UpdateFailed" xml:space="preserve">
+    <value>Update failed!</value>
+  </data>
+  <data name="UpdateSuccessful" xml:space="preserve">
+    <value>Update Successful.</value>
+  </data>
+  <data name="UserNotActive" xml:space="preserve">
+    <value>User is not active.</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>User not found!</value>
+  </data>
+  <data name="UserSuccessfullyValidated" xml:space="preserve">
+    <value>User Successfully Validated.</value>
+  </data>
+  <data name="VoiceNotSaved" xml:space="preserve">
+    <value>Can't save your voice</value>
+  </data>
+  <data name="Wmf" xml:space="preserve">
+    <value>Please contact with your RSO to update channel mapping.</value>
+  </data>
+  <data name="WrongSIMOrNotInInventory" xml:space="preserve">
+    <value>Wrong SIM or Not in Inventory.</value>
+  </data>
+  <data name="Yanatcob" xml:space="preserve">
+    <value>Please contact with your RSO to update channel mapping.</value>
+  </data>
+  <data name="YouAlreadyHaveEnrolledForMaximumTimeForThisCampaign" xml:space="preserve">
+    <value>You already have enrolled for maximum time for this campaign</value>
+  </data>
+  <data name="YouAreNotAuthorizedForThisConnection" xml:space="preserve">
+    <value>You are not authorized for this connection!</value>
+  </data>
+  <data name="YourFeedbackSavedSuccessfully" xml:space="preserve">
+    <value>Your feedback saved successfully</value>
+  </data>
+  <data name="YourVoiceSavedSuccessfully" xml:space="preserve">
+    <value>Your voice saved successfully</value>
+  </data>
+  <data name="DBError" xml:space="preserve">
+    <value>Database operation failed!</value>
+  </data>
+</root>

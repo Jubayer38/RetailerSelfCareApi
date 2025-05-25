@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @if(Domain.StaticClass.AppSettingsKeys.IsWindows)
+    {
+        <link rel="shortcut icon" href="~/favicon.ico" />
+        <link href="~/bootstrap_5_0_2/css/bootstrap.min.css" rel="stylesheet" />
+    } 
+    else
+    {
+        <link rel="shortcut icon" href="/@Domain.StaticClass.AppSettingsKeys.WWWRootPath/favicon.ico" />
+        <link href="/@Domain.StaticClass.AppSettingsKeys.WWWRootPath/bootstrap_5_0_2/css/bootstrap.min.css" rel="stylesheet" />
+    }
+</head>
+<body>
+    <div class="container body-content" style="margin: 0 auto; width:70%">
+        <marquee scrolldelay="300" style="font-size:7px;">Retailer Self Care App API</marquee>
+        @RenderBody()
+        <hr>
+        <footer>
+            <p>© @DateTime.Now.Year - Banglalink</p>
+            <p style="font-size:4px;">Vendor: NAAS Solutions Ltd.</p>
+        </footer>
+    </div>
+
+    @if (Domain.StaticClass.AppSettingsKeys.IsWindows)
+    {
+        <script src="~/bootstrap_5_0_2/js/bootstrap.bundle.min.js"></script>
+    }
+    else
+    {
+        <script src="/@Domain.StaticClass.AppSettingsKeys.WWWRootPath/bootstrap_5_0_2/js/bootstrap.bundle.min.js"></script>
+    }
+
+</body>
+</html>

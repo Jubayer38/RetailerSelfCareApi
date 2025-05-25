@@ -1,0 +1,11 @@
+﻿<div class="p-5 rounded-3">
+    <h1>Banglalink</h1>
+    @if (Domain.StaticClass.AppSettingsKeys.IsWindows)
+    {
+        <img width="100%" src="~/images/welcome.jpg" />
+    }
+    else
+    {
+        <img width="100%" src="/@Domain.StaticClass.AppSettingsKeys.WWWRootPath/images/welcome.jpg" />
+    }
+</div>

@@ -1,0 +1,156 @@
+﻿@using Domain.ViewModel
+
+@{
+    Layout = "~/Views/Shared/_SurveyLayout.cshtml";
+}
+
+<div style="background-color: #121421; color: white;">
+    <div class="text-center">
+
+        <input value="@Model.RetailerCode" type="text" id="rtCode" disabled hidden />
+        <input value="@Model.Id" type="number" id="surveyId" disabled hidden />
+        <input value="@Model.FileUploadLimit" type="number" id="fileUploadLimit" disabled hidden />
+        <input value="@Model.IsValid.ToString()" type="text" id="isValid" disabled hidden />
+
+        @if (@Model.IsValid == 1)
+        {
+            <div class="card card-header" id="surveyTitle">
+                <h3>Getting Survey.... [Dark mode]</h3>
+            </div>
+
+            <div class="card-body" id="surveyBody" style="background-color: #121421 !important;">
+                <form name="surveyForm" id="surveyForm">
+                </form>
+            </div>
+
+        }
+        else if (@Model.IsValid == 2 || @Model.IsValid == 3)
+        {
+            <div class="panel-title" style="margin-top: 30px;">
+                <h3>The Survey you are trying to attend has been ended!</h3>
+                <h4>Thank you for your interest.</h4>
+            </div>
+        }
+        else if (@Model.IsValid == 4)
+        {
+            <div class="panel-title" style="margin-top: 30px;">
+                <h3>You already responded in this Survey previously.</h3>
+                <h4>Thank you for your interest again.</h4>
+            </div>
+        }
+        else
+        {
+            <div class="panel-title" style="margin-top: 30px;">
+                <h3>Something went wrong!</h3>
+                <h4>Unable to load this survey now. Please try again later.</h4>
+            </div>
+        }
+
+    </div>
+
+
+    @* Survey submit success modal *@
+    <div class="modal fade" id="successModalDark" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" data-target="modal_starthere">
+        <div class="modal-dialog">
+            <div class="modal-content" style="background-color: #231F20 !important; color: #FFFFFF;">
+
+                <div class="modal-body">
+                    <center>Your survey is saved successfully.</center>
+                    <center>Thank you.</center>
+                </div>
+                <div class="modal-footer">
+                    <center><button type="button" class="btn btn-secondary" onclick="btnOkClick()" id="btnOk">Ok</button></center>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@if (Domain.StaticClass.AppSettingsKeys.IsWindows)
+{
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/jquery-ui.min.js"></script>
+    <script src="~/bootstrap_5_0_2/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/jquery.timepicker.min.js"></script>
+    <script src="~/js/toastr.js"></script>
+    <script src="~/js/surveyViewDark.js"></script>
+}
+else
+{
+    <script src="/@Domain.StaticClass.AppSettingsKeys.WWWRootPath/js/jquery.min.js"></script>
+    <script src="/@Domain.StaticClass.AppSettingsKeys.WWWRootPath/js/jquery-ui.min.js"></script>
+    <script src="/@Domain.StaticClass.AppSettingsKeys.WWWRootPath/bootstrap_5_0_2/js/bootstrap.bundle.min.js"></script>
+    <script src="/@Domain.StaticClass.AppSettingsKeys.WWWRootPath/js/jquery.timepicker.min.js"></script>
+    <script src="/@Domain.StaticClass.AppSettingsKeys.WWWRootPath/js/toastr.js"></script>
+    <script src="/@Domain.StaticClass.AppSettingsKeys.WWWRootPath/js/surveyViewDark.js"></script>
+}
+
+<script>
+
+    let fileResult = "";
+    function singleSelect(checkbox, name) {
+        let checkboxes = document.getElementsByName(name);
+        //checkboxes.forEach(function (item){
+        //    if (item !== checkbox) item.checked = false
+        //});
+
+        for (var i = 0; i < checkboxes.length; i++) {
+
+            if (checkboxes[i] !== checkbox) checkboxes[i].checked = false
+
+        }
+
+    }
+
+    function multiSelect(checkId) {
+        if ($('#' + checkId).is(':checked')) {
+            $('#' + checkId).removeAttr('checked');
+        }
+        else {
+            $('#' + checkId).attr('checked');
+        }
+    }
+
+    //function isFileWithinLimit(fileDivid) {
+
+    //    let allowedLimit = parseInt($("#fileUploadLimit").val());
+    //    let readableLimit = (allowedLimit / 1000000).toString() + ' MB';
+    //    let fileInputId = fileDivid + 'file';
+    //    let fileTextAreaId = fileDivid + 'fileStr';
+    //    let uploadedFile = $('#' + fileInputId)[0].files[0];
+
+    //    if (uploadedFile.size > allowedLimit) {
+
+    //        let errorStr = 'Please upload file within ' + readableLimit;
+    //        console.log($('#' + fileDivid + 'span').text());
+    //        $('#' + fileDivid + 'span').text(errorStr);
+
+    //        $('#' + fileDivid).addClass('notValid');
+    //        $('#' + fileDivid + '_error').removeClass('hideError');
+
+    //        $('#' + fileInputId)[0].files[0] = '';
+    //        $('#' + fileInputId).val('');
+
+    //    }
+    //    else {
+    //        $('#' + fileDivid).removeClass('notValid');
+    //        $('#' + fileDivid + '_error').addClass('hideError');
+    //        $('#' + fileDivid + '_span').text('Please response to this question');
+
+    //        var reader = new FileReader();
+    //        reader.onloadend = function (onLoadEvent) {
+    //            fileResult = reader.result;
+    //            $("#" + fileTextAreaId).text(fileResult);
+    //        };
+    //        reader.readAsDataURL(uploadedFile);
+
+    //    }
+    //}
+
+    function optionSelected(event, id) {
+        /*        console.log($(this).val());*/
+    }
+
+</script>

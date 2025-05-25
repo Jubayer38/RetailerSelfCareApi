@@ -1,0 +1,81 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<UserSecretsId>0bf8aa8f-17cd-4336-9cba-8b8e46f60d29</UserSecretsId>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <DebugType>embedded</DebugType>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <DebugType>embedded</DebugType>
+	</PropertyGroup>
+
+	<Import Project="../SharedProjectFile.proj" />
+
+	<ItemGroup>
+		<Folder Include="Views\Shared\" />
+		<Folder Include="wwwroot\css\" />
+		<Folder Include="wwwroot\js\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-grid.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-grid.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-grid.min.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-grid.min.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-grid.rtl.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-grid.rtl.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-grid.rtl.min.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-grid.rtl.min.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-reboot.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-reboot.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-reboot.min.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-reboot.min.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-reboot.rtl.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-reboot.rtl.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-reboot.rtl.min.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-reboot.rtl.min.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-utilities.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-utilities.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-utilities.min.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-utilities.min.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-utilities.rtl.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-utilities.rtl.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-utilities.rtl.min.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap-utilities.rtl.min.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap.min.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap.min.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap.rtl.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap.rtl.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap.rtl.min.css" />
+		<None Include="wwwroot\bootstrap_5_0_2\css\bootstrap.rtl.min.css.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\js\bootstrap.bundle.js" />
+		<None Include="wwwroot\bootstrap_5_0_2\js\bootstrap.bundle.js.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\js\bootstrap.bundle.min.js" />
+		<None Include="wwwroot\bootstrap_5_0_2\js\bootstrap.bundle.min.js.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\js\bootstrap.esm.js" />
+		<None Include="wwwroot\bootstrap_5_0_2\js\bootstrap.esm.js.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\js\bootstrap.esm.min.js" />
+		<None Include="wwwroot\bootstrap_5_0_2\js\bootstrap.esm.min.js.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\js\bootstrap.js" />
+		<None Include="wwwroot\bootstrap_5_0_2\js\bootstrap.js.map" />
+		<None Include="wwwroot\bootstrap_5_0_2\js\bootstrap.min.js" />
+		<None Include="wwwroot\bootstrap_5_0_2\js\bootstrap.min.js.map" />
+		<None Include="wwwroot\images\welcome.jpg" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Application\Application.csproj" />
+	</ItemGroup>
+
+</Project>

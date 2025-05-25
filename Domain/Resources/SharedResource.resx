@@ -1,0 +1,570 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="11104" xml:space="preserve">
+    <value />
+  </data>
+  <data name="17007" xml:space="preserve">
+    <value />
+  </data>
+  <data name="17017" xml:space="preserve">
+    <value />
+  </data>
+  <data name="2003" xml:space="preserve">
+    <value />
+  </data>
+  <data name="2020" xml:space="preserve">
+    <value />
+  </data>
+  <data name="221" xml:space="preserve">
+    <value />
+  </data>
+  <data name="25034" xml:space="preserve">
+    <value />
+  </data>
+  <data name="3006201" xml:space="preserve">
+    <value />
+  </data>
+  <data name="3006202" xml:space="preserve">
+    <value />
+  </data>
+  <data name="4354" xml:space="preserve">
+    <value />
+  </data>
+  <data name="6010" xml:space="preserve">
+    <value />
+  </data>
+  <data name="6011" xml:space="preserve">
+    <value />
+  </data>
+  <data name="7002" xml:space="preserve">
+    <value />
+  </data>
+  <data name="7015" xml:space="preserve">
+    <value />
+  </data>
+  <data name="7042" xml:space="preserve">
+    <value />
+  </data>
+  <data name="7048" xml:space="preserve">
+    <value />
+  </data>
+  <data name="7065" xml:space="preserve">
+    <value />
+  </data>
+  <data name="9007" xml:space="preserve">
+    <value />
+  </data>
+  <data name="9969" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AmarOfferSmsSuccess" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AoriupPtas" xml:space="preserve">
+    <value />
+  </data>
+  <data name="BadRequest" xml:space="preserve">
+    <value />
+  </data>
+  <data name="CampaignEnrollSuccessful" xml:space="preserve">
+    <value />
+  </data>
+  <data name="CampaingKPIOverlap" xml:space="preserve">
+    <value />
+  </data>
+  <data name="CancelCampaignEnrollmentSuccessful" xml:space="preserve">
+    <value />
+  </data>
+  <data name="CanNotRaiseToSO" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ChangePWD" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ComplaintSubmitFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ComplaintSubmitSuccessful" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ContactExist" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ContactSaveFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DatabaseOperationFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DataNotFound" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DBSSError" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DBSSResentIncorrectAPIErrorResponse" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DeleteFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DeviceLimitExceed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DeviceNotEnabled" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DeviceValidateSuccess" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DeviceValidFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ErrorConnectingToRemoteShare" xml:space="preserve">
+    <value />
+  </data>
+  <data name="EVPinResetReqSent" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FailedSteps" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FeedbackNotSaved" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InvalidAmarOffer" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InvalidAttempt" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InvalidMSISDN" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InvalidOperationType" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InvalidOTP" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InvalidPin" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InvalidSecurityToken" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InvalidSession" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InvalidUserCredentials" xml:space="preserve">
+    <value />
+  </data>
+  <data name="InvalidUsername" xml:space="preserve">
+    <value />
+  </data>
+  <data name="IOI" xml:space="preserve">
+    <value />
+  </data>
+  <data name="IP" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Iu" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LMSRewardCouldNotRedeem" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LoginFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LogoutFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="LogoutSuccess" xml:space="preserve">
+    <value />
+  </data>
+  <data name="MailSentSuccessfully" xml:space="preserve">
+    <value />
+  </data>
+  <data name="MissingSOCategory" xml:space="preserve">
+    <value />
+  </data>
+  <data name="MobileAndSIMNoBothAreValid" xml:space="preserve">
+    <value />
+  </data>
+  <data name="MSISDNAlreadyActivated" xml:space="preserve">
+    <value />
+  </data>
+  <data name="MSISDNIsAlreadyExistsInInventory" xml:space="preserve">
+    <value />
+  </data>
+  <data name="MSISDNIsInvalid" xml:space="preserve">
+    <value />
+  </data>
+  <data name="MSISDNIsNotYetRegistered" xml:space="preserve">
+    <value />
+  </data>
+  <data name="MSISDNIsNot_0" xml:space="preserve">
+    <value />
+  </data>
+  <data name="MSISDNIsValid" xml:space="preserve">
+    <value />
+  </data>
+  <data name="MultipleAmarOfferAvailable" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NewDeviceRequestFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NewDeviceRequestPending" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NewDeviceRequestSuccess" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NoAmarOfferAvailable" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NoDataFound" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NoDataFoundForSendingMail" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NothingToExecute" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NRDf" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OldSIMNumberNotFound" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OneOrMoreOperationFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Oomeo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OrderSubmittedSuccessfully" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OTPGenerationFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OTPHasBeenSentToYourMobileNumber" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OTPIsValid" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OTPSendFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PasswordIsNotValid" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PasswordNotMatched" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PDFFileAttachAsBase64String" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PhgoAbuAo" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PleaseTryAgain" xml:space="preserve">
+    <value />
+  </data>
+  <data name="POCInfoNotFound" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PWDMinLength" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PWDNotNull" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PWDRepeatedNumberNotAllow" xml:space="preserve">
+    <value />
+  </data>
+  <data name="CredPSentToMobile" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PWDSpecCharNotAllow" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PWDValidationFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RatingAlreadySubmitted" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RatingSubmitted" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ReceiptSendViaEmail" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Recharge404" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RechargeAmountFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RegeisterFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ReportNotMatched" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ReportTypeNotMatched" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RRser" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RsoOrZmInfoNotFound" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SaveSuccessful" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SCSalesFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SCSalesSuccess" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SecurityTokenIsValid" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Siib" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SIMIsUsed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SIMIsValid" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SMSSendFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SomethingWentWrong" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SomethingWrongHappend" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SubmitDigitalServiceSuccessful" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SuccessfullyLogoutFromThisDevice" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ThisDeviceIsDe-Registered" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ThisDeviceIsNotEnable" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ThisIsNotA_EV_SWAPSIM" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ThisIsNotA_SWAP_SIM" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ThisMSISDNIsNotAllowedForThisTypeOfSIM" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ThisOrderIsAlreadyInProcess" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ThisSIMIsNotInYourInventory" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TryNewPassword" xml:space="preserve">
+    <value />
+  </data>
+  <data name="UnableToGenerateRequestToken" xml:space="preserve">
+    <value />
+  </data>
+  <data name="UnableToSaveResponse" xml:space="preserve">
+    <value />
+  </data>
+  <data name="UnableUpdatePWD" xml:space="preserve">
+    <value />
+  </data>
+  <data name="UpdateFailed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="UpdateSuccessful" xml:space="preserve">
+    <value />
+  </data>
+  <data name="UserNotActive" xml:space="preserve">
+    <value />
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value />
+  </data>
+  <data name="UserSuccessfullyValidated" xml:space="preserve">
+    <value />
+  </data>
+  <data name="VoiceNotSaved" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Wmf" xml:space="preserve">
+    <value />
+  </data>
+  <data name="WrongSIMOrNotInInventory" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Yanatcob" xml:space="preserve">
+    <value />
+  </data>
+  <data name="YouAlreadyHaveEnrolledForMaximumTimeForThisCampaign" xml:space="preserve">
+    <value />
+  </data>
+  <data name="YouAreNotAuthorizedForThisConnection" xml:space="preserve">
+    <value />
+  </data>
+  <data name="YourFeedbackSavedSuccessfully" xml:space="preserve">
+    <value />
+  </data>
+  <data name="YourVoiceSavedSuccessfully" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DBError" xml:space="preserve">
+    <value />
+  </data>
+</root>
