@@ -23,7 +23,7 @@ jobs:
 
       - name: Download Coverity
         run: |
-          wget --post-data "token=${{ secrets.RetailerSelfCare_CoverityToken }}&project=${{ github.repository }}" -O coverity_tool.tgz https://scan.coverity.com/download/linux64
+          wget --post-data "token=${{ secrets.RETAILERSELFCAREAPI_COVERITYTOKEN }}&project=${{ github.repository }}" -O coverity_tool.tgz https://scan.coverity.com/download/linux64
           tar -xvzf coverity_tool.tgz
 
       - name: Run Coverity Build
@@ -35,7 +35,7 @@ jobs:
 
       - name: Upload to Coverity
         run: |
-          curl --form token=${{ secrets.RetailerSelfCare_CoverityToken }} \
+          curl --form token=${{ secrets.RETAILERSELFCAREAPI_COVERITYTOKEN }} \
                --form email="mdjubayerhasan264@email.com" \
                --form file=@cov-int.tgz \
                --form version="v1.0.0" \
