@@ -4077,6 +4077,7 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetAppSettings))]
         public async Task<IActionResult> GetAppSettings([FromBody] AppSettingsRequest model)
         {
+            model ??= new AppSettingsRequest();
             string traceMsg = string.Empty;
 
             int.TryParse(model.versionName.Replace(".", string.Empty), out int _versionName);
@@ -4094,8 +4095,6 @@ namespace RetailerSelfCareApi.Controllers
             }
             else
             {
-                model ??= new AppSettingsRequest();
-
                 RedisCache redis;
                 AppFeatureSettings appSettingsResp = new();
                 bool _hasAdvert = false;
@@ -5099,6 +5098,7 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetAppSettingsV2))]
         public async Task<IActionResult> GetAppSettingsV2([FromBody] AppSettingsRequest model)
         {
+            model ??= new AppSettingsRequest();
             string traceMsg = string.Empty;
 
             _ = int.TryParse(model.versionName.Replace(".", string.Empty), out int _versionName);
@@ -5116,8 +5116,6 @@ namespace RetailerSelfCareApi.Controllers
             }
             else
             {
-                model ??= new AppSettingsRequest();
-
                 RedisCache redis;
                 AppFeatureSettings appSettingsResp = new();
                 bool _hasAdvert = false;

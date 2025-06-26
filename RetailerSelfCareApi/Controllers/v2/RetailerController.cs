@@ -4580,6 +4580,7 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(GetAppSettingsV2))]
         public async Task<IActionResult> GetAppSettingsV2([FromBody] AppSettingsRequest model)
         {
+            model ??= new AppSettingsRequest();
             string traceMsg = string.Empty;
 
             _ = int.TryParse(model.versionName.Replace(".", string.Empty), out int _versionName);
@@ -4597,8 +4598,6 @@ namespace RetailerSelfCareApi.Controllers.v2
             }
             else
             {
-                model ??= new AppSettingsRequest();
-
                 RedisCache redis;
                 AppFeatureSettings appSettingsResp = new();
                 bool _hasAdvert = false;

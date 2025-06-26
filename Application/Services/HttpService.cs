@@ -307,10 +307,9 @@ namespace Application.Services
                     result = await _client.GetAsync(urlWithBody.ToString());
                 }
 
-                responseStr = await result.Content.ReadAsStringAsync();
-
                 if (result != null && result.IsSuccessStatusCode)
                 {
+                    responseStr = await result.Content.ReadAsStringAsync();
                     model.status = 2;
                     model.remarks = "Sent via API";
                     model.isSuccess = true;

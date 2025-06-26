@@ -335,7 +335,7 @@ namespace RetailerSelfCareApi.Controllers
                 loginAtmInfo = new UserLogInAttempt()
                 {
                     userid = user.user_id,
-                    is_success = user == null ? 0 : 1,
+                    is_success = 1,
                     ip_address = ipaddress,
                     machine_name = machinename,
                     loginprovider = loginProvider,
@@ -594,7 +594,7 @@ namespace RetailerSelfCareApi.Controllers
                 loginAtmInfo = new UserLogInAttempt()
                 {
                     userid = user.user_id,
-                    is_success = user == null ? 0 : 1,
+                    is_success = 1,
                     ip_address = ipaddress,
                     machine_name = machinename,
                     loginprovider = loginProvider,
@@ -794,7 +794,7 @@ namespace RetailerSelfCareApi.Controllers
                 loginAtmInfo = new UserLogInAttempt()
                 {
                     userid = user.user_id,
-                    is_success = user == null ? 0 : 1,
+                    is_success = 1,
                     ip_address = ipaddress,
                     machine_name = machinename,
                     loginprovider = loginProvider,
