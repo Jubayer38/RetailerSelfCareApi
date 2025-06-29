@@ -298,7 +298,7 @@ namespace Domain.Helpers
                 string amarOfferStr = model.lan == "bn" ? "আমার অফার" : "Amar Offer";
                 string regularCommStr = model.lan == "bn" ? "রেগুলার কমিশন" : "Regular Commission";
                 string campaignCommStr = model.lan == "bn" ? "ক্যাম্পেইন কমিশন" : "Campaign Commission";
-                string iTopUpStr = model.lan == "bn" ? "iTopUp" : "iTopUp";
+                string iTopUpStr = "iTopUp";
                 string simSalesCountStr = model.lan == "bn" ? "সিম বিক্রি (সংখ্যা)" : "SIM Sales (Count)";
 
                 DateTime today = DateTime.Today;

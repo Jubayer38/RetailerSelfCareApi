@@ -236,7 +236,7 @@ namespace Domain.Helpers
             {
                 if (ex.InnerException != null)
                 {
-                    new Exception(ex.InnerException.ToString() + "_split_GenericTypeGetFaild");
+                    throw new Exception(ex.InnerException.ToString() + "_split_GenericTypeGetFaild");
                 }
                 throw new Exception(ex.Message + "_split_GenericTypeGetFaild");
             }

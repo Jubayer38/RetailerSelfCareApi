@@ -2633,55 +2633,59 @@ namespace RetailerSelfCareApi.Controllers
         public async Task<IActionResult> GetCampaignDetails([FromBody] CampaignRequestV2 model)
         {
             model.userId = UserSession.userId;
-
             switch (model.campaignCategory)
             {
                 case "Ext":
-
                     try
                     {
-                        RetailerService retailerService = new();
                         DataTable kpidt = new();
-
-                        try
-                        {
-                            kpidt = await retailerService.GetCampaignKPIList(model);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCampaignKPIList"));
-                        }
-
-                        List<CampaignKPIListModel> campKpiList = kpidt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignKPIListModel>(row)).ToList();
-
-                        retailerService = new();
-                        DataTable rewardt = new();
-
-                        try
-                        {
-                            rewardt = await retailerService.GetCampaignRewardList(model);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCampaignRewardList"));
-                        }
-
-                        string baseURL = ExternalKeys.ImageVirtualDirPath;
-                        List<CampaignRewardListModel> campRewardList = rewardt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignRewardListModel>(row, "", baseURL)).ToList();
-
-                        retailerService = new();
-                        DataTable campMoreDetails = new();
-
-                        try
-                        {
-                            campMoreDetails = await retailerService.GetCampFurtherDetails(model);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCampFurtherDetails"));
-                        }
-
+                        List<CampaignKPIListModel> campKpiList;
+                        List<CampaignRewardListModel> campRewardList;
+                        DataTable campMoreDetails;
                         CampaignDetailsModel campaignDetails = new();
+
+                        using (RetailerService retailerService = new())
+                        {
+                            try
+                            {
+                                kpidt = await retailerService.GetCampaignKPIList(model);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCampaignKPIList"));
+                            }
+
+                            campKpiList = kpidt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignKPIListModel>(row)).ToList();
+                        }
+
+                        using (RetailerService retailerService = new())
+                        {
+                            DataTable rewardt = new();
+                            try
+                            {
+                                rewardt = await retailerService.GetCampaignRewardList(model);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCampaignRewardList"));
+                            }
+
+                            string baseURL = ExternalKeys.ImageVirtualDirPath;
+                            campRewardList = rewardt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignRewardListModel>(row, "", baseURL)).ToList();
+                        }
+
+                        using (RetailerService retailerService = new())
+                        {
+                            campMoreDetails = new DataTable();
+                            try
+                            {
+                                campMoreDetails = await retailerService.GetCampFurtherDetails(model);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCampFurtherDetails"));
+                            }
+                        }
 
                         campaignDetails.campaignId = model.campaignId;
                         campaignDetails.kpiTargetList = campKpiList;
@@ -2710,47 +2714,53 @@ namespace RetailerSelfCareApi.Controllers
                 case "Self":
                     try
                     {
-                        RetailerService NewRetailerService = new();
                         DataTable kpidt = new();
-
-                        try
-                        {
-                            kpidt = await NewRetailerService.GetSelfCampaignKPIList(model);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSelfCampaignKPIList"));
-                        }
-
-                        List<CampaignKPIListModel> campKpiList = kpidt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignKPIListModel>(row)).ToList();
-
-                        NewRetailerService = new();
-                        DataTable rewardt = new();
-
-                        try
-                        {
-                            rewardt = await NewRetailerService.GetSelfCampaignRewardList(model);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSelfCampaignRewardList"));
-                        }
-
-                        List<CampaignRewardListModel> campRewardList = rewardt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignRewardListModel>(row, "")).ToList();
-
-                        NewRetailerService = new();
-                        DataTable campMoreDetails = new();
-
-                        try
-                        {
-                            campMoreDetails = await NewRetailerService.GetSelfCampFurtherDetails(model);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSelfCampFurtherDetails"));
-                        }
-
+                        List<CampaignKPIListModel> campKpiList;
+                        List<CampaignRewardListModel> campRewardList;
+                        DataTable campMoreDetails;
                         CampaignDetailsModel campaignDetails = new();
+
+                        using (RetailerService NewRetailerService = new())
+                        {
+                            try
+                            {
+                                kpidt = await NewRetailerService.GetSelfCampaignKPIList(model);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSelfCampaignKPIList"));
+                            }
+
+                            campKpiList = kpidt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignKPIListModel>(row)).ToList();
+                        }
+
+                        using (RetailerService NewRetailerService = new())
+                        {
+                            DataTable rewardt = new();
+                            try
+                            {
+                                rewardt = await NewRetailerService.GetSelfCampaignRewardList(model);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSelfCampaignRewardList"));
+                            }
+
+                            campRewardList = rewardt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignRewardListModel>(row, "")).ToList();
+                        }
+
+                        using (RetailerService NewRetailerService = new())
+                        {
+                            campMoreDetails = new DataTable();
+                            try
+                            {
+                                campMoreDetails = await NewRetailerService.GetSelfCampFurtherDetails(model);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSelfCampFurtherDetails"));
+                            }
+                        }
 
                         campaignDetails.campaignId = model.campaignId;
                         campaignDetails.kpiTargetList = campKpiList;
@@ -2777,8 +2787,8 @@ namespace RetailerSelfCareApi.Controllers
                     {
                         throw;
                     }
-                default:
 
+                default:
                     return Ok(new ResponseMessage()
                     {
                         isError = true,
