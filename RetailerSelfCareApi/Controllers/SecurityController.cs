@@ -421,8 +421,11 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(DevicePWDValidation))]
         public async Task<IActionResult> DevicePWDValidation([FromBody] DevicePWDValidationRequest pwdValidation)
         {
-            SecurityService _auth = new();
-            bool result = await _auth.ValidatePWD(pwdValidation);
+            bool result = false;
+            using (SecurityService _auth = new())
+            {
+                result = await _auth.ValidatePWD(pwdValidation);
+            }
 
             if (result)
             {
@@ -434,26 +437,27 @@ namespace RetailerSelfCareApi.Controllers
                     isNewOTP = true
                 };
 
-                _auth = new();
-
-                RAOTPResponse otpObj = await _auth.GenerateOTPUA(otpModel);
-
-                if (otpObj.result == true)
+                using (SecurityService _auth = new())
                 {
-                    return Ok(new ResponseMessage()
-                    {
-                        isError = false,
-                        message = SharedResource.GetLocal("OTPHasBeenSentToYourMobileNumber", Message.OTPSentToMobile)
-                    });
+                    RAOTPResponse otpObj = await _auth.GenerateOTPUA(otpModel);
 
-                }
-                else
-                {
-                    return Ok(new ResponseMessage()
+                    if (otpObj.result == true)
                     {
-                        isError = true,
-                        message = SharedResource.GetLocal("OTPGenerationFailed", Message.OTPFailed)
-                    });
+                        return Ok(new ResponseMessage()
+                        {
+                            isError = false,
+                            message = SharedResource.GetLocal("OTPHasBeenSentToYourMobileNumber", Message.OTPSentToMobile)
+                        });
+
+                    }
+                    else
+                    {
+                        return Ok(new ResponseMessage()
+                        {
+                            isError = true,
+                            message = SharedResource.GetLocal("OTPGenerationFailed", Message.OTPFailed)
+                        });
+                    }
                 }
 
             }

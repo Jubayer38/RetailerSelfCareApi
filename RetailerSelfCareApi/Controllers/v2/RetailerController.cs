@@ -1599,22 +1599,25 @@ namespace RetailerSelfCareApi.Controllers.v2
                 throw new Exception(msg);
             }
 
-            RetailerV2Service retailerService = new();
-            string callingTime = await retailerService.GetRegionWisePopupCallingTime(retailerRequest.iTopUpNumber);
-
-            var data = new
+            using (RetailerV2Service retailerService = new())
             {
-                PopUpMethodsCallingTime = callingTime,
-                FeatureStatus.PopUpMethodsRestrictTime,
-                FeatureStatus.PopUpMethodsCallingSlot
-            };
+                string callingTime = await retailerService.GetRegionWisePopupCallingTime(retailerRequest.iTopUpNumber);
 
-            return Ok(new ResponseMessage()
-            {
-                isError = false,
-                message = SharedResource.GetLocal("Success", Message.Success),
-                data = data
-            });
+                var data = new
+                {
+                    PopUpMethodsCallingTime = callingTime,
+                    FeatureStatus.PopUpMethodsRestrictTime,
+                    FeatureStatus.PopUpMethodsCallingSlot
+                };
+
+
+                return Ok(new ResponseMessage()
+                {
+                    isError = false,
+                    message = SharedResource.GetLocal("Success", Message.Success),
+                    data = data
+                });
+            }
         }
 
 
@@ -2136,45 +2139,51 @@ namespace RetailerSelfCareApi.Controllers.v2
                             userId = UserSession.userId
                         };
 
-                        RetailerV2Service retailerService = new();
                         DataTable kpidt = new();
 
-                        try
+                        using(RetailerV2Service retailerService = new())
                         {
-                            kpidt = await retailerService.GetCampaignKPIList(request);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCampaignKPIList"));
+                            // Get Campaign KPI List
+                            try
+                            {
+                                kpidt = await retailerService.GetCampaignKPIList(request);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCampaignKPIListV2"));
+                            }
                         }
 
                         List<CampaignKPIListModel> campKpiList = kpidt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignKPIListModel>(row)).ToList();
 
-                        retailerService = new();
                         DataTable rewardt = new();
-
-                        try
+                        using (RetailerV2Service retailerService = new())
                         {
-                            rewardt = await retailerService.GetCampaignRewardList(request);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCampaignRewardListV2"));
+                            try
+                            {
+                                rewardt = await retailerService.GetCampaignRewardList(request);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCampaignRewardListV2"));
+                            }
                         }
 
                         string webUrl = ExternalKeys.WebPortalBaseUrl;
                         List<CampaignRewardListModel> campRewardList = rewardt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignRewardListModel>(row, "", webUrl)).ToList();
 
-                        retailerService = new();
                         DataTable campMoreDetails = new();
 
-                        try
+                        using (RetailerV2Service retailerService = new())
                         {
-                            campMoreDetails = await retailerService.GetCampFurtherDetails(request);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCampFurtherDetailsV2"));
+                            try
+                            {
+                                campMoreDetails = await retailerService.GetCampFurtherDetails(request);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCampFurtherDetailsV2"));
+                            }
                         }
 
                         CampCompareDetails campaignDetails = new();
@@ -2215,44 +2224,50 @@ namespace RetailerSelfCareApi.Controllers.v2
                             userId = UserSession.userId
                         };
 
-                        RetailerV2Service retailerService = new();
                         DataTable kpidt = new();
 
-                        try
+                        using (RetailerV2Service retailerService = new())
                         {
-                            kpidt = await retailerService.GetSelfCampaignKPIList(request);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSelfCampaignKPIList"));
+                            try
+                            {
+                                kpidt = await retailerService.GetSelfCampaignKPIList(request);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSelfCampaignKPIList"));
+                            }
                         }
 
                         List<CampaignKPIListModel> campKpiList = kpidt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignKPIListModel>(row)).ToList();
 
-                        retailerService = new();
                         DataTable rewardt = new();
 
-                        try
+                        using (RetailerV2Service retailerService = new())
                         {
-                            rewardt = await retailerService.GetSelfCampaignRewardList(request);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSelfCampaignRewardList"));
+                            try
+                            {
+                                rewardt = await retailerService.GetSelfCampaignRewardList(request);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSelfCampaignRewardList"));
+                            }
                         }
 
                         List<CampaignRewardListModel> campRewardList = rewardt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignRewardListModel>(row, "")).ToList();
 
-                        retailerService = new();
                         DataTable campMoreDetails = new();
 
-                        try
+                        using (RetailerV2Service retailerService = new())
                         {
-                            campMoreDetails = await retailerService.GetSelfCampFurtherDetails(request);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSelfCampFurtherDetails"));
+                            try
+                            {
+                                campMoreDetails = await retailerService.GetSelfCampFurtherDetails(request);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSelfCampFurtherDetails"));
+                            }
                         }
 
                         CampCompareDetails campaignDetails = new();
@@ -3936,26 +3951,27 @@ namespace RetailerSelfCareApi.Controllers.v2
                 retailerCode = model.retailerCode
             };
 
-            SurveyService surveyService = new();
-
             int insertResult = 0;
 
-            try
+            using (SurveyService surveyService = new())
             {
-                insertResult = await surveyService.InsertShortSurveyResponse(responseModel);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "InsertShortSurveyResponse"));
-            }
-
-            if (insertResult <= 0)
-            {
-                return Ok(new ResponseMessage()
+                try
                 {
-                    isError = true,
-                    message = SharedResource.GetLocal("UnableToSaveResponse", Message.UnableToSaveResponse)
-                });
+                    insertResult = await surveyService.InsertShortSurveyResponse(responseModel);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "InsertShortSurveyResponse"));
+                }
+
+                if (insertResult <= 0)
+                {
+                    return Ok(new ResponseMessage()
+                    {
+                        isError = true,
+                        message = SharedResource.GetLocal("UnableToSaveResponse", Message.UnableToSaveResponse)
+                    });
+                }
             }
 
             return Ok(new ResponseMessage()
@@ -5297,8 +5313,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                 });
             }
 
-            RetailerV2Service retailerService = new();
-            await retailerService.SaveBase64File(fileRequest);
+            using (RetailerV2Service retailerService = new())
+            {
+                await retailerService.SaveBase64File(fileRequest);
+            }
 
             return Ok(new ResponseMessage()
             {
@@ -5329,18 +5347,23 @@ namespace RetailerSelfCareApi.Controllers.v2
             };
 
             var userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
-            StockV2Service stockService = new();
-            string resp = stockService.GetITopUpBalanceNew(rsoEligibility, xmlRequest, userAgent);
-
-            try
+            string resp = string.Empty;
+            using (StockV2Service stockService = new())
             {
-                stockService = new();
-                stockService.FormatEvBalanceResponse(ref stockSummary, resp);
-                traceMsg = stockSummary.updateTime;
+                resp = stockService.GetITopUpBalanceNew(rsoEligibility, xmlRequest, userAgent);
             }
-            catch (Exception ex)
+
+            using (StockV2Service stockService = new())
             {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "FormatEvBalanceResponse"));
+                try
+                {
+                    stockService.FormatEvBalanceResponse(ref stockSummary, resp);
+                    traceMsg = stockSummary.updateTime;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "FormatEvBalanceResponse"));
+                }
             }
 
             _ = double.TryParse(stockSummary.amount, out double _amount);
@@ -5352,19 +5375,21 @@ namespace RetailerSelfCareApi.Controllers.v2
                 UpdateTime = stockSummary.updateTime
             };
 
-            try
+            using (StockV2Service stockService = new())
             {
-                stockService = new();
-                int res = stockService.UpdateItopUpBalance(model).Result;
-                if (res == 0)
+                try
                 {
-                    traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "Unable to update Balance;", null);
+                    int res = stockService.UpdateItopUpBalance(model).Result;
+                    if (res == 0)
+                    {
+                        traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "Unable to update Balance;", null);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                traceMsg = HelperMethod.BuildTraceMessage(traceMsg, stockSummary.updateTime, null);
-                traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "UpdateItopUpBalance", ex);
+                catch (Exception ex)
+                {
+                    traceMsg = HelperMethod.BuildTraceMessage(traceMsg, stockSummary.updateTime, null);
+                    traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "UpdateItopUpBalance", ex);
+                }
             }
 
             return traceMsg;

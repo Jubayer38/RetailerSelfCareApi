@@ -54,25 +54,27 @@ namespace RetailerSelfCareApi.Controllers
                 requestMethod = "GetLmsMemberProfile"
             };
 
-            HttpService httpService = new();
-            var memberProfile = await httpService.CallExternalApi<MemberProfile>(httpReq);
+            using (HttpService httpService = new())
+            {
+                var memberProfile = await httpService.CallExternalApi<MemberProfile>(httpReq);
 
-            if (memberProfile is not null)
-            {
-                return Ok(new ResponseMessage()
+                if (memberProfile is not null)
                 {
-                    isError = false,
-                    data = memberProfile.Object,
-                    message = SharedResource.GetLocal("Success", Message.Success)
-                });
-            }
-            else
-            {
-                return Ok(new ResponseMessage()
+                    return Ok(new ResponseMessage()
+                    {
+                        isError = false,
+                        data = memberProfile.Object,
+                        message = SharedResource.GetLocal("Success", Message.Success)
+                    });
+                }
+                else
                 {
-                    isError = true,
-                    message = SharedResource.GetLocal("NoDataFound", Message.NoDataFound)
-                });
+                    return Ok(new ResponseMessage()
+                    {
+                        isError = true,
+                        message = SharedResource.GetLocal("NoDataFound", Message.NoDataFound)
+                    });
+                }
             }
 
         }

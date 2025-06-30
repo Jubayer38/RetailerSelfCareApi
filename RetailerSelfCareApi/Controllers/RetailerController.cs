@@ -423,15 +423,17 @@ namespace RetailerSelfCareApi.Controllers
                 IrisOfferRequestNew irisOfferReq = offerRequest.Adapt<IrisOfferRequestNew>();
                 OfferResponseModelNew irisOffersModel = new();
 
-                try
+                using (RechargeService rechargeService = new(Connections.RetAppDbCS))
                 {
-                    RechargeService rechargeService = new(Connections.RetAppDbCS);
-                    irisOffersModel = await rechargeService.IRISOfferRequest(irisOfferReq);
-                }
-                catch (Exception ex)
-                {
-                    string errMsg = HelperMethod.ExMsgBuild(ex, "ValidateIRISDenoOffer || IRISOfferRequestNew");
-                    throw new Exception(errMsg);
+                    try
+                    {
+                        irisOffersModel = await rechargeService.IRISOfferRequest(irisOfferReq);
+                    }
+                    catch (Exception ex)
+                    {
+                        string errMsg = HelperMethod.ExMsgBuild(ex, "ValidateIRISDenoOffer || IRISOfferRequestNew");
+                        throw new Exception(errMsg);
+                    }
                 }
 
                 var offers = irisOffersModel.OfferList.Where(o => o.amount.ToString() == offerRequest.amount).ToList();
@@ -775,17 +777,18 @@ namespace RetailerSelfCareApi.Controllers
         {
             try
             {
-                RetailerService retailerService = new();
                 DataTable dt = new();
-
-                try
+                using (RetailerService retailerService = new())
                 {
-                    dt = await retailerService.GetComplaintTitleList(reqModel);
-                }
-                catch (Exception ex)
-                {
-                    string errMsg = HelperMethod.ExMsgBuild(ex, "GetComplaintTitleList");
-                    throw new Exception(errMsg);
+                    try
+                    {
+                        dt = await retailerService.GetComplaintTitleList(reqModel);
+                    }
+                    catch (Exception ex)
+                    {
+                        string errMsg = HelperMethod.ExMsgBuild(ex, "GetComplaintTitleList");
+                        throw new Exception(errMsg);
+                    }
                 }
 
                 List<ComplaintTitleResponse> complaintTypes = dt.AsEnumerable().Select(row => HelperMethod.ModelBinding<ComplaintTitleResponse>(row, string.Empty, reqModel.lan)).ToList();
@@ -907,8 +910,10 @@ namespace RetailerSelfCareApi.Controllers
                 DataTable dt = new();
                 try
                 {
-                    RetailerService retailerService = new();
-                    dt = await retailerService.GetRSOInformation(retailerRequest);
+                    using (RetailerService retailerService = new())
+                    {
+                        dt = await retailerService.GetRSOInformation(retailerRequest);
+                    }
                     RSOProfile profile = dt.Rows.Count > 0 ? new RSOProfile(dt.Rows[0]) : null;
 
                     return new OkObjectResult(new ResponseMessage()
@@ -1343,8 +1348,6 @@ namespace RetailerSelfCareApi.Controllers
         {
             string traceMsg = string.Empty;
 
-            RetailerService retailerService = new(Connections.RetAppDbCS);
-
             if (string.IsNullOrEmpty(vorRequest.feedbackTypeId))
             {
                 vorRequest.feedbackTypeId = "0";
@@ -1368,13 +1371,16 @@ namespace RetailerSelfCareApi.Controllers
 
             int vorInsertResult = 0;
 
-            try
+            using (RetailerService retailerService = new(Connections.RetAppDbCS))
             {
-                vorInsertResult = await retailerService.VORByRetailer(model);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "VORByRetailer"));
+                try
+                {
+                    vorInsertResult = await retailerService.VORByRetailer(model);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "VORByRetailer"));
+                }
             }
 
             if (vorInsertResult > 0)
@@ -1383,14 +1389,16 @@ namespace RetailerSelfCareApi.Controllers
 
                 if (model.imageList != null && model.imageList.Count > 0)
                 {
-                    retailerService = new(Connections.RetAppDbCS);
-                    try
+                    using (RetailerService retailerService = new(Connections.RetAppDbCS))
                     {
-                        await retailerService.DeleteTableRows(model.id, "RSLTBLVORFILES", "VOR_ID");
-                    }
-                    catch (Exception ex)
-                    {
-                        traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "DeleteTableRows || ID: " + model.id.ToString(), ex);
+                        try
+                        {
+                            await retailerService.DeleteTableRows(model.id, "RSLTBLVORFILES", "VOR_ID");
+                        }
+                        catch (Exception ex)
+                        {
+                            traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "DeleteTableRows || ID: " + model.id.ToString(), ex);
+                        }
                     }
 
                     for (int i = 0; i < model.imageList.Count; i++)
@@ -1401,14 +1409,16 @@ namespace RetailerSelfCareApi.Controllers
                         string base64Header = "data:" + attatchType.MimeType + ";base64,";
                         int res = 0;
 
-                        try
+                        using (RetailerService retailerService = new(Connections.RetAppDbCS))
                         {
-                            retailerService = new(Connections.RetAppDbCS);
-                            res = await retailerService.SaveVorImage(model.id, base64Header, imgStr);
-                        }
-                        catch (Exception ex)
-                        {
-                            traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "SaveVorImage", ex);
+                            try
+                            {
+                                res = await retailerService.SaveVorImage(model.id, base64Header, imgStr);
+                            }
+                            catch (Exception ex)
+                            {
+                                traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "SaveVorImage", ex);
+                            }
                         }
                     }
                 }
@@ -2814,16 +2824,17 @@ namespace RetailerSelfCareApi.Controllers
                 case "Ext":
                     try
                     {
-                        RetailerService retailerService = new();
                         long result = 0;
-
-                        try
+                        using(RetailerService retailerService = new())
                         {
-                            result = await retailerService.EnrollExtCampaign(model);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "EnrollExtCampaign"));
+                            try
+                            {
+                                result = await retailerService.EnrollExtCampaign(model);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "EnrollExtCampaign"));
+                            }
                         }
 
                         return Ok(new ResponseMessage()
@@ -2840,16 +2851,17 @@ namespace RetailerSelfCareApi.Controllers
                 case "Self":
                     try
                     {
-                        RetailerService NewRetailerService = new();
                         long result = 0;
-
-                        try
+                        using(RetailerService NewRetailerService = new())
                         {
-                            result = await NewRetailerService.EnrollSelfCampaign(model);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "EnrollSelfCampaign"));
+                            try
+                            {
+                                result = await NewRetailerService.EnrollSelfCampaign(model);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "EnrollSelfCampaign"));
+                            }
                         }
 
                         if (result != -999)

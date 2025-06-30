@@ -239,8 +239,11 @@ namespace RetailerSelfCareApi.Controllers
                         if (string.IsNullOrWhiteSpace(sendMailRequest.month))
                             sendMailRequest.month = "thismonth";
 
-                        CommissionService commissionService = new(Connections.RetAppDbCS);
-                        DataTable dataTable = await commissionService.GetSalesVsCommission(searchRequestV2);
+                        DataTable dataTable = new();
+                        using (CommissionService commissionService = new(Connections.RetAppDbCS))
+                        {
+                            dataTable = await commissionService.GetSalesVsCommission(searchRequestV2);
+                        }
 
                         SalesVsCommissionModel salesVsCommData = new(dataTable, searchRequestV2.searchText);
 
@@ -427,19 +430,21 @@ namespace RetailerSelfCareApi.Controllers
                         searchText = downloadRequest.month
                     };
 
-                    CommissionService commissionService = new(Connections.RetAppDbCS);
-                    DataTable dataTable = await commissionService.GetSalesVsCommission(searchRequestV2);
+                    using (CommissionService commissionService = new(Connections.RetAppDbCS))
+                    {
+                        DataTable dataTable = await commissionService.GetSalesVsCommission(searchRequestV2);
 
-                    SalesVsCommissionModel salesVsCommData = new(dataTable, searchRequestV2.searchText);
+                        SalesVsCommissionModel salesVsCommData = new(dataTable, searchRequestV2.searchText);
 
-                    string yearMonth = searchRequestV2.searchText.Equals("previousmonth", StringComparison.OrdinalIgnoreCase) ? DateTime.Now.AddMonths(-1).ToEnUSDateString("MMMyyyy") : downloadRequest.startDate.ToEnUSDateString("MMMyyyy");
-                    filename = "SalesVsCommissionReport_" + yearMonth + ".pdf";
+                        string yearMonth = searchRequestV2.searchText.Equals("previousmonth", StringComparison.OrdinalIgnoreCase) ? DateTime.Now.AddMonths(-1).ToEnUSDateString("MMMyyyy") : downloadRequest.startDate.ToEnUSDateString("MMMyyyy");
+                        filename = "SalesVsCommissionReport_" + yearMonth + ".pdf";
 
-                    VMCommissionReport salesModel = PrepareCommissionModel(salesVsCommData, "SalesVsCommission", downloadRequest.lan.ToLower());
+                        VMCommissionReport salesModel = PrepareCommissionModel(salesVsCommData, "SalesVsCommission", downloadRequest.lan.ToLower());
 
-                    byte[] salesReportBytes = PDFGenerator.ConvertHtmlTextToPdf(salesModel, _converter, downloadRequest.month);
+                        byte[] salesReportBytes = PDFGenerator.ConvertHtmlTextToPdf(salesModel, _converter, downloadRequest.month);
 
-                    base64String = Convert.ToBase64String(salesReportBytes);
+                        base64String = Convert.ToBase64String(salesReportBytes);
+                    }
                     break;
 
                 case "RStatement":
@@ -587,16 +592,18 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(TarVsAchvDetails))]
         public async Task<IActionResult> TarVsAchvDetails([FromBody] TarVsAchvRequestV2 tarVsAchvRequest)
         {
-            CommissionService tarVsAchvService = new(Connections.RetAppDbCS);
             DataTable tarVsAchv = new();
 
-            try
+            using (CommissionService tarVsAchvService = new(Connections.RetAppDbCS))
             {
-                tarVsAchv = await tarVsAchvService.TarVsAchvDeatils(tarVsAchvRequest);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "TarVsAchvDeatils"));
+                try
+                {
+                    tarVsAchv = await tarVsAchvService.TarVsAchvDeatils(tarVsAchvRequest);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "TarVsAchvDeatils"));
+                }
             }
 
             List<TarVsAchvDetailsModel> tarVsAchvs = tarVsAchv.AsEnumerable().Select(row => HelperMethod.ModelBinding<TarVsAchvDetailsModel>(row)).ToList();

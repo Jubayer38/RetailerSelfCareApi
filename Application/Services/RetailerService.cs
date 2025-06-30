@@ -373,9 +373,11 @@ namespace Application.Services
             StringBuilder urlWithBody = new();
             urlWithBody.AppendFormat(_url, msisdn, offers.Prepend(smsGreetings));
 
-            HttpService httpService = new();
-            string result = await httpService.CallSMSSendAPI(model, urlWithBody);
-            return result;
+            using(HttpService httpService = new())
+            {
+                string result = await httpService.CallSMSSendAPI(model, urlWithBody);
+                return result;
+            }
         }
 
 
@@ -553,8 +555,10 @@ namespace Application.Services
                                     requestUrl = url
                                 };
 
-                                HttpService httpService = new();
-                                await httpService.CallExternalApi<dynamic>(httpReqModel);
+                                using (HttpService httpService = new())
+                                {
+                                    await httpService.CallExternalApi<dynamic>(httpReqModel);
+                                }
                             }
                         }
 
@@ -1180,8 +1184,10 @@ namespace Application.Services
                     requestMethod = "SendPushNotificationTemp"
                 };
 
-                HttpService httpService = new();
-                await httpService.SendFcmNotificationViaWebApi<dynamic>(httpReqModel);
+                using (HttpService httpService = new())
+                {
+                    await httpService.SendFcmNotificationViaWebApi<dynamic>(httpReqModel);
+                }
             }
         }
 
