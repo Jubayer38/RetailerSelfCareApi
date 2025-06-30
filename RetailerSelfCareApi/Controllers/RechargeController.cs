@@ -343,30 +343,35 @@ namespace RetailerSelfCareApi.Controllers
                 IrisOfferRequestNew offerRequest = new();
                 requestModel.Adapt(offerRequest);
 
-                RechargeService rechargeService = new(Connections.RetAppDbCS);
-                OfferResponseModelNew responseModel = await rechargeService.IRISOfferRequest(offerRequest);
-
-                if (responseModel.statusCode != "0")
+                using (RechargeService rechargeService = new(Connections.RetAppDbCS))
                 {
-                    if (string.IsNullOrEmpty(responseModel.statusMessage))
+                    OfferResponseModelNew responseModel = await rechargeService.IRISOfferRequest(offerRequest);
+
+
+                    if (responseModel.statusCode != "0")
                     {
-                        responseModel.statusMessage = SharedResource.GetLocal("SomethingWentWrong", Message.SomethingWentWrong);
+                        if (string.IsNullOrEmpty(responseModel.statusMessage))
+                        {
+                            responseModel.statusMessage = SharedResource.GetLocal("SomethingWentWrong", Message.SomethingWentWrong);
+                        }
+
+                        return new OkObjectResult(new IRISResponseMessage()
+                        {
+                            isError = true,
+                            isUSIM = responseModel.isUSIM,
+                            message = responseModel.statusMessage
+                        });
                     }
 
-                    return new OkObjectResult(new IRISResponseMessage()
+                    Regex regex = new(@"^(.*?)(C|c)-");
+                    IEnumerable<string> offerList = responseModel.OfferList.Select((o, i) => (i + 1) + "." + (regex.IsMatch(o.description) ? regex.Match(o.description).Groups[1].Value.Trim() : o.description));
+                    string offers = string.Join("\n", offerList);
+
+                    using (RetailerService NewRetailerService = new(null))
                     {
-                        isError = true,
-                        isUSIM = responseModel.isUSIM,
-                        message = responseModel.statusMessage
-                    });
+                        string result = await NewRetailerService.SendSMS(requestModel, offers);
+                    }
                 }
-
-                Regex regex = new(@"^(.*?)(C|c)-");
-                IEnumerable<string> offerList = responseModel.OfferList.Select((o, i) => (i + 1) + "." + (regex.IsMatch(o.description) ? regex.Match(o.description).Groups[1].Value.Trim() : o.description));
-                string offers = string.Join("\n", offerList);
-
-                RetailerService NewRetailerService = new(null);
-                string result = await NewRetailerService.SendSMS(requestModel, offers);
 
                 return new OkObjectResult(new ResponseMessage()
                 {

@@ -630,35 +630,40 @@ namespace RetailerSelfCareApi.Controllers.v2
         public async Task<IActionResult> GamificationBanners([FromBody] RetailerRequest reqModel)
         {
             string traceMsg = string.Empty;
-            RedisCache redis = new();
             List<GamificationBannerRedis> bannerList = [];
 
-            try
+            using (RedisCache redis = new())
             {
-                string allBannersStr = await redis.GetCacheAsync(RedisCollectionNames.GamificationBannerDetails);
-                bannerList = JsonConvert.DeserializeObject<List<GamificationBannerRedis>>(allBannersStr);
-            }
-            catch (Exception ex)
-            {
-                traceMsg = HelperMethod.FormattedExceptionMsg(ex);
+                try
+                {
+                    string allBannersStr = await redis.GetCacheAsync(RedisCollectionNames.GamificationBannerDetails);
+                    bannerList = JsonConvert.DeserializeObject<List<GamificationBannerRedis>>(allBannersStr);
+                }
+                catch (Exception ex)
+                {
+                    traceMsg = HelperMethod.FormattedExceptionMsg(ex);
+                }
             }
 
             List<long> bannerIds = [];
 
-            try
+            using (RedisCache redis = new RedisCache())
             {
-                redis = new RedisCache();
-                string hasBnrIdsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerGamificationBannerIds, reqModel.retailerCode);
-                string hasBnrIds = JsonConvert.DeserializeObject<dynamic>(hasBnrIdsStr)!;
-                if (!string.IsNullOrEmpty(hasBnrIds))
+                try
                 {
-                    bannerIds = hasBnrIds.Split(',').Select(s => Convert.ToInt64(s)).ToList();
+                    string hasBnrIdsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerGamificationBannerIds, reqModel.retailerCode);
+                    string hasBnrIds = JsonConvert.DeserializeObject<dynamic>(hasBnrIdsStr)!;
+                    if (!string.IsNullOrEmpty(hasBnrIds))
+                    {
+                        bannerIds = hasBnrIds.Split(',').Select(s => Convert.ToInt64(s)).ToList();
+                    }
+
                 }
-            }
-            catch (Exception ex)
-            {
-                string _msg = "RetailerGamificationBannerIds";
-                traceMsg = HelperMethod.BuildTraceMessage(traceMsg, _msg, ex);
+                catch (Exception ex)
+                {
+                    string _msg = "RetailerGamificationBannerIds";
+                    traceMsg = HelperMethod.BuildTraceMessage(traceMsg, _msg, ex);
+                }
             }
 
             List<GamificationBannerRedis> appBanners = bannerList.Where(w => bannerIds.Any(a => a == w.bannerId)).ToList();
@@ -3715,20 +3720,25 @@ namespace RetailerSelfCareApi.Controllers.v2
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
-            RetailerV2Service retailerService = new();
+
             int userId = UserSession.userId;
             long insertId = 0;
+            using (RetailerV2Service retailerService = new())
+            {
 
-            try
-            {
-                insertId = await retailerService.SaveDigitalService(model, userId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "SubmitDigitalService"));
+                try
+                {
+                    insertId = await retailerService.SaveDigitalService(model, userId);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "SubmitDigitalService"));
+                }
             }
 
             if (insertId > 0 && !string.IsNullOrEmpty(model.amount) && !string.IsNullOrEmpty(model.userPin))
@@ -3743,27 +3753,32 @@ namespace RetailerSelfCareApi.Controllers.v2
                 }
                 catch (Exception ex)
                 {
-                    retailerService = new();
-                    await retailerService.DeleteTableRows(insertId, "RSLTBLDIGITALSERVICE", "DIGITAL_SERVICE_ID");
-
-                    return Ok(new ResponseMessage()
+                    using (RetailerV2Service retailerService = new())
                     {
-                        isError = true,
-                        message = ex.Message
-                    });
+                        await retailerService.DeleteTableRows(insertId, "RSLTBLDIGITALSERVICE", "DIGITAL_SERVICE_ID");
+
+                        return Ok(new ResponseMessage()
+                        {
+                            isError = true,
+                            message = ex.Message
+                        });
+                    }
                 }
             }
 
             if (insertId > 0)
             {
-                try
+                using (RetailerV2Service retailerService = new())
                 {
-                    retailerService = new();
-                    await retailerService.DigitalServiceSmsSendToUser(model.productId, model.subscriberNumber);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(HelperMethod.ExMsgBuild(ex, "DigitalServiceSmsSendToUser"));
+                    try
+                    {
+                        await retailerService.DigitalServiceSmsSendToUser(model.productId, model.subscriberNumber);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(HelperMethod.ExMsgBuild(ex, "DigitalServiceSmsSendToUser"));
+                    }
                 }
             }
 

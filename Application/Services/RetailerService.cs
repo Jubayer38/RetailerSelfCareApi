@@ -1146,8 +1146,10 @@ namespace Application.Services
                 requestMethod = "SendPushNotification"
             };
 
-            HttpService httpService = new();
-            await httpService.SendFcmNotificationViaWebApi<dynamic>(httpReqModel);
+            using (HttpService httpService = new())
+            {
+                await httpService.SendFcmNotificationViaWebApi<dynamic>(httpReqModel);
+            }
         }
 
 

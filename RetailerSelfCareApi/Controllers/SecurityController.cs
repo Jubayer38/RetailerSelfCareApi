@@ -873,25 +873,27 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(RequestNewDevice))]
         public async Task<IActionResult> RequestNewDevice([FromBody] NewDeviceRequest newDeviceRequest)
         {
-            SecurityService _auth = new();
-            long res = await _auth.SubmitNewDeviceRequest(newDeviceRequest);
-
-            if (res == -111)
+            using (SecurityService _auth = new())
             {
-                return Ok(new ResponseMessage()
-                {
-                    isError = true,
-                    message = SharedResource.GetLocal("NewDeviceRequestPending", Message.NewDeviceRequestPending)
-                });
-            }
+                long res = await _auth.SubmitNewDeviceRequest(newDeviceRequest);
 
-            if (res > 0)
-            {
-                return Ok(new ResponseMessage()
+                if (res == -111)
                 {
-                    isError = false,
-                    message = SharedResource.GetLocal("NewDeviceRequestSuccess", Message.NewDeviceRequestSuccess)
-                });
+                    return Ok(new ResponseMessage()
+                    {
+                        isError = true,
+                        message = SharedResource.GetLocal("NewDeviceRequestPending", Message.NewDeviceRequestPending)
+                    });
+                }
+
+                if (res > 0)
+                {
+                    return Ok(new ResponseMessage()
+                    {
+                        isError = false,
+                        message = SharedResource.GetLocal("NewDeviceRequestSuccess", Message.NewDeviceRequestSuccess)
+                    });
+                }
             }
 
             return Ok(new ResponseMessage()

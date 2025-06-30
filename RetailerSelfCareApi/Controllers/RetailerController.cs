@@ -3461,16 +3461,17 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetSecondaryDeviceList))]
         public async Task<IActionResult> GetSecondaryDeviceList([FromBody] RetailerRequest getSecondaryDeviceListRequest)
         {
-            RetailerService retailerService = new();
             DataTable deviceList = new();
-
-            try
+            using (RetailerService retailerService = new())
             {
-                deviceList = await retailerService.SecondaryDeviceList(getSecondaryDeviceListRequest);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "SecondaryDeviceList"));
+                try
+                {
+                    deviceList = await retailerService.SecondaryDeviceList(getSecondaryDeviceListRequest);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "SecondaryDeviceList"));
+                }
             }
 
             List<SecondaryDeviceListModel> secondaryDeviceListModel = deviceList.AsEnumerable().Select(row => HelperMethod.ModelBinding<SecondaryDeviceListModel>(row)).ToList();
@@ -4531,16 +4532,17 @@ namespace RetailerSelfCareApi.Controllers
                 retailerCode = communicationRequest.retailerCode
             };
 
-            RetailerService retailerService = new(Connections.RetAppDbCS);
             DataTable communications = new();
-
-            try
+            using (RetailerService retailerService = new(Connections.RetAppDbCS))
             {
-                communications = await retailerService.GetCommunications(communicationRequest);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCommunicationsV3"));
+                try
+                {
+                    communications = await retailerService.GetCommunications(communicationRequest);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCommunicationsV3"));
+                }
             }
 
             string imageVirDirPath = ExternalKeys.ImageVirtualDirPath;

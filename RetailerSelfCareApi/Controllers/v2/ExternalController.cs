@@ -71,53 +71,58 @@ namespace RetailerSelfCareApi.Controllers.v2
             }
 
             long userValidRes;
-            try
+
+            using (UserService userService = new())
             {
-                UserService userService = new();
-                userValidRes = await userService.ValidateExternalUsers(retailerModel.userName, retailerModel.password);
-            }
-            catch (Exception ex)
-            {
-                string errMsg = HelperMethod.ExMsgBuild(ex, "ValidateExternalUsers");
-                throw new Exception(errMsg);
+                try
+                {
+                    userValidRes = await userService.ValidateExternalUsers(retailerModel.userName, retailerModel.password);
+                }
+                catch (Exception ex)
+                {
+                    string errMsg = HelperMethod.ExMsgBuild(ex, "ValidateExternalUsers");
+                    throw new Exception(errMsg);
+                }
             }
 
             if (userValidRes > 0)
             {
-                try
+                using (RetailerService service = new())
                 {
-                    RetailerService service = new();
-                    var result = await service.UpdateRetailerInfoMySQL(retailerModel);
-
-                    #region===============| Call Biometric API for Status Update  |===============
-
-                    string bioStatusURL = BiometricKeys.BioRetailerStatusURL;
-
-                    RetailerInfoRequest bioStatusModel = new()
+                    try
                     {
-                        userName = BiometricKeys.BioRetailerStatusUserName,
-                        password = BiometricKeys.BioRetailerStatusCred,
-                        retailerCode = retailerModel.retailerCode,
-                        iTopUpNumber = retailerModel.iTopUpNumber,
-                        isActive = retailerModel.isActive,
-                        typeName = retailerModel.typeName
-                    };
+                        var result = await service.UpdateRetailerInfoMySQL(retailerModel);
 
-                    HttpService httpService = new();
-                    await httpService.UpdateBioRetailerStatus(bioStatusModel, bioStatusURL);
+                        #region===============| Call Biometric API for Status Update  |===============
 
-                    #endregion===============|  Call Biometric API for Status Update |===============
+                        string bioStatusURL = BiometricKeys.BioRetailerStatusURL;
 
-                    return Ok(new RACommonResponse()
+                        RetailerInfoRequest bioStatusModel = new()
+                        {
+                            userName = BiometricKeys.BioRetailerStatusUserName,
+                            password = BiometricKeys.BioRetailerStatusCred,
+                            retailerCode = retailerModel.retailerCode,
+                            iTopUpNumber = retailerModel.iTopUpNumber,
+                            isActive = retailerModel.isActive,
+                            typeName = retailerModel.typeName
+                        };
+
+                        HttpService httpService = new();
+                        await httpService.UpdateBioRetailerStatus(bioStatusModel, bioStatusURL);
+
+                        #endregion===============|  Call Biometric API for Status Update |===============
+
+                        return Ok(new RACommonResponse()
+                        {
+                            result = result.Item1,
+                            message = result.Item2
+                        });
+                    }
+                    catch (Exception ex)
                     {
-                        result = result.Item1,
-                        message = result.Item2
-                    });
-                }
-                catch (Exception ex)
-                {
-                    string errMsg = HelperMethod.ExMsgBuild(ex, "UpdateRetailerInfo");
-                    throw new Exception(errMsg);
+                        string errMsg = HelperMethod.ExMsgBuild(ex, "UpdateRetailerInfo");
+                        throw new Exception(errMsg);
+                    }
                 }
             }
             else
