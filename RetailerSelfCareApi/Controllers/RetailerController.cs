@@ -3516,8 +3516,6 @@ namespace RetailerSelfCareApi.Controllers
         {
             deviceStatusRequest.userId = UserSession.userId;
 
-            RetailerService NewRetailerService = new();
-
             switch (deviceStatusRequest.operationType)
             {
                 case "Deregister":
@@ -3529,7 +3527,12 @@ namespace RetailerSelfCareApi.Controllers
                                 { "operationType", "Deregister" }
                             };
 
-                        long derestrationResult = await NewRetailerService.DeregisterDevice(deviceStatusRequest);
+                        long derestrationResult;
+
+                        using(RetailerService NewRetailerService = new())
+                        {
+                            derestrationResult = await NewRetailerService.DeregisterDevice(deviceStatusRequest);
+                        }
 
                         List<string> keyList = new() { deviceStatusRequest.retailerCode + "_" + deviceStatusRequest.operationalDeviceId };
                         RedisCache redis = new();
@@ -3559,9 +3562,13 @@ namespace RetailerSelfCareApi.Controllers
                         {
                                 { "operationType", "SecondaryToPrimary" },
                                 { "operationalDeviceId", deviceStatusRequest.operationalDeviceId }
-                            };
+                        };
 
-                        long result = await NewRetailerService.ChangeDeviceType(deviceStatusRequest);
+                        long result;
+                        using (RetailerService NewRetailerService = new())
+                        {
+                            result = await NewRetailerService.ChangeDeviceType(deviceStatusRequest);
+                        }
 
                         bool isSuccess = false;
 
@@ -3609,11 +3616,14 @@ namespace RetailerSelfCareApi.Controllers
 
                         deviceStatusRequest.deviceStatus = 1;
 
-                        var result = await NewRetailerService.EnableDisableDevice(deviceStatusRequest);
+                        using (RetailerService NewRetailerService = new())
+                        {
+                            var result = await NewRetailerService.EnableDisableDevice(deviceStatusRequest);
 
-                        bool isSuccess = result > 0 ? true : false;
+                            bool isSuccess = result > 0 ? true : false;
 
-                        responseDictionary.Add("success", isSuccess.ToString());
+                            responseDictionary.Add("success", isSuccess.ToString());
+                        }
 
                         return Ok(new ResponseMessage()
                         {
@@ -3638,11 +3648,14 @@ namespace RetailerSelfCareApi.Controllers
 
                         deviceStatusRequest.deviceStatus = 0;
 
-                        var result = await NewRetailerService.EnableDisableDevice(deviceStatusRequest);
+                        using (RetailerService NewRetailerService = new())
+                        {
+                            var result = await NewRetailerService.EnableDisableDevice(deviceStatusRequest);
 
-                        bool isSuccess = result > 0 ? true : false;
+                            bool isSuccess = result > 0 ? true : false;
 
-                        responseDictionary.Add("success", isSuccess.ToString());
+                            responseDictionary.Add("success", isSuccess.ToString());
+                        }
 
                         return Ok(new ResponseMessage()
                         {

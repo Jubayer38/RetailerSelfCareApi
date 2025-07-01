@@ -871,8 +871,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using(LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             RetailerV2Service retailerService;
             if (!string.IsNullOrEmpty(reqModel.address))
@@ -921,8 +923,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                         _ = Task.Run(async () =>
                         {
-                            retailerService = new();
-                            await retailerService.SaveNdSendFileWithResize(imageModel, reqModel.retailerCode);
+                            using (retailerService = new())
+                            {
+                                await retailerService.SaveNdSendFileWithResize(imageModel, reqModel.retailerCode);
+                            }
                         });
                     }
 
@@ -938,8 +942,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                     }
                 }
 
-                retailerService = new();
-                insertId = await retailerService.SaveRaiseComplaint(reqModel, userId);
+                using (retailerService = new())
+                {
+                    insertId = await retailerService.SaveRaiseComplaint(reqModel, userId);
+                }
             }
             catch (Exception ex)
             {
@@ -960,15 +966,18 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             if (!string.IsNullOrEmpty(reqModel.category) && reqModel.category.ToLower() == "app")
             {
-                retailerService = new();
                 DataTable raiseComplInfo = new();
-                try
+
+                using (retailerService = new())
                 {
-                    raiseComplInfo = await retailerService.GetRaiseComplaintInfoV2(reqModel, insertId);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(HelperMethod.ExMsgBuild(ex, "GetRaiseComplaintInfo"));
+                    try
+                    {
+                        raiseComplInfo = await retailerService.GetRaiseComplaintInfoV2(reqModel, insertId);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(HelperMethod.ExMsgBuild(ex, "GetRaiseComplaintInfo"));
+                    }
                 }
 
                 RaiseComplaintExternalSubmissionModel extSubModel;
@@ -1019,8 +1028,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                             requestMethod = "v2/SubmitRaiseComplaint"
                         };
 
-                        HttpService httpService = new();
-                        rcExtSubmit = await httpService.SubmitExternalRequest(httpModel);
+                        using(HttpService httpService = new())
+                        {
+                            rcExtSubmit = await httpService.SubmitExternalRequest(httpModel);
+                        }
 
                         //once api call complete update complaint status to 1
                         if (rcExtSubmit.success == true && rcExtSubmit.statusCode == 200)
@@ -1037,15 +1048,18 @@ namespace RetailerSelfCareApi.Controllers.v2
                             updateModel.userName = ExternalKeys.InternalUser;
 
                             Tuple<bool, string> result;
-                            try
+
+                            using (retailerService = new())
                             {
-                                retailerService = new();
-                                result = await retailerService.UpdateRaiseComplaintStatusV2(updateModel);
-                            }
-                            catch (Exception ex)
-                            {
-                                string errMsg = HelperMethod.ExMsgBuild(ex, "UpdateRaiseComplaintStatusV2");
-                                throw new Exception(errMsg);
+                                try
+                                {
+                                    result = await retailerService.UpdateRaiseComplaintStatusV2(updateModel);
+                                }
+                                catch (Exception ex)
+                                {
+                                    string errMsg = HelperMethod.ExMsgBuild(ex, "UpdateRaiseComplaintStatusV2");
+                                    throw new Exception(errMsg);
+                                }
                             }
 
                             if (!result.Item1)
@@ -1087,8 +1101,9 @@ namespace RetailerSelfCareApi.Controllers.v2
             }
             else if (!string.IsNullOrEmpty(reqModel.category) && reqModel.category.ToLower() == "superoffice")
             {
+                long soTicketId;
                 SuperOfficeService superOffice = new();
-                long soTicketId = await superOffice.SubmitTicketToSuperOffice(soModel);
+                soTicketId = await superOffice.SubmitTicketToSuperOffice(soModel);
 
                 if (soTicketId > 0)
                 {
@@ -1103,15 +1118,17 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                     updateModel.userName = ExternalKeys.InternalUser;
 
-                    try
+                    using (retailerService = new())
                     {
-                        retailerService = new();
-                        await retailerService.UpdateRaiseComplaintStatusFromSO(updateModel, soTicketId);
-                    }
-                    catch (Exception ex)
-                    {
-                        string errMsg = HelperMethod.ExMsgBuild(ex, "UpdateRaiseComplaintStatusFromSOV2");
-                        throw new Exception(errMsg);
+                        try
+                        {
+                            await retailerService.UpdateRaiseComplaintStatusFromSO(updateModel, soTicketId);
+                        }
+                        catch (Exception ex)
+                        {
+                            string errMsg = HelperMethod.ExMsgBuild(ex, "UpdateRaiseComplaintStatusFromSOV2");
+                            throw new Exception(errMsg);
+                        }
                     }
                 }
                 else if (soTicketId == -1)
@@ -2091,17 +2108,19 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(ProductRatingHistory))]
         public async Task<IActionResult> ProductRatingHistory([FromBody] HistoryPageRequestModel model)
         {
-            RetailerV2Service retailerService = new();
             DataTable dt = new();
 
-            try
+            using(RetailerV2Service retailerService = new())
             {
-                dt = await retailerService.GetProductRatingHistory(model);
-            }
-            catch (Exception ex)
-            {
-                string errMsg = HelperMethod.ExMsgBuild(ex, "GetProductRatingHistory");
-                throw new Exception(errMsg);
+                try
+                {
+                    dt = await retailerService.GetProductRatingHistory(model);
+                }
+                catch (Exception ex)
+                {
+                    string errMsg = HelperMethod.ExMsgBuild(ex, "GetProductRatingHistory");
+                    throw new Exception(errMsg);
+                }
             }
 
             List<PRHistoryVM> ratingHistory = dt.AsEnumerable().Select(row => HelperMethod.ModelBinding<PRHistoryVM>(row, string.Empty, model.lan)).ToList();
@@ -2421,17 +2440,19 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(GetSelfCampDayList))]
         public async Task<IActionResult> GetSelfCampDayList([FromBody] GetSelfCampDayListRequest model)
         {
-            RetailerV2Service retailerService = new();
             string ids = string.Join(",", model.targetIdList);
             DataTable dt = new();
 
-            try
+            using (RetailerV2Service retailerService = new())
             {
-                dt = await retailerService.GetSelfCampDayList(model.retailerCode, ids);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSelfCampDayList"));
+                try
+                {
+                    dt = await retailerService.GetSelfCampDayList(model.retailerCode, ids);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSelfCampDayList"));
+                }
             }
 
             List<CampDurationListObject> daysList = dt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampDurationListObject>(row)).ToList();
@@ -5283,24 +5304,26 @@ namespace RetailerSelfCareApi.Controllers.v2
                 userId = logout.userId
             };
 
-            RetailerV2Service retailerService = new();
-            var result = await retailerService.LogoutDevice(model);
+            using (RetailerV2Service retailerService = new())
+            {
+                var result = await retailerService.LogoutDevice(model);
 
-            if (result > 0)
-            {
-                return Ok(new ResponseMessage()
+                if (result > 0)
                 {
-                    isError = false,
-                    message = SharedResource.GetLocal("LogoutSuccess", Message.LogoutSuccess)
-                });
-            }
-            else
-            {
-                return Ok(new ResponseMessage()
+                    return Ok(new ResponseMessage()
+                    {
+                        isError = false,
+                        message = SharedResource.GetLocal("LogoutSuccess", Message.LogoutSuccess)
+                    });
+                }
+                else
                 {
-                    isError = true,
-                    message = SharedResource.GetLocal("LogoutFailed", Message.LogoutFailed)
-                });
+                    return Ok(new ResponseMessage()
+                    {
+                        isError = true,
+                        message = SharedResource.GetLocal("LogoutFailed", Message.LogoutFailed)
+                    });
+                }
             }
         }
 

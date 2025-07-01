@@ -1047,18 +1047,19 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             EvPinChangeXMLResponse evPinChangeResponse = new();
             DateTime changeDate = DateTime.Now;
-            RechargeV2Service rechargeService;
 
-            try
+            using(RechargeV2Service rechargeService = new())
             {
-                var userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
-                rechargeService = new();
-                evPinChangeResponse = await rechargeService.SubmitEvPinChangeReq(xmlRequest, userAgent);
-                changeDate = DateTime.Now;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "SubmitEvPinChangeReq"));
+                try
+                {
+                    var userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
+                    evPinChangeResponse = await rechargeService.SubmitEvPinChangeReq(xmlRequest, userAgent);
+                    changeDate = DateTime.Now;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "SubmitEvPinChangeReq"));
+                }
             }
 
             bool status = evPinChangeResponse.txnStatus == "200";
@@ -1067,7 +1068,7 @@ namespace RetailerSelfCareApi.Controllers.v2
             if (status)
             {
                 // Update pin change successfull time in ev pin log table
-                using (rechargeService = new())
+                using (RechargeV2Service rechargeService = new())
                 {
                     try
                     {

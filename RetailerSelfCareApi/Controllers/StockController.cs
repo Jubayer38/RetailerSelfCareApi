@@ -39,19 +39,18 @@ namespace RetailerSelfCareApi.Controllers
         {
             string traceMsg = string.Empty;
 
-            StockService stockService;
             List<StockDetialsModel> stockDetials = [];
             bool status = true;
             EvXmlResponse itopupSock = new();
 
             RetailerSessionCheck retailer = new();
 
-
-            stockService = new StockService();
             string loginProvider = Request.HttpContext.Items["loginProviderId"] as string;
 
-            retailer = await stockService.CheckRetailerByCode(detailRequest.retailerCode, loginProvider);
-
+            using (StockService stockService = new StockService())
+            {
+                retailer = await stockService.CheckRetailerByCode(detailRequest.retailerCode, loginProvider);
+            }
 
             if (string.IsNullOrEmpty(loginProvider) || !retailer.isSessionValid)
             {
@@ -64,15 +63,19 @@ namespace RetailerSelfCareApi.Controllers
 
             if (detailRequest.itemCode == 1)//SC
             {
-                stockService = new StockService(Connections.DMSCS);
-                DataTable scDetails = stockService.GetScStockDetails(detailRequest);
-                stockDetials = scDetails.AsEnumerable().Select(row => new StockDetialsModel(row)).ToList();
+                using (StockService stockService = new StockService(Connections.DMSCS))
+                {
+                    DataTable scDetails = stockService.GetScStockDetails(detailRequest);
+                    stockDetials = scDetails.AsEnumerable().Select(row => new StockDetialsModel(row)).ToList();
+                }
             }
             else if (detailRequest.itemCode == 2)//SIM
             {
-                stockService = new StockService(Connections.DMSCS);
-                DataTable simDetails = stockService.GetSimStockDetails(detailRequest);
-                stockDetials = simDetails.AsEnumerable().Select(row => new StockDetialsModel(row)).ToList();
+                using (StockService stockService = new StockService(Connections.DMSCS))
+                {
+                    DataTable simDetails = stockService.GetSimStockDetails(detailRequest);
+                    stockDetials = simDetails.AsEnumerable().Select(row => new StockDetialsModel(row)).ToList();
+                }
             }
             else if (detailRequest.itemCode == 3)//ITopUp Current Balance
             {
@@ -93,18 +96,22 @@ namespace RetailerSelfCareApi.Controllers
                     Language1 = "0"
                 };
 
-                stockService = new StockService(Connections.RetAppDbCS);
-                itopupSock = stockService.GetITOPUPStockSummary(xmlRequest, detailRequest);
+                using (StockService stockService = new StockService(Connections.RetAppDbCS))
+                {
+                    itopupSock = stockService.GetITOPUPStockSummary(xmlRequest, detailRequest);
+                }
 
-                stockService = new StockService(Connections.RetAppDbCS);
-                StockDetialsModel stockDetail = stockService.StockDetialModelMaker(itopupSock);
+                StockDetialsModel stockDetail;
+                using (StockService stockService = new StockService(Connections.RetAppDbCS))
+                {
+                    stockDetail = stockService.StockDetialModelMaker(itopupSock);
+                    stockDetials.Add(stockDetail);
+                }
 
-                stockDetials.Add(stockDetail);
                 status = itopupSock.txnStatus.Equals("200");
 
                 if (status)
                 {
-                    stockService = new StockService(Connections.RetAppDbCS);
                     DateTime _dateTime = DateTime.ParseExact(stockDetail.dateTime, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
                     string dateTime = _dateTime.ToEnUSDateString("hh:mm:ss tt, dd MMM yyyy");
                     traceMsg = HelperMethod.BuildTraceMessage(traceMsg, $"{stockDetail.dateTime};{dateTime}", null);
@@ -117,7 +124,14 @@ namespace RetailerSelfCareApi.Controllers
                             NewBalance = Convert.ToDouble(stockDetail.amount),
                             UpdateTime = dateTime
                         };
-                        int res = stockService.UpdateItopUpBalance(model);
+
+                        int res;
+
+                        using (StockService stockService = new StockService(Connections.RetAppDbCS))
+                        {
+                            res = stockService.UpdateItopUpBalance(model);
+                        }
+
                         if (res == 0)
                         {
                             traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "Unable to update Retailer Balance;", null);
