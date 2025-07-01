@@ -101,14 +101,16 @@ namespace RetailerSelfCareApi.Controllers.v2
             //SIM and SC
             DataTable simscStock = new();
 
-            try
+            using(stockService = new(Connections.RetAppDbCS))
             {
-                stockService = new(Connections.RetAppDbCS);
-                simscStock = await stockService.GetSIMSCStocksSummary(retailer);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSIMSCStocksSummary"));
+                try
+                {
+                    simscStock = await stockService.GetSIMSCStocksSummary(retailer);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSIMSCStocksSummary"));
+                }
             }
 
             if (simscStock.Rows.Count > 0)
@@ -118,16 +120,18 @@ namespace RetailerSelfCareApi.Controllers.v2
             }
 
             //ITopUP - Not Current Balance 
-            stockService = new();
             DataTable itopUpStock = new();
 
-            try
+            using (stockService = new())
             {
-                itopUpStock = await stockService.GetItopUpSummary(retailer);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetItopUpSummary"));
+                try
+                {
+                    itopUpStock = await stockService.GetItopUpSummary(retailer);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "GetItopUpSummary"));
+                }
             }
 
             if (itopUpStock.Rows.Count > 0)

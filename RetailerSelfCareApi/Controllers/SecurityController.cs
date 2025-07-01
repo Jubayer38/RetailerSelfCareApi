@@ -955,30 +955,32 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(ChangePassword))]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestsV2 changePasswordReq)
         {
-            SecurityService _auth = new();
-            var validationResult = await _auth.IsPasswordFormatValid(changePasswordReq.newPassword, changePasswordReq.lan);
-
-            if (validationResult.Item1 == false)
+            using (SecurityService _auth = new())
             {
-                return Ok(new RACommonResponse()
-                {
-                    result = validationResult.Item1,
-                    message = validationResult.Item2
-                });
-            }
-            else
-            {
-                try
-                {
-                    RACommonResponse resp = await _auth.ChangePassword(changePasswordReq.retailerCode, changePasswordReq.oldPassword, changePasswordReq.newPassword, ResponseMessages.InvalidUserName);
+                var validationResult = await _auth.IsPasswordFormatValid(changePasswordReq.newPassword, changePasswordReq.lan);
 
-                    resp.message = SharedResource.GetLocal(resp.message, resp.message);
-                    return Ok(resp);
+                if (validationResult.Item1 == false)
+                {
+                    return Ok(new RACommonResponse()
+                    {
+                        result = validationResult.Item1,
+                        message = validationResult.Item2
+                    });
                 }
-                catch (Exception ex)
+                else
                 {
-                    string errMsg = HelperMethod.ExMsgBuild(ex, "ChangePassword");
-                    throw new Exception(errMsg);
+                    try
+                    {
+                        RACommonResponse resp = await _auth.ChangePassword(changePasswordReq.retailerCode, changePasswordReq.oldPassword, changePasswordReq.newPassword, ResponseMessages.InvalidUserName);
+
+                        resp.message = SharedResource.GetLocal(resp.message, resp.message);
+                        return Ok(resp);
+                    }
+                    catch (Exception ex)
+                    {
+                        string errMsg = HelperMethod.ExMsgBuild(ex, "ChangePassword");
+                        throw new Exception(errMsg);
+                    }
                 }
             }
         }

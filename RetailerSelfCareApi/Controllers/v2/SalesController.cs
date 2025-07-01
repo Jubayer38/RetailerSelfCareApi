@@ -57,9 +57,12 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route("GetSalesWeeklyTrend")]
         public async Task<IActionResult> GetSalesWeeklyTrend([FromBody] RetailerRequest retailerRequest)
         {
-            SalesV2Service salesService = new();
-            DataTable salesTend = await salesService.GetSalesWeeklyTrend(retailerRequest);
-            List<SalesTendModel> salesTends = salesTend.AsEnumerable().Select(row => new SalesTendModel(row)).ToList();
+            List<SalesTendModel> salesTends = [];
+            using (SalesV2Service salesService = new())
+            {
+                DataTable salesTend = await salesService.GetSalesWeeklyTrend(retailerRequest);
+                salesTends = salesTend.AsEnumerable().Select(row => new SalesTendModel(row)).ToList();
+            }
 
 
             return new OkObjectResult(new ResponseMessage()

@@ -788,15 +788,17 @@ namespace RetailerSelfCareApi.Controllers.v2
                 List<Categories> superCategories = new();
                 DataTable dt = new();
 
-                try
+                using(RetailerV2Service retailerService = new())
                 {
-                    RetailerV2Service retailerService = new();
-                    dt = await retailerService.GetComplaintTypeList();
-                }
-                catch (Exception ex)
-                {
-                    string errMsg = HelperMethod.ExMsgBuild(ex, "ComplaintTypeList");
-                    throw new Exception(errMsg);
+                    try
+                    {
+                        dt = await retailerService.GetComplaintTypeList();
+                    }
+                    catch (Exception ex)
+                    {
+                        string errMsg = HelperMethod.ExMsgBuild(ex, "ComplaintTypeList");
+                        throw new Exception(errMsg);
+                    }
                 }
 
                 List<ComplaintTypeResponse> complaintTypes = dt.AsEnumerable().Select(row => HelperMethod.ModelBinding<ComplaintTypeResponse>(row, string.Empty, reqModel.lan)).ToList();
@@ -3456,27 +3458,31 @@ namespace RetailerSelfCareApi.Controllers.v2
                 InActiveQAList = model.inactiveWeidgets
             };
 
-            try
+            using (RedisCache redis = new())
             {
-                RedisCache redis = new();
-                bool result = await redis.SetCacheAsync(RedisCollectionNames.RetailerQuickAccess, model.deviceId, retQAList.ToJsonString());
-            }
-            catch (Exception ex)
-            {
-                traceMsg = ex.Message;
+                try
+                {
+                    bool result = await redis.SetCacheAsync(RedisCollectionNames.RetailerQuickAccess, model.deviceId, retQAList.ToJsonString());
+                }
+                catch (Exception ex)
+                {
+                    traceMsg = ex.Message;
+                }
             }
 
-            RetailerV2Service retailerService = new();
             int insertResult = 0;
 
-            try
+            using (RetailerV2Service retailerService = new())
             {
-                insertResult = await retailerService.UpdateQuickAccessOrder(model);
-            }
-            catch (Exception ex)
-            {
-                string _msg = "UpdateQuickAccessOrder";
-                traceMsg = HelperMethod.BuildTraceMessage(traceMsg, _msg, ex);
+                try
+                {
+                    insertResult = await retailerService.UpdateQuickAccessOrder(model);
+                }
+                catch (Exception ex)
+                {
+                    string _msg = "UpdateQuickAccessOrder";
+                    traceMsg = HelperMethod.BuildTraceMessage(traceMsg, _msg, ex);
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(traceMsg))

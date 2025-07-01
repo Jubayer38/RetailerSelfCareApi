@@ -71,15 +71,18 @@ namespace RetailerSelfCareApi.Controllers
             }
 
             long userValidRes;
-            try
+
+            using(UserService userService = new())
             {
-                UserService userService = new();
-                userValidRes = await userService.ValidateExternalUsers(retailerModel.userName, retailerModel.password);
-            }
-            catch (Exception ex)
-            {
-                string errMsg = HelperMethod.ExMsgBuild(ex, "ValidateExternalUsers");
-                throw new Exception(errMsg);
+                try
+                {
+                    userValidRes = await userService.ValidateExternalUsers(retailerModel.userName, retailerModel.password);
+                }
+                catch (Exception ex)
+                {
+                    string errMsg = HelperMethod.ExMsgBuild(ex, "ValidateExternalUsers");
+                    throw new Exception(errMsg);
+                }
             }
 
             if (userValidRes > 0)
@@ -301,15 +304,18 @@ namespace RetailerSelfCareApi.Controllers
         public async Task<IActionResult> UpdateRaiseComplaintStatus([FromBody] UpdateRaiseComplaintRequest model)
         {
             long userValidRes;
-            try
+
+            using(UserService userService = new())
             {
-                UserService userService = new();
-                userValidRes = await userService.ValidateExternalUsers(model.userName, model.password);
-            }
-            catch (Exception ex)
-            {
-                string errMsg = HelperMethod.ExMsgBuild(ex, "ValidateExternalUsers");
-                throw new Exception(errMsg);
+                try
+                {
+                    userValidRes = await userService.ValidateExternalUsers(model.userName, model.password);
+                }
+                catch (Exception ex)
+                {
+                    string errMsg = HelperMethod.ExMsgBuild(ex, "ValidateExternalUsers");
+                    throw new Exception(errMsg);
+                }
             }
 
             if (userValidRes > 0)

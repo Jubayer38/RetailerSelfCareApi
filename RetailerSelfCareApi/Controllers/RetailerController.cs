@@ -1682,7 +1682,6 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(ProductTypeList))]
         public async Task<IActionResult> ProductTypeList([FromBody] RetailerRequest model)
         {
-            RetailerService retailerService = new(Connections.RetAppDbCS);
             DataTable dt = new();
             ProductTypeModel type = new();
             List<ProductTypeModel> types = [];
@@ -1693,14 +1692,17 @@ namespace RetailerSelfCareApi.Controllers
             ProductTypeModel amarOffer = new() { ProductTypeName = "Amar Offer", ProductTypeNameBN = "আমার অফার" };
             types.Add(amarOffer);
 
-            try
+            using(RetailerService retailerService = new(Connections.RetAppDbCS))
             {
-                dt = await retailerService.GetProductTypeList();
-            }
-            catch (Exception ex)
-            {
-                string errMsg = HelperMethod.ExMsgBuild(ex, "GetProductTypeList");
-                throw new Exception(errMsg);
+                try
+                {
+                    dt = await retailerService.GetProductTypeList();
+                }
+                catch (Exception ex)
+                {
+                    string errMsg = HelperMethod.ExMsgBuild(ex, "GetProductTypeList");
+                    throw new Exception(errMsg);
+                }
             }
 
             foreach (DataRow row in dt.Rows)
@@ -2241,8 +2243,12 @@ namespace RetailerSelfCareApi.Controllers
                 searchRequest.lan = searchRequest.lan.ToLower();
             }
 
-            RechargeService rechargeService = new(Connections.RetAppDbCS);
-            DataTable offers = await rechargeService.SearchOffers(searchRequest);
+            DataTable offers = new();
+
+            using (RechargeService rechargeService = new(Connections.RetAppDbCS))
+            {
+                offers = await rechargeService.SearchOffers(searchRequest);
+            }
 
             List<RechargePackageModel> rechargePackageModels = offers.AsEnumerable().Select(row => HelperMethod.ModelBinding<RechargePackageModel>(row, "GlobalOfferSearchV2", searchRequest.lan)).ToList();
 
@@ -3122,18 +3128,20 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetSelfKPIDetails))]
         public async Task<IActionResult> GetSelfKPIDetails([FromBody] CampaignKPIRequest model)
         {
-            RetailerService NewRetailerService = new();
             string ids = string.Join(",", model.targetIdList);
             DataTable kpiDT = new();
 
-            try
+            using(RetailerService NewRetailerService = new())
             {
-                kpiDT = await NewRetailerService.GetCampKPIDetails(model, ids);
-            }
-            catch (Exception ex)
-            {
-                string errMsg = HelperMethod.ExMsgBuild(ex, "GetCampKPIDetailsV2");
-                throw new Exception(errMsg);
+                try
+                {
+                    kpiDT = await NewRetailerService.GetCampKPIDetails(model, ids);
+                }
+                catch (Exception ex)
+                {
+                    string errMsg = HelperMethod.ExMsgBuild(ex, "GetCampKPIDetailsV2");
+                    throw new Exception(errMsg);
+                }
             }
 
             List<SelfCampaignKPIDetailsModelV2> kpiList = kpiDT.AsEnumerable().Select(row => HelperMethod.ModelBinding<SelfCampaignKPIDetailsModelV2>(row)).ToList();

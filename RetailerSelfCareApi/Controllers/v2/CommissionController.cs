@@ -427,8 +427,11 @@ namespace RetailerSelfCareApi.Controllers.v2
                         searchText = downloadRequest.month
                     };
 
-                    CommissionV2Service commissionService = new();
-                    DataTable dataTable = await commissionService.GetSalesVsCommission(searchRequestV2);
+                    DataTable dataTable = new();
+                    using (CommissionV2Service commissionService = new())
+                    {
+                        dataTable = await commissionService.GetSalesVsCommission(searchRequestV2);
+                    }
 
                     SalesVsCommissionModel salesVsCommData = new(dataTable, searchRequestV2.searchText);
 
@@ -587,16 +590,18 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(TarVsAchvDetails))]
         public async Task<IActionResult> TarVsAchvDetails([FromBody] TarVsAchvRequestV2 tarVsAchvRequest)
         {
-            CommissionV2Service tarVsAchvService = new();
             DataTable tarVsAchv = new();
 
-            try
+            using (CommissionV2Service tarVsAchvService = new())
             {
-                tarVsAchv = await tarVsAchvService.TarVsAchvDeatils(tarVsAchvRequest);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "TarVsAchvDeatils"));
+                try
+                {
+                    tarVsAchv = await tarVsAchvService.TarVsAchvDeatils(tarVsAchvRequest);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "TarVsAchvDeatils"));
+                }
             }
 
             List<TarVsAchvDetailsModel> tarVsAchvs = tarVsAchv.AsEnumerable().Select(row => HelperMethod.ModelBinding<TarVsAchvDetailsModel>(row)).ToList();

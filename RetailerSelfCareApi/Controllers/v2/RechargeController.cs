@@ -283,14 +283,20 @@ namespace RetailerSelfCareApi.Controllers.v2
         {
             string userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
             offerRequest.userAgent = userAgent;
-            RechargeV2Service rechargeService = new();
-            OfferResponseModelNew responseModel = await rechargeService.IRISOfferRequest(offerRequest);
+            OfferResponseModelNew responseModel = new();
+
+            using (RechargeV2Service rechargeService = new())
+            {
+                responseModel = await rechargeService.IRISOfferRequest(offerRequest);
+            }
 
             if (!string.IsNullOrWhiteSpace(offerRequest.amount))
             {
-                RetailerV2Service retailerService = new();
-                List<OfferModelNew> rechargeOffers = await retailerService.GetAdminsRechargeOffers(offerRequest);
-                responseModel.OfferList.AddRange(rechargeOffers);
+                using (RetailerV2Service retailerService = new())
+                {
+                    List<OfferModelNew> rechargeOffers = await retailerService.GetAdminsRechargeOffers(offerRequest);
+                    responseModel.OfferList.AddRange(rechargeOffers);
+                }
             }
 
             if (responseModel.statusCode != "0")
@@ -1020,8 +1026,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             string evPinChangeURL = ExternalKeys.EvPinChangeUrl;
 
@@ -1059,14 +1067,16 @@ namespace RetailerSelfCareApi.Controllers.v2
             if (status)
             {
                 // Update pin change successfull time in ev pin log table
-                try
+                using (rechargeService = new())
                 {
-                    rechargeService = new();
-                    await rechargeService.UpdateEvPinResetSuccessDate(model, changeDate);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(HelperMethod.ExMsgBuild(ex, "UpdateEvPinResetSuccessDate"));
+                    try
+                    {
+                        await rechargeService.UpdateEvPinResetSuccessDate(model, changeDate);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(HelperMethod.ExMsgBuild(ex, "UpdateEvPinResetSuccessDate"));
+                    }
                 }
             }
 
@@ -1132,20 +1142,22 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(CheckStarTrekStatus))]
         public async Task<IActionResult> CheckStarTrekStatus([FromBody] StarTrekStatusCheckRequest request)
         {
-            RechargeV2Service rechargeService = new();
-            var resp = await rechargeService.StarTrekStatusCheck(request);
-
-            var data = new
+            using (RechargeV2Service rechargeService = new())
             {
-                isStarTrek = resp
-            };
+                var resp = await rechargeService.StarTrekStatusCheck(request);
 
-            return Ok(new ResponseMessage()
-            {
-                isError = false,
-                message = SharedResource.GetLocal("Success", Message.Success),
-                data = data
-            });
+                var data = new
+                {
+                    isStarTrek = resp
+                };
+
+                return Ok(new ResponseMessage()
+                {
+                    isError = false,
+                    message = SharedResource.GetLocal("Success", Message.Success),
+                    data = data
+                });
+            }
         }
 
     }
