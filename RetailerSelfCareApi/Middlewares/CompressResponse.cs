@@ -6,10 +6,9 @@ namespace RetailerSelfCareApi.Middlewares
 {
     public class CompressResponseAttribute : ActionFilterAttribute
     {
-
-        private readonly Stream _originalBodyStream = null;
+        private Stream _originalBodyStream;
         private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager = new();
-        private readonly RecyclableMemoryStream responseBody = null;
+        private RecyclableMemoryStream responseBody;
 
         //private Stream _originStream = null;
         //private MemoryStream _ms = null;
@@ -25,15 +24,12 @@ namespace RetailerSelfCareApi.Middlewares
 
             HttpResponse response = context.HttpContext.Response;
 
-            if (response.Body is not BrotliStream)// avoid twice compression.
+            if (response.Body is not BrotliStream)
             {
-                _recyclableMemoryStreamManager.GetStream();
-                response.Body = responseBody;
-
-                //_originStream = response.Body;
-                //_ms = new MemoryStream();
-                response.Headers.Append("Content-encoding", "br");
+                _originalBodyStream = response.Body;
+                responseBody = _recyclableMemoryStreamManager.GetStream();
                 response.Body = new BrotliStream(responseBody, CompressionLevel.Fastest);
+                response.Headers.Append("Content-encoding", "br");
             }
 
             base.OnActionExecuting(context);
@@ -41,18 +37,11 @@ namespace RetailerSelfCareApi.Middlewares
 
         public override async void OnResultExecuted(ResultExecutedContext context)
         {
-            if ((_originalBodyStream != null) && (_recyclableMemoryStreamManager != null))
+            if (_originalBodyStream != null && responseBody != null)
             {
+                responseBody.Seek(0, SeekOrigin.Begin);
                 await responseBody.CopyToAsync(_originalBodyStream);
-
-                //HttpResponse response = context.HttpContext.Response;
-                //await response.Body.FlushAsync();
-                //_ms.Seek(0, SeekOrigin.Begin);
-                //response.Headers.ContentLength = _ms.Length;
-                //await _ms.CopyToAsync(_originStream);
-                //response.Body.Dispose();
-                //_ms.Dispose();
-                //response.Body = _originStream;
+                await responseBody.DisposeAsync();
             }
             base.OnResultExecuted(context);
         }
