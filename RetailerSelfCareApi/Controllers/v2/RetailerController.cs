@@ -3682,14 +3682,16 @@ namespace RetailerSelfCareApi.Controllers.v2
             cid = Convert.ToInt32(model.id.Split('~')[0]);
             lac = Convert.ToInt32(model.id.Split('~')[1]);
 
-            try
+            using (RetailerV2Service retailerService = new())
             {
-                RetailerV2Service retailerService = new();
-                dt = await retailerService.GetBTSLocationDetails(lac, cid);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetBTSLocationDetails"));
+                try
+                {
+                    dt = await retailerService.GetBTSLocationDetails(lac, cid);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "GetBTSLocationDetails"));
+                }
             }
 
             BTSInfoModel tempBTSInfo = HelperMethod.ModelBinding<BTSInfoModel>(dt.Rows[0]);
@@ -4518,98 +4520,107 @@ namespace RetailerSelfCareApi.Controllers.v2
             }
             else
             {
-                RedisCache redis;
                 AppFeatureSettings appSettingsResp = new();
                 bool _hasAdvert = false;
 
                 if (!string.IsNullOrWhiteSpace(model.retailerCode))
                 {
-                    redis = new RedisCache();
-                    string result = await redis.GetCacheAsync(RedisCollectionNames.RetailerAdvertisementIds, model.retailerCode);
-                    string retailerAdvertId = result ?? JsonConvert.DeserializeObject<string>(result)!;
-                    _hasAdvert = !string.IsNullOrWhiteSpace(retailerAdvertId);
+                    using (RedisCache redis = new RedisCache())
+                    {
+                        string result = await redis.GetCacheAsync(RedisCollectionNames.RetailerAdvertisementIds, model.retailerCode);
+                        string retailerAdvertId = result ?? JsonConvert.DeserializeObject<string>(result)!;
+                        _hasAdvert = !string.IsNullOrWhiteSpace(retailerAdvertId);
+                    }
                 }
 
-                try
+                using (RedisCache redis = new RedisCache())
                 {
-                    redis = new RedisCache();
-                    string appSettingsInfo = await redis.GetCacheAsync(RedisCollectionNames.AppSettingsInfo);
-                    if (!string.IsNullOrWhiteSpace(appSettingsInfo))
+                    try
                     {
-                        appSettingsResp = JsonConvert.DeserializeObject<AppFeatureSettings>(appSettingsInfo)!;
+                        string appSettingsInfo = await redis.GetCacheAsync(RedisCollectionNames.AppSettingsInfo);
+                        if (!string.IsNullOrWhiteSpace(appSettingsInfo))
+                        {
+                            appSettingsResp = JsonConvert.DeserializeObject<AppFeatureSettings>(appSettingsInfo)!;
+                        }
+                        else
+                        {
+                            DataTable dt = new();
+
+                            using(RetailerV2Service retailerService = new())
+                            {
+                                try
+                                {
+                                    dt = await retailerService.GetAppSettingsInfo();
+                                }
+                                catch (Exception exp)
+                                {
+                                    throw new Exception(HelperMethod.ExMsgBuild(exp, "GetAppSettingsInfo"));
+                                }
+                            }
+
+                            appSettingsResp = HelperMethod.ModelBinding<AppFeatureSettings>(dt);
+                        }
+
+                        appSettingsResp.hasAdvertisement = _hasAdvert;
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        RetailerV2Service retailerService = new();
+                        traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "", ex);
                         DataTable dt = new();
 
-                        try
+                        using (RetailerV2Service retailerService = new())
                         {
-                            dt = await retailerService.GetAppSettingsInfo();
-                        }
-                        catch (Exception exp)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(exp, "GetAppSettingsInfo"));
+                            try
+                            {
+                                dt = await retailerService.GetAppSettingsInfo();
+                            }
+                            catch (Exception exp)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(exp, "GetAppSettingsInfo"));
+                            }
                         }
 
                         appSettingsResp = HelperMethod.ModelBinding<AppFeatureSettings>(dt);
                     }
-
-                    appSettingsResp.hasAdvertisement = _hasAdvert;
                 }
-                catch (Exception ex)
-                {
-                    traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "", ex);
-                    RetailerV2Service retailerService = new();
-                    DataTable dt = new();
 
+                using (RedisCache redis = new RedisCache())
+                {
                     try
                     {
-                        dt = await retailerService.GetAppSettingsInfo();
-                    }
-                    catch (Exception exp)
-                    {
-                        throw new Exception(HelperMethod.ExMsgBuild(exp, "GetAppSettingsInfo"));
-                    }
+                        string bnrIDTimes = await redis.GetCacheAsync(RedisCollectionNames.BannerIdTimeMySQL);
 
-                    appSettingsResp = HelperMethod.ModelBinding<AppFeatureSettings>(dt);
-                }
-
-                try
-                {
-                    redis = new RedisCache();
-                    string bnrIDTimes = await redis.GetCacheAsync(RedisCollectionNames.BannerIdTimeMySQL);
-
-                    if (!string.IsNullOrWhiteSpace(bnrIDTimes))
-                    {
-                        Dictionary<string, string> idTimesList = new();
-
-                        try
+                        if (!string.IsNullOrWhiteSpace(bnrIDTimes))
                         {
-                            idTimesList = JsonConvert.DeserializeObject<Dictionary<string, string>>(bnrIDTimes)!;
-                        }
-                        catch (Exception ex)
-                        {
-                            string _msg = "BannerIDTimes Deserialization";
-                            traceMsg = HelperMethod.BuildTraceMessage(traceMsg, _msg, ex);
-                        }
+                            Dictionary<string, string> idTimesList = new();
 
-                        Parallel.ForEach(idTimesList, item =>
-                        {
-                            AppBannerIDDatesVM tempInstnc = new()
+                            try
                             {
-                                bannerId = Convert.ToInt64(item.Key),
-                                dateInMS = Convert.ToInt64(item.Value)
-                            };
+                                idTimesList = JsonConvert.DeserializeObject<Dictionary<string, string>>(bnrIDTimes)!;
+                            }
+                            catch (Exception ex)
+                            {
+                                string _msg = "BannerIDTimes Deserialization";
+                                traceMsg = HelperMethod.BuildTraceMessage(traceMsg, _msg, ex);
+                            }
 
-                            appSettingsResp.bannerUpdatedInMSList.Add(tempInstnc);
-                        });
+                            Parallel.ForEach(idTimesList, item =>
+                            {
+                                AppBannerIDDatesVM tempInstnc = new()
+                                {
+                                    bannerId = Convert.ToInt64(item.Key),
+                                    dateInMS = Convert.ToInt64(item.Value)
+                                };
+
+                                appSettingsResp.bannerUpdatedInMSList.Add(tempInstnc);
+                            });
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    string _msg = "Get BannerIDTimes";
-                    traceMsg = HelperMethod.BuildTraceMessage(traceMsg, _msg, ex);
+                    catch (Exception ex)
+                    {
+                        string _msg = "Get BannerIDTimes";
+                        traceMsg = HelperMethod.BuildTraceMessage(traceMsg, _msg, ex);
+                    }
                 }
 
                 if (!string.IsNullOrWhiteSpace(traceMsg))

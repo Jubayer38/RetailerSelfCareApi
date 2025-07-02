@@ -276,8 +276,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             int isEligible;
             string rsoNumber;
@@ -286,8 +288,11 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                RetailerV2Service retailerService = new();
-                DataTable dt = await retailerService.GetRSOAndLastTime(retailerRequest);
+                DataTable dt = new();
+                using (RetailerV2Service retailerService = new())
+                {
+                    dt = await retailerService.GetRSOAndLastTime(retailerRequest);
+                }
 
                 if (dt.Rows.Count > 0)
                 {
@@ -340,18 +345,19 @@ namespace RetailerSelfCareApi.Controllers.v2
                     Extrefnum = "123456"
                 };
 
-                StockV2Service stockService = new(Connections.RetAppDbCS);
-                var userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
-                string resp = stockService.GetITOPUPBalance(xmlRequest, retailerRequest, userAgent);
+                using (StockV2Service stockService = new(Connections.RetAppDbCS))
+                {
+                    var userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
+                    string resp = stockService.GetITOPUPBalance(xmlRequest, retailerRequest, userAgent);
 
-                try
-                {
-                    stockService = new(Connections.RetAppDbCS);
-                    stockService.FormatEvBalanceResponse(ref stockSummary, resp);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(HelperMethod.ExMsgBuild(ex, "FormatEvBalanceResponse"));
+                    try
+                    {
+                        stockService.FormatEvBalanceResponse(ref stockSummary, resp);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(HelperMethod.ExMsgBuild(ex, "FormatEvBalanceResponse"));
+                    }
                 }
 
                 try
@@ -364,8 +370,12 @@ namespace RetailerSelfCareApi.Controllers.v2
                         UpdateTime = stockSummary.updateTime
                     };
 
-                    stockService = new();
-                    int res = await stockService.UpdateItopUpBalance(model);
+                    int res;
+                    using (StockV2Service stockService = new())
+                    {
+                        res = await stockService.UpdateItopUpBalance(model);
+                    }
+
                     if (res == 0)
                     {
                         traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "Unable to update Retailer Balance;", null);

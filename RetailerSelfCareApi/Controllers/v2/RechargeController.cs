@@ -421,19 +421,20 @@ namespace RetailerSelfCareApi.Controllers.v2
         public async Task<IActionResult> EvRecharge([FromBody] EVRechargeRequest rechargeRequest)
         {
             string traceMsg = string.Empty;
-            StockV2Service stockService;
             RetailerSessionCheck retailer = new();
             string loginProvider = Request.HttpContext.Items["loginProviderId"] as string;
 
-            try
+            using(StockV2Service stockService = new())
             {
-                stockService = new();
-                retailer = await stockService.CheckRetailerByCode(rechargeRequest.retailerCode, loginProvider);
-            }
-            catch (Exception ex)
-            {
-                string errMsg = HelperMethod.ExMsgBuild(ex, "CheckRetailerByCode");
-                throw new Exception(errMsg);
+                try
+                {
+                    retailer = await stockService.CheckRetailerByCode(rechargeRequest.retailerCode, loginProvider);
+                }
+                catch (Exception ex)
+                {
+                    string errMsg = HelperMethod.ExMsgBuild(ex, "CheckRetailerByCode");
+                    throw new Exception(errMsg);
+                }
             }
 
             if (string.IsNullOrEmpty(loginProvider) || !retailer.isSessionValid)
@@ -458,8 +459,6 @@ namespace RetailerSelfCareApi.Controllers.v2
             string evUrl = ExternalKeys.EvURL;
             string paymentType = rechargeRequest.paymentType == (int)PaymentType.prepaid ? "EXRCTRFREQ" : "EXPPBREQ";
 
-            RechargeV2Service rechargeService = new(Connections.RetAppDbCS);
-
             ItopUpXmlRequest xmlRequest = new()
             {
                 Url = evUrl,
@@ -481,15 +480,18 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             EvXmlResponse evResponse = new();
 
-            try
+            using(RechargeV2Service rechargeService = new(Connections.RetAppDbCS))
             {
-                var userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
-                evResponse = rechargeService.EvRecharge(xmlRequest, rechargeRequest, "EvRecharge", userAgent);
-            }
-            catch (Exception ex)
-            {
-                string errMsg = HelperMethod.ExMsgBuild(ex, "EvRecharge");
-                throw new Exception(errMsg);
+                try
+                {
+                    var userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
+                    evResponse = rechargeService.EvRecharge(xmlRequest, rechargeRequest, "EvRecharge", userAgent);
+                }
+                catch (Exception ex)
+                {
+                    string errMsg = HelperMethod.ExMsgBuild(ex, "EvRecharge");
+                    throw new Exception(errMsg);
+                }
             }
 
             bool status = false;
@@ -559,15 +561,17 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             if (status)
             {
-                try
+                using(RechargeV2Service rechargeService = new())
                 {
-                    rechargeService = new();
-                    logStatus = await rechargeService.SaveTransactionLog(transObj);
-                }
-                catch (Exception ex)
-                {
-                    string errMsg = HelperMethod.ExMsgBuild(ex, "SaveTransactionLog");
-                    throw new Exception(errMsg);
+                    try
+                    {
+                        logStatus = await rechargeService.SaveTransactionLog(transObj);
+                    }
+                    catch (Exception ex)
+                    {
+                        string errMsg = HelperMethod.ExMsgBuild(ex, "SaveTransactionLog");
+                        throw new Exception(errMsg);
+                    }
                 }
 
                 LMSPointAdjustReq pointAdjustReq = new()
@@ -581,8 +585,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                     adjustmentType = nameof(LmsAdjustmentType.CREDIT)
                 };
 
-                LMSService lmsService = new();
-                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+                using(LMSService lmsService = new())
+                {
+                    await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+                }
 
 
                 // EV response message and datetime parsing
@@ -611,11 +617,13 @@ namespace RetailerSelfCareApi.Controllers.v2
                         UpdateTime = updateTime
                     };
 
-                    stockService = new();
-                    int res = await stockService.UpdateItopUpBalance(model);
-                    if (res == 0)
+                    using (StockV2Service stockService = new())
                     {
-                        traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "Unable to update Retailer Balance;", null);
+                        int res = await stockService.UpdateItopUpBalance(model);
+                        if (res == 0)
+                        {
+                            traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "Unable to update Retailer Balance;", null);
+                        }
                     }
                 }
                 catch (Exception ex)

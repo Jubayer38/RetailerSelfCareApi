@@ -4668,11 +4668,11 @@ namespace RetailerSelfCareApi.Controllers
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
-
-            RetailerService retailerService;
             if (!string.IsNullOrEmpty(reqModel.address))
             {
                 reqModel.description += " | " + reqModel.address;
@@ -4730,13 +4730,17 @@ namespace RetailerSelfCareApi.Controllers
                     }
                 }
 
-                retailerService = new();
-                insertId = await retailerService.SaveRaiseComplaint(reqModel, userId);
+                using (RetailerService retailerService = new())
+                {
+                    insertId = await retailerService.SaveRaiseComplaint(reqModel, userId);
+                }
 
                 if (insertId > 0 && imageVMs.Count > 0)
                 {
-                    RetailerService reService = new();
-                    await reService.SaveFileToApiServer(imageVMs, reqModel);
+                    using (RetailerService reService = new())
+                    {
+                        await reService.SaveFileToApiServer(imageVMs, reqModel);
+                    }
                 }
             }
             catch (Exception ex)
@@ -4758,15 +4762,17 @@ namespace RetailerSelfCareApi.Controllers
 
             if (!string.IsNullOrEmpty(reqModel.category) && reqModel.category.ToLower() == "app")
             {
-                retailerService = new();
                 DataTable raiseComplInfo = new();
-                try
+                using(RetailerService retailerService = new())
                 {
-                    raiseComplInfo = await retailerService.GetRaiseComplaintInfoV2(reqModel, insertId);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(HelperMethod.ExMsgBuild(ex, "GetRaiseComplaintInfo"));
+                    try
+                    {
+                        raiseComplInfo = await retailerService.GetRaiseComplaintInfoV2(reqModel, insertId);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(HelperMethod.ExMsgBuild(ex, "GetRaiseComplaintInfo"));
+                    }
                 }
 
                 RaiseComplaintExternalSubmissionModel extSubModel;
@@ -4817,8 +4823,10 @@ namespace RetailerSelfCareApi.Controllers
                             requestMethod = "SubmitRaiseComplaint"
                         };
 
-                        HttpService httpService = new();
-                        rcExtSubmit = await httpService.SubmitExternalRequest(httpModel);
+                        using (HttpService httpService = new())
+                        {
+                            rcExtSubmit = await httpService.SubmitExternalRequest(httpModel);
+                        }
 
                         //once api call complete update complaint status to 1
                         if (rcExtSubmit.success == true && rcExtSubmit.statusCode == 200)
@@ -4835,15 +4843,18 @@ namespace RetailerSelfCareApi.Controllers
                             updateModel.userName = ExternalKeys.InternalUser;
 
                             Tuple<bool, string> result;
-                            try
+                            using (RetailerService retailerService = new())
                             {
-                                retailerService = new();
-                                result = await retailerService.UpdateRaiseComplaintStatusV2(updateModel);
-                            }
-                            catch (Exception ex)
-                            {
-                                string errMsg = HelperMethod.ExMsgBuild(ex, "UpdateRaiseComplaintStatusV2");
-                                throw new Exception(errMsg);
+                                try
+                                {
+                                    result = await retailerService.UpdateRaiseComplaintStatusV2(updateModel);
+                                }
+
+                                catch (Exception ex)
+                                {
+                                    string errMsg = HelperMethod.ExMsgBuild(ex, "UpdateRaiseComplaintStatusV2");
+                                    throw new Exception(errMsg);
+                                }
                             }
 
                             if (!result.Item1)
@@ -4901,15 +4912,17 @@ namespace RetailerSelfCareApi.Controllers
 
                     updateModel.userName = ExternalKeys.InternalUser;
 
-                    try
+                    using(RetailerService retailerService = new())
                     {
-                        retailerService = new();
-                        await retailerService.UpdateRaiseComplaintStatusFromSO(updateModel, soTicketId);
-                    }
-                    catch (Exception ex)
-                    {
-                        string errMsg = HelperMethod.ExMsgBuild(ex, "UpdateRaiseComplaintStatusFromSOV2");
-                        throw new Exception(errMsg);
+                        try
+                        {
+                            await retailerService.UpdateRaiseComplaintStatusFromSO(updateModel, soTicketId);
+                        }
+                        catch (Exception ex)
+                        {
+                            string errMsg = HelperMethod.ExMsgBuild(ex, "UpdateRaiseComplaintStatusFromSOV2");
+                            throw new Exception(errMsg);
+                        }
                     }
                 }
                 else if (soTicketId == -1)
@@ -5075,16 +5088,18 @@ namespace RetailerSelfCareApi.Controllers
                 disclaimerRequest.lan = disclaimerRequest.lan.ToLower();
             }
 
-            RetailerService retailerService = new(Connections.RetAppDbCS);
             DataTable dtResp = new();
 
-            try
+            using(RetailerService retailerService = new(Connections.RetAppDbCS))
             {
-                dtResp = await retailerService.GetDisclaimerNotices(disclaimerRequest.lan);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetDisclaimerNotices"));
+                try
+                {
+                    dtResp = await retailerService.GetDisclaimerNotices(disclaimerRequest.lan);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "GetDisclaimerNotices"));
+                }
             }
 
             if (dtResp.Rows.Count > 0)
