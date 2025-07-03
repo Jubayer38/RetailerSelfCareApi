@@ -285,40 +285,42 @@ namespace RetailerSelfCareApi.Controllers
             {
                 string userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
                 offerRequest.userAgent = userAgent;
-                RechargeService rechargeService = new(Connections.RetAppDbCS);
-                OfferResponseModelNew responseModel = await rechargeService.IRISOfferRequest(offerRequest);
 
-                if (!string.IsNullOrWhiteSpace(offerRequest.amount))
+                using (RechargeService rechargeService = new(Connections.RetAppDbCS))
                 {
-                    rechargeService = new(Connections.RetAppDbCS);
-                    List<OfferModelNew> rechargeOffers = rechargeService.GetRechargeOffersV2(offerRequest);
-                    responseModel.OfferList.AddRange(rechargeOffers);
-                }
+                    OfferResponseModelNew responseModel = await rechargeService.IRISOfferRequest(offerRequest);
 
-                if (responseModel.statusCode != "0")
-                {
-                    if (string.IsNullOrEmpty(responseModel.statusMessage))
+                    if (!string.IsNullOrWhiteSpace(offerRequest.amount))
                     {
-                        responseModel.statusMessage = SharedResource.GetLocal("SomethingWentWrong", Message.SomethingWentWrong);
+                        List<OfferModelNew> rechargeOffers = rechargeService.GetRechargeOffersV2(offerRequest);
+                        responseModel.OfferList.AddRange(rechargeOffers);
                     }
 
-                    return new OkObjectResult(new IRISResponseMessage()
+                    if (responseModel.statusCode != "0")
                     {
-                        isError = true,
-                        isUSIM = responseModel.isUSIM,
-                        message = responseModel.statusMessage,
-                        data = responseModel.OfferList
-                    });
-                }
-                else
-                {
-                    return new OkObjectResult(new IRISResponseMessage()
+                        if (string.IsNullOrEmpty(responseModel.statusMessage))
+                        {
+                            responseModel.statusMessage = SharedResource.GetLocal("SomethingWentWrong", Message.SomethingWentWrong);
+                        }
+
+                        return new OkObjectResult(new IRISResponseMessage()
+                        {
+                            isError = true,
+                            isUSIM = responseModel.isUSIM,
+                            message = responseModel.statusMessage,
+                            data = responseModel.OfferList
+                        });
+                    }
+                    else
                     {
-                        isError = false,
-                        isUSIM = responseModel.isUSIM,
-                        message = responseModel.statusMessage,
-                        data = responseModel.OfferList
-                    });
+                        return new OkObjectResult(new IRISResponseMessage()
+                        {
+                            isError = false,
+                            isUSIM = responseModel.isUSIM,
+                            message = responseModel.statusMessage,
+                            data = responseModel.OfferList
+                        });
+                    }
                 }
             }
             catch (Exception ex)

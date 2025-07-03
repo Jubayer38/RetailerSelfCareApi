@@ -1425,9 +1425,11 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                redis = new RedisCache();
-                var redBnrDetailsStr = await redis.GetCacheAsync(RedisCollectionNames.BannerDetailsMySQL);
-                redisAppBanners = JsonConvert.DeserializeObject<List<BannerDetailsRedis>>(redBnrDetailsStr)!;
+                using (redis = new RedisCache())
+                {
+                    var redBnrDetailsStr = await redis.GetCacheAsync(RedisCollectionNames.BannerDetailsMySQL);
+                    redisAppBanners = JsonConvert.DeserializeObject<List<BannerDetailsRedis>>(redBnrDetailsStr)!;
+                }
             }
             catch (Exception ex)
             {
@@ -1438,12 +1440,14 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                redis = new RedisCache();
-                string hasBnrIdsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerBannerIdsMySQL, retailerRequest.retailerCode);
-                string hasBnrIds = JsonConvert.DeserializeObject<dynamic>(hasBnrIdsStr)!;
-                if (!string.IsNullOrEmpty(hasBnrIds))
+                using (redis = new RedisCache())
                 {
-                    bannerIds = hasBnrIds.Split(',').Select(s => Convert.ToInt64(s)).ToList();
+                    string hasBnrIdsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerBannerIdsMySQL, retailerRequest.retailerCode);
+                    string hasBnrIds = JsonConvert.DeserializeObject<dynamic>(hasBnrIdsStr)!;
+                    if (!string.IsNullOrEmpty(hasBnrIds))
+                    {
+                        bannerIds = hasBnrIds.Split(',').Select(s => Convert.ToInt64(s)).ToList();
+                    }
                 }
             }
             catch (Exception ex)
@@ -2669,16 +2673,18 @@ namespace RetailerSelfCareApi.Controllers.v2
                 case "Ext":
                     try
                     {
-                        RetailerV2Service retailerService = new();
                         long result = 0;
 
-                        try
+                        using(RetailerV2Service retailerService = new())
                         {
-                            result = await retailerService.EnrollExtCampaign(model);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "EnrollExtCampaign"));
+                            try
+                            {
+                                result = await retailerService.EnrollExtCampaign(model);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "EnrollExtCampaign"));
+                            }
                         }
 
                         return Ok(new ResponseMessage()
@@ -2695,16 +2701,18 @@ namespace RetailerSelfCareApi.Controllers.v2
                 case "Self":
                     try
                     {
-                        RetailerV2Service NewRetailerService = new();
                         long result = 0;
 
-                        try
+                        using(RetailerV2Service NewRetailerService = new())
                         {
-                            result = await NewRetailerService.EnrollSelfCampaign(model);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(HelperMethod.ExMsgBuild(ex, "EnrollSelfCampaign"));
+                            try
+                            {
+                                result = await NewRetailerService.EnrollSelfCampaign(model);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(HelperMethod.ExMsgBuild(ex, "EnrollSelfCampaign"));
+                            }
                         }
 
                         if (result != -999)
@@ -4673,28 +4681,37 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                 if (!string.IsNullOrWhiteSpace(model.retailerCode))
                 {
-                    redis = new RedisCache();
-                    string result = await redis.GetCacheAsync(RedisCollectionNames.RetailerAdvertisementIds, model.retailerCode);
-                    string retailerAdvertId = result ?? JsonConvert.DeserializeObject<string>(result)!;
-                    _hasAdvert = !string.IsNullOrWhiteSpace(retailerAdvertId);
+                    using (redis = new RedisCache())
+                    {
+                        string result = await redis.GetCacheAsync(RedisCollectionNames.RetailerAdvertisementIds, model.retailerCode);
+                        string retailerAdvertId = result ?? JsonConvert.DeserializeObject<string>(result)!;
+                        _hasAdvert = !string.IsNullOrWhiteSpace(retailerAdvertId);
+                    }
                 }
 
                 try
                 {
-                    redis = new RedisCache();
-                    string appSettingsInfo = await redis.GetCacheAsync(RedisCollectionNames.AppSettingsInfo);
+                    string appSettingsInfo = string.Empty;
+                    using (redis = new RedisCache())
+                    {
+                        appSettingsInfo = await redis.GetCacheAsync(RedisCollectionNames.AppSettingsInfo);
+                    }
+
                     if (!string.IsNullOrWhiteSpace(appSettingsInfo))
                     {
                         appSettingsResp = JsonConvert.DeserializeObject<AppFeatureSettings>(appSettingsInfo)!;
                     }
                     else
                     {
-                        RetailerV2Service retailerService = new();
                         DataTable dt = new();
 
                         try
                         {
-                            dt = await retailerService.GetAppSettingsInfo();
+                            using(RetailerV2Service retailerService = new())
+                            {
+                                // Get App Settings Info from MySQL
+                                dt = await retailerService.GetAppSettingsInfo();
+                            }
                         }
                         catch (Exception exp)
                         {
@@ -4709,12 +4726,14 @@ namespace RetailerSelfCareApi.Controllers.v2
                 catch (Exception ex)
                 {
                     traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "", ex);
-                    RetailerV2Service retailerService = new();
                     DataTable dt = new();
 
                     try
                     {
-                        dt = await retailerService.GetAppSettingsInfo();
+                        using (RetailerV2Service retailerService = new())
+                        {
+                            dt = await retailerService.GetAppSettingsInfo();
+                        }
                     }
                     catch (Exception exp)
                     {
@@ -4726,8 +4745,11 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                 try
                 {
-                    redis = new RedisCache();
-                    string bnrIDTimes = await redis.GetCacheAsync(RedisCollectionNames.BannerIdTimeMySQL);
+                    string bnrIDTimes = string.Empty;
+                    using (redis = new RedisCache())
+                    {
+                        bnrIDTimes = await redis.GetCacheAsync(RedisCollectionNames.BannerIdTimeMySQL);
+                    }
 
                     if (!string.IsNullOrWhiteSpace(bnrIDTimes))
                     {
@@ -4763,8 +4785,11 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                 try
                 {
-                    redis = new RedisCache();
-                    string bnrIDTimes = await redis.GetCacheAsync(RedisCollectionNames.GamificationBannerIdTime);
+                    string bnrIDTimes = string.Empty;
+                    using (redis = new RedisCache())
+                    {
+                        bnrIDTimes = await redis.GetCacheAsync(RedisCollectionNames.GamificationBannerIdTime);
+                    }
 
                     if (!string.IsNullOrWhiteSpace(bnrIDTimes))
                     {

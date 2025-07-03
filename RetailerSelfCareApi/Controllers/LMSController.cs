@@ -396,15 +396,17 @@ namespace RetailerSelfCareApi.Controllers
         public async Task<IActionResult> LmsTermsConditions([FromBody] RetailerRequestV2 reqModel)
         {
             int featureType = (int)LmsTermsFaq.TermsConditions;
-            LMSService lmsService = new();
-            List<LmsTermsFaqs> listData = await lmsService.GetLmsTermsConditionsAndFaqs(featureType, reqModel.lan);
-
-            return Ok(new ResponseMessage()
+            using (LMSService lmsService = new())
             {
-                isError = false,
-                data = listData,
-                message = SharedResource.GetLocal("Success", Message.Success)
-            });
+                List<LmsTermsFaqs> listData = await lmsService.GetLmsTermsConditionsAndFaqs(featureType, reqModel.lan);
+
+                return Ok(new ResponseMessage()
+                {
+                    isError = false,
+                    data = listData,
+                    message = SharedResource.GetLocal("Success", Message.Success)
+                });
+            }
         }
 
 

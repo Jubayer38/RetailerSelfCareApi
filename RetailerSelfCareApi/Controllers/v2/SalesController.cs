@@ -113,8 +113,12 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route("TodaySalesMemo")]
         public async Task<IActionResult> TodaySalesMemo([FromBody] RetailerRequest retailerRequest)
         {
-            SalesV2Service salesService = new(Connections.RetAppDbCS);
-            DataTable todaysSales = await salesService.GetTodaySalesMemo(retailerRequest);
+            DataTable todaysSales = new();
+
+            using (SalesV2Service salesService = new(Connections.RetAppDbCS))
+            {
+                todaysSales = await salesService.GetTodaySalesMemo(retailerRequest);
+            }
             List<TodaysSalesMemoModel> todaysSalesMemo = todaysSales.AsEnumerable().Select(row => new TodaysSalesMemoModel(row)).ToList();
 
             return new OkObjectResult(new ResponseMessage()

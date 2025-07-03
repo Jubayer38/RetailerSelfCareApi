@@ -1191,15 +1191,17 @@ namespace RetailerSelfCareApi.Controllers
         {
             try
             {
-                RetailerService retailerService = new(Connections.RetAppDbCS);
-                string[] denoList = retailerService.GetRetailersTopThreeDeno(retailerRequest);
-
-                return new OkObjectResult(new ResponseMessage()
+                using (RetailerService retailerService = new(Connections.RetAppDbCS))
                 {
-                    isError = false,
-                    message = SharedResource.GetLocal("Success", Message.Success),
-                    data = denoList
-                });
+                    string[] denoList = retailerService.GetRetailersTopThreeDeno(retailerRequest);
+
+                    return new OkObjectResult(new ResponseMessage()
+                    {
+                        isError = false,
+                        message = SharedResource.GetLocal("Success", Message.Success),
+                        data = denoList
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -1555,17 +1557,19 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetOperatorList))]
         public async Task<IActionResult> GetOperatorList([FromBody] RetailerRequest model)
         {
-            RetailerService retailerService = new(Connections.RetAppDbCS);
             int userId = UserSession.userId;
             DataTable operatorListDT = new();
 
-            try
+            using(RetailerService retailerService = new(Connections.RetAppDbCS))
             {
-                operatorListDT = await retailerService.GetOperatorList(userId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "GetOperatorList"));
+                try
+                {
+                    operatorListDT = await retailerService.GetOperatorList(userId);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "GetOperatorList"));
+                }
             }
 
             List<OperatorsModel> operatorList = operatorListDT.AsEnumerable().Select(row => HelperMethod.ModelBinding<OperatorsModel>(row)).ToList();
@@ -1734,12 +1738,14 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(ProductRatingHistory))]
         public async Task<IActionResult> ProductRatingHistory([FromBody] HistoryPageRequestModel model)
         {
-            RetailerService retailerService = new(Connections.RetAppDbCS);
             DataTable dt = new();
 
             try
             {
-                dt = await retailerService.GetProductRatingHistory(model);
+                using (RetailerService retailerService = new(Connections.RetAppDbCS))
+                {
+                    dt = await retailerService.GetProductRatingHistory(model);
+                }
             }
             catch (Exception ex)
             {
@@ -1817,8 +1823,10 @@ namespace RetailerSelfCareApi.Controllers
                     requestMethod = "POSMQRUpdate"
                 };
 
-                HttpService httpService = new();
-                resp = await httpService.CallDmsExternalApi<ExternalApiResponse>(httpModel);
+                using (HttpService httpService = new())
+                {
+                    resp = await httpService.CallDmsExternalApi<ExternalApiResponse>(httpModel);
+                }
             }
             catch (Exception ex)
             {
@@ -1843,7 +1851,6 @@ namespace RetailerSelfCareApi.Controllers
                     message = SharedResource.GetLocal(msg, msg)
                 });
             }
-
         }
 
 
@@ -3776,8 +3783,6 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(BulkDeviceSetting))]
         public async Task<IActionResult> BulkDeviceSetting([FromBody] BulkDeviceStatusRequest deviceStatusRequest)
         {
-            RetailerService retailerService = new();
-
             RetailerRequest deviceListModed = new()
             {
                 retailerCode = deviceStatusRequest.retailerCode,
@@ -3788,7 +3793,10 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                deviceList = await retailerService.SecondaryDeviceList(deviceListModed);
+                using(RetailerService retailerService = new())
+                {
+                    deviceList = await retailerService.SecondaryDeviceList(deviceListModed);
+                }
             }
             catch (Exception ex)
             {
@@ -3810,8 +3818,6 @@ namespace RetailerSelfCareApi.Controllers
 
                         foreach (var id in secondaryDeviceList)
                         {
-                            retailerService = new();
-
                             DeviceStatusRequest model = new()
                             {
                                 retailerCode = deviceStatusRequest.retailerCode,
@@ -3820,11 +3826,14 @@ namespace RetailerSelfCareApi.Controllers
                                 deviceStatus = 1
                             };
 
-                            var result = await retailerService.EnableDisableDevice(model);
-
-                            if (result > 0)
+                            using (RetailerService retailerService = new())
                             {
-                                resultCount++;
+                                var result = await retailerService.EnableDisableDevice(model);
+
+                                if (result > 0)
+                                {
+                                    resultCount++;
+                                }
                             }
                         }
 
@@ -3871,8 +3880,6 @@ namespace RetailerSelfCareApi.Controllers
 
                         foreach (var id in secondaryDeviceList)
                         {
-                            retailerService = new();
-
                             DeviceStatusRequest model = new()
                             {
                                 retailerCode = deviceStatusRequest.retailerCode,
@@ -3881,11 +3888,14 @@ namespace RetailerSelfCareApi.Controllers
                                 deviceStatus = 0
                             };
 
-                            var result = await retailerService.EnableDisableDevice(model);
-
-                            if (result > 0)
+                            using (RetailerService retailerService = new())
                             {
-                                resultCount++;
+                                var result = await retailerService.EnableDisableDevice(model);
+
+                                if (result > 0)
+                                {
+                                    resultCount++;
+                                }
                             }
                         }
 
@@ -3932,19 +3942,20 @@ namespace RetailerSelfCareApi.Controllers
 
                         foreach (var id in secondaryDeviceList)
                         {
-                            retailerService = new();
-
                             DeviceStatusRequest model = new()
                             {
                                 retailerCode = deviceStatusRequest.retailerCode,
                                 operationalDeviceId = id.DeviecId
                             };
 
-                            var result = await retailerService.DeregisterDevice(model);
-
-                            if (result > 0)
+                            using (RetailerService retailerService = new())
                             {
-                                resultCount++;
+                                var result = await retailerService.DeregisterDevice(model);
+
+                                if (result > 0)
+                                {
+                                    resultCount++;
+                                }
                             }
                         }
 
@@ -3953,8 +3964,11 @@ namespace RetailerSelfCareApi.Controllers
                             responseDictionary.Add("success", "True");
 
                             List<string> keyList = secondaryDeviceList.AsEnumerable().Select(x => deviceStatusRequest.retailerCode + "_" + x.DeviecId).ToList();
-                            RedisCache redis = new();
-                            await redis.RemoveLoginProviderFromRedis(RedisCollectionNames.RetailerChkInGuids, keyList);
+
+                            using (RedisCache redis = new())
+                            {
+                                await redis.RemoveLoginProviderFromRedis(RedisCollectionNames.RetailerChkInGuids, keyList);
+                            }
 
                             return Ok(new ResponseMessage()
                             {
