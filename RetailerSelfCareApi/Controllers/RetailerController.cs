@@ -1777,8 +1777,10 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                RetailerService reService = new(Connections.RetAppDbCS);
-                dt = await reService.GetBTSLocationDetails(lac, cid);
+                using(RetailerService reService = new(Connections.RetAppDbCS))
+                {
+                    dt = await reService.GetBTSLocationDetails(lac, cid);
+                }
             }
             catch (Exception ex)
             {
@@ -1971,10 +1973,12 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                redis = new RedisCache();
-                string QAListStr = await redis.GetCacheAsync(RedisCollectionNames.QuickAccessList);
-                IEnumerable<QuickAccessRedisModel> quickAccessRedis = JsonConvert.DeserializeObject<IEnumerable<QuickAccessRedisModel>>(QAListStr);
-                quickAccessList = quickAccessRedis.Select(q => q.Adapt<QuickAccessModel>().SetIcon(quickAccessRequest.isDark));
+                using (redis = new RedisCache())
+                {
+                    string QAListStr = await redis.GetCacheAsync(RedisCollectionNames.QuickAccessList);
+                    IEnumerable<QuickAccessRedisModel> quickAccessRedis = JsonConvert.DeserializeObject<IEnumerable<QuickAccessRedisModel>>(QAListStr);
+                    quickAccessList = quickAccessRedis.Select(q => q.Adapt<QuickAccessModel>().SetIcon(quickAccessRequest.isDark));
+                }
             }
             catch (Exception ex)
             {
@@ -1987,11 +1991,13 @@ namespace RetailerSelfCareApi.Controllers
             {
                 try
                 {
-                    redis = new RedisCache();
-                    retailerQAListStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerQuickAccess, quickAccessRequest.deviceId);
-                    if (!string.IsNullOrWhiteSpace(retailerQAListStr))
+                    using (redis = new RedisCache())
                     {
-                        qaList = JsonConvert.DeserializeObject<RetailerQAListRedis>(retailerQAListStr)!;
+                        retailerQAListStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerQuickAccess, quickAccessRequest.deviceId);
+                        if (!string.IsNullOrWhiteSpace(retailerQAListStr))
+                        {
+                            qaList = JsonConvert.DeserializeObject<RetailerQAListRedis>(retailerQAListStr)!;
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -2002,32 +2008,37 @@ namespace RetailerSelfCareApi.Controllers
 
                 if (string.IsNullOrWhiteSpace(qaList.ActiveQAList) || string.IsNullOrWhiteSpace(qaList.InActiveQAList))
                 {
-                    RetailerService retailerService = new(Connections.RetAppDbCS);
 
                     //pulling retailer wise active QA string
                     try
                     {
-                        qaList.ActiveQAList = await retailerService.GetActiveQAListIDs(quickAccessRequest);
+                        using (RetailerService retailerService = new(Connections.RetAppDbCS))
+                        {
+                            qaList.ActiveQAList = await retailerService.GetActiveQAListIDs(quickAccessRequest);
+                        }
                     }
                     catch (Exception ex)
                     {
                         throw new Exception(HelperMethod.ExMsgBuild(ex, "GetActiveQAList"));
                     }
 
-                    retailerService = new(Connections.RetAppDbCS);
-
                     //pulling retailer wise inactive QA list
                     try
                     {
-                        qaList.InActiveQAList = await retailerService.GetInActiveQAListIDs(quickAccessRequest);
+                        using (RetailerService retailerService = new(Connections.RetAppDbCS))
+                        {
+                            qaList.InActiveQAList = await retailerService.GetInActiveQAListIDs(quickAccessRequest);
+                        }
                     }
                     catch (Exception ex)
                     {
                         throw new Exception(HelperMethod.ExMsgBuild(ex, "GetInActiveQAList"));
                     }
 
-                    redis = new RedisCache();
-                    await redis.SetCacheAsync(RedisCollectionNames.RetailerQuickAccess, quickAccessRequest.deviceId, qaList.ToJsonString());
+                    using (redis = new RedisCache())
+                    {
+                        await redis.SetCacheAsync(RedisCollectionNames.RetailerQuickAccess, quickAccessRequest.deviceId, qaList.ToJsonString());
+                    }
                 }
                 else
                 {
@@ -2121,8 +2132,10 @@ namespace RetailerSelfCareApi.Controllers
 
                     if (hasUpdate)
                     {
-                        redis = new RedisCache();
-                        await redis.SetCacheAsync(RedisCollectionNames.RetailerQuickAccess, quickAccessRequest.deviceId, qaList.ToJsonString());
+                        using (redis = new RedisCache())
+                        {
+                            await redis.SetCacheAsync(RedisCollectionNames.RetailerQuickAccess, quickAccessRequest.deviceId, qaList.ToJsonString());
+                        }
                     }
 
                 }
@@ -3004,12 +3017,14 @@ namespace RetailerSelfCareApi.Controllers
                 model.endDate = tillDate;
             }
 
-            RetailerService retailerService = new();
             DataTable kpidt = new();
 
             try
             {
-                kpidt = await retailerService.GetCampHistoryKPIList(model);
+                using (RetailerService retailerService = new())
+                {
+                    kpidt = await retailerService.GetCampHistoryKPIList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -3018,12 +3033,14 @@ namespace RetailerSelfCareApi.Controllers
 
             List<CampaignHistoryKPI> campKpiList = kpidt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignHistoryKPI>(row)).ToList();
 
-            retailerService = new();
             DataTable campDT = new();
 
             try
             {
-                campDT = await retailerService.GetCampHistoryList(model);
+                using (RetailerService retailerService = new())
+                {
+                    campDT = await retailerService.GetCampHistoryList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -3032,12 +3049,15 @@ namespace RetailerSelfCareApi.Controllers
 
             List<CampaignHistoryModel> campHistoryList = campDT.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignHistoryModel, CampaignHistoryKPI>(row, campKpiList)).ToList();
 
-            retailerService = new();
             string historyUpdateTill = "";
 
             try
             {
-                historyUpdateTill = await retailerService.GetCampHistoryUpdateTill(model);
+
+                using (RetailerService retailerService = new())
+                {
+                    historyUpdateTill = await retailerService.GetCampHistoryUpdateTill(model);
+                }
             }
             catch (Exception ex)
             {
@@ -3045,12 +3065,14 @@ namespace RetailerSelfCareApi.Controllers
             }
 
             //Self Campaign Section
-            RetailerService reService = new();
             DataTable selfKPIdt = new();
 
             try
             {
-                selfKPIdt = await reService.GetSelfCampHistoryKPIList(model);
+                using (RetailerService reService = new())
+                {
+                    selfKPIdt = await reService.GetSelfCampHistoryKPIList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -3062,12 +3084,14 @@ namespace RetailerSelfCareApi.Controllers
             if (model.dateField == "START_DATE") model.dateField = "FROM_DATE";
             if (model.dateField == "END_DATE") model.dateField = "TO_DATE";
 
-            reService = new();
             DataTable selfCampDT = new();
 
             try
             {
-                selfCampDT = await reService.GetSelfCampHistoryList(model);
+                using (RetailerService reService = new())
+                {
+                    selfCampDT = await reService.GetSelfCampHistoryList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -3077,13 +3101,15 @@ namespace RetailerSelfCareApi.Controllers
             List<CampaignHistoryModel> selfCampHistoryList = selfCampDT.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignHistoryModel, CampaignHistoryKPI>(row, campSelfKpiList)).ToList();
 
             campHistoryList.AddRange(selfCampHistoryList);
-            reService = new();
 
             string selfHistoryUpdateTill = "";
 
             try
             {
-                selfHistoryUpdateTill = await reService.GetSelfCampHistoryUpdateTill(model);
+                using (RetailerService reService = new())
+                {
+                    selfHistoryUpdateTill = await reService.GetSelfCampHistoryUpdateTill(model);
+                }
             }
             catch (Exception ex)
             {
@@ -3315,12 +3341,14 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetDigitalProductList))]
         public async Task<IActionResult> GetDigitalProductList([FromBody] DigitalProductRequest model)
         {
-            RetailerService retailerService = new();
             DataTable dt = new();
 
             try
             {
-                dt = await retailerService.GetDigitalProductList();
+                using (RetailerService retailerService = new())
+                {
+                    dt = await retailerService.GetDigitalProductList();
+                }
             }
             catch (Exception ex)
             {
@@ -3351,13 +3379,14 @@ namespace RetailerSelfCareApi.Controllers
                 retailerCode = model.retailerCode
             };
 
-            SurveyService surveyService = new();
-
             int insertResult = 0;
 
             try
             {
-                insertResult = await surveyService.InsertShortSurveyResponse(responseModel);
+                using (SurveyService surveyService = new())
+                {
+                    insertResult = await surveyService.InsertShortSurveyResponse(responseModel);
+                }
             }
             catch (Exception ex)
             {

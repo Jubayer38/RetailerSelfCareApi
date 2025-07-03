@@ -377,8 +377,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                stockService = new();
-                retailer = await stockService.CheckRetailerByCode(offerRequest.retailerCode, loginProvider);
+                using (stockService = new())
+                {
+                    retailer = await stockService.CheckRetailerByCode(offerRequest.retailerCode, loginProvider);
+                }
             }
             catch (Exception ex)
             {
@@ -399,11 +401,13 @@ namespace RetailerSelfCareApi.Controllers.v2
             Dictionary<string, string> result = [];
 
             //Pull Stock Details
-            RetailerV2Service retailerService = new();
             RSOEligibility rsoEligibility = new();
-            rsoEligibility = retailerService.GetITopUpStockEligibilityCheck(retailerRequest, out string msg);
+            using (RetailerV2Service retailerService = new())
+            {
+                rsoEligibility = retailerService.GetITopUpStockEligibilityCheck(retailerRequest, out string msg);
 
-            traceMsg = HelperMethod.BuildTraceMessage(traceMsg, msg, null);
+                traceMsg = HelperMethod.BuildTraceMessage(traceMsg, msg, null);
+            }
 
             DataRow emptyDr = new DataTable().NewRow();
             StockSummaryModel stockSummary = new(emptyDr, "iTopUp");
@@ -439,8 +443,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                 try
                 {
-                    RechargeV2Service rechargeService = new();
-                    irisOffersModel = await rechargeService.IRISOfferRequest(irisOfferReq);
+                    using (RechargeV2Service rechargeService = new())
+                    {
+                        irisOffersModel = await rechargeService.IRISOfferRequest(irisOfferReq);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -1676,12 +1682,14 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(NotificationStatusUpdate))]
         public async Task<IActionResult> NotificationStatusUpdate([FromBody] RetailerNotificationRequest retailerRequest)
         {
-            RetailerV2Service retailerService = new();
             int notificationCount = 0;
 
             try
             {
-                notificationCount = await retailerService.UpdateNotoficationStatus(retailerRequest);
+                using (RetailerV2Service retailerService = new())
+                {
+                    notificationCount = await retailerService.UpdateNotoficationStatus(retailerRequest);
+                }
             }
             catch (Exception ex)
             {
