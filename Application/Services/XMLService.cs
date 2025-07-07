@@ -158,7 +158,7 @@ namespace Application.Services
                 request.ContentLength = bytes.Length;
                 request.Method = "POST";
 
-                externalApiVM.reqStartTime = DateTime.Now;
+                externalApiVM.reqStartTime = DateTime.Now; 
                 Stream requestStream = request.GetRequestStream();
                 requestStream.Write(bytes, 0, bytes.Length);
                 requestStream.Close();
