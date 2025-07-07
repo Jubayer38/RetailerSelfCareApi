@@ -262,8 +262,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                     adjustmentType = nameof(LmsAdjustmentType.CREDIT)
                 };
 
-                LMSService lmsService = new();
-                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+                using (LMSService lmsService = new())
+                {
+                    await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+                }
 
                 return Ok(new ResponseMessage()
                 {
@@ -1721,15 +1723,17 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route("RetailersTopThreeDeno")]
         public async Task<IActionResult> GetRetailersTopThreeDeno([FromBody] RetailerRequestV2 retailerRequest)
         {
-            RetailerV2Service retailerService = new();
-            string[] denoList = await retailerService.GetRetailersTopThreeDeno(retailerRequest);
-
-            return new OkObjectResult(new ResponseMessage()
+            using (RetailerV2Service retailerService = new())
             {
-                isError = false,
-                message = SharedResource.GetLocal("Success", Message.Success),
-                data = denoList
-            });
+                string[] denoList = await retailerService.GetRetailersTopThreeDeno(retailerRequest);
+
+                return new OkObjectResult(new ResponseMessage()
+                {
+                    isError = false,
+                    message = SharedResource.GetLocal("Success", Message.Success),
+                    data = denoList
+                });
+            }
         }
 
 
@@ -1743,8 +1747,11 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route("DenoReportDetails")]
         public async Task<IActionResult> DenoReportDetails([FromBody] SearchRequestV2 searchRequest)
         {
-            RetailerV2Service retailerService = new();
-            DataTable dataTable = await retailerService.RetailerDenoReport(searchRequest);
+            DataTable dataTable = new();
+            using (RetailerV2Service retailerService = new())
+            {
+                dataTable = await retailerService.RetailerDenoReport(searchRequest);
+            }
 
             DenoDetailsModel denoDetails = new();
             if (dataTable.Rows.Count > 0)
@@ -2482,12 +2489,14 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(GetSelfKPIList))]
         public async Task<IActionResult> GetSelfKPIList([FromBody] SelfKPIListRequest model)
         {
-            RetailerV2Service retailerService = new();
             DataTable kpiDT = new();
 
             try
             {
-                kpiDT = await retailerService.GetCampKPIList(model);
+                using (RetailerV2Service retailerService = new())
+                {
+                    kpiDT = await retailerService.GetCampKPIList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -2772,12 +2781,15 @@ namespace RetailerSelfCareApi.Controllers.v2
                 case "Ext":
                     try
                     {
-                        RetailerV2Service retailerService = new();
                         int result = 0;
 
                         try
                         {
-                            result = await retailerService.CancelExtCampaignEnroll(model);
+                            using(RetailerV2Service retailerService = new())
+                            {
+                                // Cancel Campaign Enrollment
+                                result = await retailerService.CancelExtCampaignEnroll(model);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -2798,12 +2810,14 @@ namespace RetailerSelfCareApi.Controllers.v2
                 case "Self":
                     try
                     {
-                        RetailerV2Service retailerService = new();
                         int result = 0;
 
                         try
                         {
-                            result = await retailerService.CancelSelfCampaignEnroll(model);
+                            using (RetailerV2Service retailerService = new())
+                            {
+                                result = await retailerService.CancelSelfCampaignEnroll(model);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -3733,12 +3747,14 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(GetDigitalProductList))]
         public async Task<IActionResult> GetDigitalProductList([FromBody] DigitalProductRequest model)
         {
-            RetailerV2Service retailerService = new();
             DataTable dt = new();
 
             try
             {
-                dt = await retailerService.GetDigitalProductList();
+                using (RetailerV2Service retailerService = new())
+                {
+                    dt = await retailerService.GetDigitalProductList();
+                }
             }
             catch (Exception ex)
             {
@@ -4073,8 +4089,6 @@ namespace RetailerSelfCareApi.Controllers.v2
         {
             deviceStatusRequest.userId = UserSession.userId;
 
-            RetailerV2Service retailerService = new();
-
             switch (deviceStatusRequest.operationType)
             {
                 case "Deregister":
@@ -4086,11 +4100,18 @@ namespace RetailerSelfCareApi.Controllers.v2
                                 { "operationType", "Deregister" }
                             };
 
-                        long derestrationResult = await retailerService.DeregisterDevice(deviceStatusRequest);
+                        long derestrationResult;
+                        using (RetailerV2Service retailerService = new())
+                        {
+                            derestrationResult = await retailerService.DeregisterDevice(deviceStatusRequest);
+                        }
 
                         List<string> keyList = new() { deviceStatusRequest.retailerCode + "_" + deviceStatusRequest.operationalDeviceId };
-                        RedisCache redis = new();
-                        await redis.RemoveLoginProviderFromRedis(RedisCollectionNames.RetailerChkInGuids, keyList);
+                        
+                        using(RedisCache redis = new())
+                        {
+                            await redis.RemoveLoginProviderFromRedis(RedisCollectionNames.RetailerChkInGuids, keyList);
+                        }
 
                         bool isSuccess = derestrationResult > 0 ? true : false;
 
@@ -4118,7 +4139,11 @@ namespace RetailerSelfCareApi.Controllers.v2
                                 { "operationalDeviceId", deviceStatusRequest.operationalDeviceId }
                             };
 
-                        long result = await retailerService.ChangeDeviceType(deviceStatusRequest);
+                        long result;
+                        using (RetailerV2Service retailerService = new())
+                        {
+                            result = await retailerService.ChangeDeviceType(deviceStatusRequest);
+                        }
 
                         bool isSuccess = false;
 
@@ -4166,18 +4191,22 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                         deviceStatusRequest.deviceStatus = 1;
 
-                        var result = await retailerService.EnableDisableDevice(deviceStatusRequest);
-
-                        bool isSuccess = result > 0 ? true : false;
-
-                        responseDictionary.Add("success", isSuccess.ToString());
-
-                        return Ok(new ResponseMessage()
+                        using (RetailerV2Service retailerService = new())
                         {
-                            isError = false,
-                            message = SharedResource.GetLocal("Success", Message.Success),
-                            data = responseDictionary
-                        });
+                            var result = await retailerService.EnableDisableDevice(deviceStatusRequest);
+
+                            bool isSuccess = result > 0 ? true : false;
+
+
+                            responseDictionary.Add("success", isSuccess.ToString());
+
+                            return Ok(new ResponseMessage()
+                            {
+                                isError = false,
+                                message = SharedResource.GetLocal("Success", Message.Success),
+                                data = responseDictionary
+                            });
+                        }
 
                     }
                     catch (Exception ex)
@@ -4195,18 +4224,21 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                         deviceStatusRequest.deviceStatus = 0;
 
-                        var result = await retailerService.EnableDisableDevice(deviceStatusRequest);
-
-                        bool isSuccess = result > 0 ? true : false;
-
-                        responseDictionary.Add("success", isSuccess.ToString());
-
-                        return Ok(new ResponseMessage()
+                        using (RetailerV2Service retailerService = new())
                         {
-                            isError = false,
-                            message = SharedResource.GetLocal("Success", Message.Success),
-                            data = responseDictionary
-                        });
+                            var result = await retailerService.EnableDisableDevice(deviceStatusRequest);
+
+                            bool isSuccess = result > 0 ? true : false;
+
+                            responseDictionary.Add("success", isSuccess.ToString());
+
+                            return Ok(new ResponseMessage()
+                            {
+                                isError = false,
+                                message = SharedResource.GetLocal("Success", Message.Success),
+                                data = responseDictionary
+                            });
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -4913,15 +4945,20 @@ namespace RetailerSelfCareApi.Controllers.v2
                 tranRequest.sortByDate = "DESC";
             }
 
-            RetailerV2Service retailerService = new();
-            DataTable datatable = await retailerService.GetC2STransactions(tranRequest);
+            DataTable datatable = new();
+            using (RetailerV2Service retailerService = new())
+            {
+                datatable = await retailerService.GetC2STransactions(tranRequest);
+            }
 
             DataTable postpaidTrans = new();
             try
             {
-                retailerService = new();
-                postpaidTrans = await retailerService.GetC2SPostpaidTransactions(tranRequest);
-                datatable.Merge(postpaidTrans, true, MissingSchemaAction.Ignore);
+                using (RetailerV2Service retailerService = new())
+                {
+                    postpaidTrans = await retailerService.GetC2SPostpaidTransactions(tranRequest);
+                    datatable.Merge(postpaidTrans, true, MissingSchemaAction.Ignore);
+                }
             }
             catch (Exception ex)
             {
@@ -4942,8 +4979,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             if (!string.IsNullOrWhiteSpace(traceMsg))
             {

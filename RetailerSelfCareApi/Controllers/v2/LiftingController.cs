@@ -35,8 +35,11 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route("ProductCategory")]
         public async Task<IActionResult> ProductCategory([FromBody] ProductCategoryRequest categoryRequest)
         {
-            LiftingV2Service liftingService = new();
-            DataTable lifting = await liftingService.ProductCategory(categoryRequest);
+            DataTable lifting = new();
+            using (LiftingV2Service liftingService = new())
+            {
+                lifting = await liftingService.ProductCategory(categoryRequest);
+            }
 
             List<ProductCategoryModel> liftings = lifting.AsEnumerable().Select(row => new ProductCategoryModel(row)).ToList();
 
@@ -80,8 +83,10 @@ namespace RetailerSelfCareApi.Controllers.v2
             long res;
             try
             {
-                liftingService = new();
-                res = await liftingService.GetExistRequest(liftingRequest);
+                using (liftingService = new())
+                {
+                    res = await liftingService.GetExistRequest(liftingRequest);
+                }
             }
             catch (Exception ex)
             {
@@ -106,8 +111,10 @@ namespace RetailerSelfCareApi.Controllers.v2
             long lifting;
             try
             {
-                liftingService = new();
-                lifting = await liftingService.SaveLiftingV3(liftingRequest);
+                using (liftingService = new())
+                {
+                    lifting = await liftingService.SaveLiftingV3(liftingRequest);
+                }
             }
             catch (Exception ex)
             {
@@ -141,8 +148,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                         requestMethod = "v2/Lifting"
                     };
 
-                    HttpService httpService = new();
-                    rcExtSubmit = await httpService.SubmitExternalRequest(httpModel);
+                    using (HttpService httpService = new())
+                    {
+                        rcExtSubmit = await httpService.SubmitExternalRequest(httpModel);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -167,8 +176,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                 try
                 {
-                    liftingService = new();
-                    long resp = await liftingService.UpdateStockRequestStatus(ul);
+                    using (liftingService = new())
+                    {
+                        long resp = await liftingService.UpdateStockRequestStatus(ul);
+                    }
                 }
                 catch (Exception ex)
                 {

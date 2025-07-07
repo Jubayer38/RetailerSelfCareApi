@@ -52,8 +52,11 @@ namespace RetailerSelfCareApi.Controllers
             if (string.IsNullOrWhiteSpace(searchRequest.searchText))
                 searchRequest.searchText = "thismonth";
 
-            CommissionService commissionService = new(Connections.RetAppDbCS);
-            DataTable dataTable = await commissionService.GetSalesVsCommission(searchRequest);
+            DataTable dataTable = new();
+            using (CommissionService commissionService = new(Connections.RetAppDbCS))
+            {
+                dataTable = await commissionService.GetSalesVsCommission(searchRequest);
+            }
 
             SalesVsCommissionModel salesVsCommData = new(dataTable, searchRequest.searchText);
 
@@ -68,8 +71,10 @@ namespace RetailerSelfCareApi.Controllers
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             return Ok(new ResponseMessage()
             {

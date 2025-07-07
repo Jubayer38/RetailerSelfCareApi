@@ -917,31 +917,33 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(ForgetPwd))]
         public async Task<IActionResult> ForgetPwd([FromBody] VMUserInfoForForgetPWD model)
         {
-            SecurityService _auth = new();
-            var generatePWDRes = await _auth.GenerateNewPWD();
-
-            if (generatePWDRes.Item2)
+            using (SecurityService _auth = new())
             {
-                string generatePWD = generatePWDRes.Item1;
-                var res = await _auth.SavePassword(model.iTopUpNumber, generatePWD);
+                var generatePWDRes = await _auth.GenerateNewPWD();
 
-                if (res.result)
+                if (generatePWDRes.Item2)
                 {
-                    return Ok(new RACommonResponse()
+                    string generatePWD = generatePWDRes.Item1;
+                    var res = await _auth.SavePassword(model.iTopUpNumber, generatePWD);
+
+                    if (res.result)
                     {
-                        result = true,
-                        message = SharedResource.GetLocal("PWDSentToMobile", ResponseMessages.CredPSentToMobile)
-                    });
+                        return Ok(new RACommonResponse()
+                        {
+                            result = true,
+                            message = SharedResource.GetLocal("PWDSentToMobile", ResponseMessages.CredPSentToMobile)
+                        });
+                    }
+
+                    return Ok(res);
                 }
 
-                return Ok(res);
+                return Ok(new RACommonResponse()
+                {
+                    result = false,
+                    message = SharedResource.GetLocal(generatePWDRes.Item3, generatePWDRes.Item4)
+                });
             }
-
-            return Ok(new RACommonResponse()
-            {
-                result = false,
-                message = SharedResource.GetLocal(generatePWDRes.Item3, generatePWDRes.Item4)
-            });
 
         }
 

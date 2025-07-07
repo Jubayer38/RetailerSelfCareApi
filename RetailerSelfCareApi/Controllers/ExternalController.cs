@@ -146,8 +146,10 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                UserService userService = new();
-                userValidRes = await userService.ValidateExternalUsers(reqModel.userName, reqModel.password);
+                using (UserService userService = new())
+                {
+                    userValidRes = await userService.ValidateExternalUsers(reqModel.userName, reqModel.password);
+                }
             }
             catch (Exception ex)
             {
@@ -192,8 +194,10 @@ namespace RetailerSelfCareApi.Controllers
                     long isBulkDataInsert;
                     try
                     {
-                        liftingService = new(Connections.RetAppDbCS);
-                        isBulkDataInsert = await liftingService.SaveUsingOracleBulkCopy(dt);
+                        using (liftingService = new(Connections.RetAppDbCS))
+                        {
+                            isBulkDataInsert = await liftingService.SaveUsingOracleBulkCopy(dt);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -202,8 +206,10 @@ namespace RetailerSelfCareApi.Controllers
 
                     if (isBulkDataInsert > 0)
                     {
-                        liftingService = new(Connections.RetAppDbCS);
-                        _ = liftingService.UpdateStockRequisitionDeliveredOrder();
+                        using (liftingService = new(Connections.RetAppDbCS))
+                        {
+                            _ = liftingService.UpdateStockRequisitionDeliveredOrder();
+                        }
 
                         return Ok(new ResponseMessage()
                         {

@@ -109,12 +109,15 @@ namespace Application.Services
                 requestMethod = "GetLmsPartners"
             };
 
-            HttpService httpService = new();
-            var partnersObj = await httpService.CallExternalApi<LMSPartnerResp>(httpReq);
+            using(HttpService httpService = new())
+            {
+                var partnersObj = await httpService.CallExternalApi<LMSPartnerResp>(httpReq);
 
-            List<LMSPartner> partners = partnersObj.Object.partnerArray;
+                List<LMSPartner> partners = partnersObj.Object.partnerArray;
 
-            return partners;
+                return partners;
+            }
+
         }
 
 
@@ -128,10 +131,12 @@ namespace Application.Services
                 requestMethod = "GetPointHistory"
             };
 
-            HttpService httpService = new();
-            Response<LMSPointHistory> pointHistoryObj = await httpService.CallExternalApi<LMSPointHistory>(httpReq);
+            using (HttpService httpService = new())
+            {
+                Response<LMSPointHistory> pointHistoryObj = await httpService.CallExternalApi<LMSPointHistory>(httpReq);
 
-            return pointHistoryObj.Object;
+                return pointHistoryObj.Object;
+            }
         }
 
 

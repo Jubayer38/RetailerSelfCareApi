@@ -687,8 +687,10 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                stockService = new();
-                retailer = await stockService.CheckRetailerByCode(rechargeRequest.retailerCode, loginProvider);
+                using (stockService = new())
+                {
+                    retailer = await stockService.CheckRetailerByCode(rechargeRequest.retailerCode, loginProvider);
+                }
             }
             catch (Exception ex)
             {
@@ -738,13 +740,15 @@ namespace RetailerSelfCareApi.Controllers
 
                 rechargeRequest.amount = recharge.amount;
 
-                rechargeService = new(Connections.RetAppDbCS);
                 EvXmlResponse evXmlResponse = new();
 
                 try
                 {
                     var userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
-                    evXmlResponse = rechargeService.EvRecharge(xmlRequestNew, rechargeRequest, "MultiEvRecharge", userAgent);
+                    using (rechargeService = new(Connections.RetAppDbCS))
+                    {
+                        evXmlResponse = rechargeService.EvRecharge(xmlRequestNew, rechargeRequest, "MultiEvRecharge", userAgent);
+                    }
                     respMesg = evXmlResponse.message;
                     respDateTime = evXmlResponse.date;
                 }
@@ -813,11 +817,13 @@ namespace RetailerSelfCareApi.Controllers
 
                 if (recharge.isSuccess)
                 {
-                    rechargeService = new(Connections.RetAppDbCS);
                     bool logStatus = false;
                     try
                     {
-                        logStatus = await rechargeService.SaveTransactionLog(transObj);
+                        using (rechargeService = new(Connections.RetAppDbCS))
+                        {
+                            logStatus = await rechargeService.SaveTransactionLog(transObj);
+                        }
                         if (!logStatus) { break; }
                     }
                     catch (Exception ex)
@@ -843,8 +849,10 @@ namespace RetailerSelfCareApi.Controllers
                     adjustmentType = nameof(LmsAdjustmentType.CREDIT)
                 };
 
-                LMSService lmsService = new();
-                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+                using (LMSService lmsService = new())
+                {
+                    await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+                }
 
                 // EV response message and datetime parsing
                 string amount = "", updateTime = "";

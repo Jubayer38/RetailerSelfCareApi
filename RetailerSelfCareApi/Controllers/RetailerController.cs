@@ -131,8 +131,11 @@ namespace RetailerSelfCareApi.Controllers
         [Route("CustomerFeedback")]
         public async Task<IActionResult> CustomerFeedback([FromBody] RetailerRequest retailer)
         {
-            RetailerService RetailerService = new(Connections.RetAppDbCS);
-            DataTable customerFeedback = await RetailerService.CustomerFeedback(retailer);
+            DataTable customerFeedback = new();
+            using (RetailerService RetailerService = new(Connections.RetAppDbCS))
+            {
+                customerFeedback = await RetailerService.CustomerFeedback(retailer);
+            }
             List<CustomerFeedback> customerFeedbacks = customerFeedback.AsEnumerable().Select(cf => new CustomerFeedback(cf)).ToList();
 
 
@@ -1860,8 +1863,11 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetContactList))]
         public async Task<IActionResult> GetContactList([FromBody] RetailerRequest retailerRequest)
         {
-            RetailerService retailerService = new();
-            DataTable contact = await retailerService.GetContactList(retailerRequest.retailerCode);
+            DataTable contact = new();
+            using (RetailerService retailerService = new())
+            {
+                contact = await retailerService.GetContactList(retailerRequest.retailerCode);
+            }
             List<ContactModel> ContactList = contact.AsEnumerable().Select(row => new ContactModel(row)).ToList();
 
             return new OkObjectResult(new ResponseMessage()
@@ -2641,12 +2647,14 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetSelfKPIList))]
         public async Task<IActionResult> GetSelfKPIList([FromBody] SelfKPIListRequest model)
         {
-            RetailerService retailerService = new();
             DataTable kpiDT = new();
 
             try
             {
-                kpiDT = await retailerService.GetCampKPIList(model);
+                using (RetailerService retailerService = new())
+                {
+                    kpiDT = await retailerService.GetCampKPIList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -3571,8 +3579,11 @@ namespace RetailerSelfCareApi.Controllers
                         }
 
                         List<string> keyList = new() { deviceStatusRequest.retailerCode + "_" + deviceStatusRequest.operationalDeviceId };
-                        RedisCache redis = new();
-                        await redis.RemoveLoginProviderFromRedis(RedisCollectionNames.RetailerChkInGuids, keyList);
+
+                        using (RedisCache redis = new())
+                        {
+                            await redis.RemoveLoginProviderFromRedis(RedisCollectionNames.RetailerChkInGuids, keyList);
+                        }
 
                         bool isSuccess = derestrationResult > 0 ? true : false;
 
@@ -4042,12 +4053,14 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(NotificationCount))]
         public async Task<IActionResult> NotificationCount([FromBody] RetailerRequest retailerRequest)
         {
-            RetailerService retailerService = new();
             int notificationCount = 0;
 
             try
             {
-                notificationCount = await retailerService.GetNotificationCount(retailerRequest);
+                using (RetailerService retailerService = new())
+                {
+                    notificationCount = await retailerService.GetNotificationCount(retailerRequest);
+                }
             }
             catch (Exception ex)
             {
@@ -4071,12 +4084,14 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(NotificationStatusUpdate))]
         public async Task<IActionResult> NotificationStatusUpdate([FromBody] RetailerNotificationRequest retailerRequest)
         {
-            RetailerService retailerService = new();
             int notificationCount = 0;
 
             try
             {
-                notificationCount = await retailerService.UpdateNotoficationStatus(retailerRequest);
+                using (RetailerService retailerService = new())
+                {
+                    notificationCount = await retailerService.UpdateNotoficationStatus(retailerRequest);
+                }
             }
             catch (Exception ex)
             {
@@ -4441,24 +4456,28 @@ namespace RetailerSelfCareApi.Controllers
         public async Task<IActionResult> CampaignList([FromBody] CampaignRequestV3 model)
         {
             model.userId = UserSession.userId;
-            RetailerService retailerService = new();
             DataTable campaigns = new();
 
             try
             {
-                campaigns = await retailerService.GetCampaignList(model);
+                using (RetailerService retailerService = new())
+                {
+                    campaigns = await retailerService.GetCampaignList(model);
+                }
             }
             catch (Exception ex)
             {
                 throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCampaignList"));
             }
 
-            retailerService = new();
             DataTable selfCampaign = new();
 
             try
             {
-                selfCampaign = await retailerService.GetSelfCampaignList(model);
+                using (RetailerService retailerService = new())
+                {
+                    selfCampaign = await retailerService.GetSelfCampaignList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -4482,8 +4501,10 @@ namespace RetailerSelfCareApi.Controllers
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             return Ok(new ResponseMessage()
             {

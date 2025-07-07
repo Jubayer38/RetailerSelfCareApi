@@ -75,16 +75,17 @@ namespace Application.Services
                 requestMethod = "LogInExternal"
             };
 
-            HttpService httpService = new();
-
-            Response<LogInViewModel> logInResponse = await httpService.CallExternalApi<LogInViewModel>(httpModel);
-
-            if (logInResponse is null || logInResponse.Object is null)
+            using (HttpService httpService = new())
             {
-                return new LogInViewModel() { ISAuthenticate = false };
-            }
+                Response<LogInViewModel> logInResponse = await httpService.CallExternalApi<LogInViewModel>(httpModel);
 
-            return logInResponse.Object;
+                if (logInResponse is null || logInResponse.Object is null)
+                {
+                    return new LogInViewModel() { ISAuthenticate = false };
+                }
+
+                return logInResponse.Object;
+            }
         }
         #endregion
 

@@ -308,8 +308,10 @@ namespace RetailerSelfCareApi.Controllers.v2
             long userValidRes;
             try
             {
-                UserService userService = new();
-                userValidRes = await userService.ValidateExternalUsers(model.userName, model.password);
+                using(UserService userService = new())
+                {
+                    userValidRes = await userService.ValidateExternalUsers(model.userName, model.password);
+                }
             }
             catch (Exception ex)
             {
@@ -321,14 +323,16 @@ namespace RetailerSelfCareApi.Controllers.v2
             {
                 try
                 {
-                    RetailerService reService = new();
-                    var result = await reService.UpdateRaiseComplaintStatus(model);
-
-                    return Ok(new RACommonResponse()
+                    using(RetailerService reService = new())
                     {
-                        result = result.Item1,
-                        message = result.Item2
-                    });
+                        var result = await reService.UpdateRaiseComplaintStatus(model);
+
+                        return Ok(new RACommonResponse()
+                        {
+                            result = result.Item1,
+                            message = result.Item2
+                        });
+                    }
                 }
                 catch (Exception ex)
                 {

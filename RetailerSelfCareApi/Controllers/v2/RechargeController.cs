@@ -688,8 +688,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                stockService = new();
-                retailer = await stockService.CheckRetailerByCode(rechargeRequest.retailerCode, loginProvider);
+                using (stockService = new())
+                {
+                    retailer = await stockService.CheckRetailerByCode(rechargeRequest.retailerCode, loginProvider);
+                }
             }
             catch (Exception ex)
             {
@@ -739,15 +741,17 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                 rechargeRequest.amount = recharge.amount;
 
-                rechargeService = new();
                 EvXmlResponse evXmlResponse = new();
 
                 try
                 {
                     var userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
-                    evXmlResponse = rechargeService.EvRecharge(xmlRequestNew, rechargeRequest, "MultiEvRecharge", userAgent);
-                    respMesg = evXmlResponse.message;
-                    respDateTime = evXmlResponse.date;
+                    using (rechargeService = new())
+                    {
+                        evXmlResponse = rechargeService.EvRecharge(xmlRequestNew, rechargeRequest, "MultiEvRecharge", userAgent);
+                        respMesg = evXmlResponse.message;
+                        respDateTime = evXmlResponse.date;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -844,8 +848,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                     adjustmentType = nameof(LmsAdjustmentType.CREDIT)
                 };
 
-                LMSService lmsService = new();
-                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+                using (LMSService lmsService = new())
+                {
+                    await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+                }
 
                 // EV response message and datetime parsing
                 string amount = "", updateTime = "";
@@ -873,8 +879,11 @@ namespace RetailerSelfCareApi.Controllers.v2
                         UpdateTime = updateTime
                     };
 
-                    stockService = new();
-                    int res = await stockService.UpdateItopUpBalance(model);
+                    int res;
+                    using (stockService = new())
+                    {
+                        res = await stockService.UpdateItopUpBalance(model);
+                    }
                     if (res == 0)
                     {
                         traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "Unable to update Retailer Balance;", null);

@@ -150,27 +150,31 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                redis = new RedisCache();
-                var redPkgDetailsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerSalesSummaryMySql, retailer.retailerCode);
-
-                if (!string.IsNullOrEmpty(redPkgDetailsStr))
+                using (redis = new RedisCache())
                 {
-                    var resultDict = JsonConvert.DeserializeObject<Dictionary<string, List<SalesSummaryModel>>>(redPkgDetailsStr);
-                    if (resultDict.Count > 0)
-                    {
-                        resultKey = resultDict.Keys.FirstOrDefault();
-                        summary = resultDict.Values.FirstOrDefault();
-                    }
+                    var redPkgDetailsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerSalesSummaryMySql, retailer.retailerCode);
 
-                    isEligibleDBCall = HelperMethod.CheckSalesSummaryDbCallEligibility(resultKey, _dataKey);
+                    if (!string.IsNullOrEmpty(redPkgDetailsStr))
+                    {
+                        var resultDict = JsonConvert.DeserializeObject<Dictionary<string, List<SalesSummaryModel>>>(redPkgDetailsStr);
+                        if (resultDict.Count > 0)
+                        {
+                            resultKey = resultDict.Keys.FirstOrDefault();
+                            summary = resultDict.Values.FirstOrDefault();
+                        }
+
+                        isEligibleDBCall = HelperMethod.CheckSalesSummaryDbCallEligibility(resultKey, _dataKey);
+                    }
                 }
 
                 if (summary.Count == 0 || isEligibleDBCall)
                 {
-                    SalesV2Service salesService = new(Connections.RetAppDbCS);
                     DataTable sales = new();
 
-                    sales = salesService.GetSalesSummaryData(retailer);
+                    using (SalesV2Service salesService = new(Connections.RetAppDbCS))
+                    {
+                        sales = salesService.GetSalesSummaryData(retailer);
+                    }
 
                     summary = sales.AsEnumerable().Select(row => HelperMethod.ModelBinding<SalesSummaryModel>(row)).ToList();
                     if (summary.Count == 0)
@@ -183,8 +187,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                     redis = new RedisCache();
                     await redis.DeleteAsync(RedisCollectionNames.RetailerSalesSummaryMySql, retailer.retailerCode);
 
-                    redis = new RedisCache();
-                    await redis.SetCacheAsync(RedisCollectionNames.RetailerSalesSummaryMySql, retailer.retailerCode, dataStr);
+                    using (redis = new RedisCache())
+                    {
+                        await redis.SetCacheAsync(RedisCollectionNames.RetailerSalesSummaryMySql, retailer.retailerCode, dataStr);
+                    }
                 }
             }
             catch (Exception ex)

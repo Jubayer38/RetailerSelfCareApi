@@ -2,6 +2,7 @@
 using Domain.RequestModel;
 using Domain.StaticClass;
 using Domain.ViewModel;
+using System.IO.Compression;
 using System.Net;
 using System.Text;
 using System.Xml.Serialization;
