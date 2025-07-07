@@ -184,8 +184,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                     summaryDict.Add(_dataKey, summary);
                     string dataStr = summaryDict.ToJsonString();
 
-                    redis = new RedisCache();
-                    await redis.DeleteAsync(RedisCollectionNames.RetailerSalesSummaryMySql, retailer.retailerCode);
+                    using (redis = new RedisCache())
+                    {
+                        await redis.DeleteAsync(RedisCollectionNames.RetailerSalesSummaryMySql, retailer.retailerCode);
+                    }
 
                     using (redis = new RedisCache())
                     {

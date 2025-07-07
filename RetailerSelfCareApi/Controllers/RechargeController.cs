@@ -880,8 +880,11 @@ namespace RetailerSelfCareApi.Controllers
                         UpdateTime = updateTime
                     };
 
-                    stockService = new(Connections.RetAppDbCS);
-                    int res = stockService.UpdateItopUpBalance(model);
+                    int res;
+                    using (stockService = new(Connections.RetAppDbCS))
+                    {
+                        res = stockService.UpdateItopUpBalance(model);
+                    }
                     if (res == 0)
                     {
                         traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "Unable to update Retailer Balance;", null);

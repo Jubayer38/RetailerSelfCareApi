@@ -158,19 +158,26 @@ namespace Application.Services
                 request.ContentLength = bytes.Length;
                 request.Method = "POST";
 
-                externalApiVM.reqStartTime = DateTime.Now; 
-                Stream requestStream = request.GetRequestStream();
-                requestStream.Write(bytes, 0, bytes.Length);
-                requestStream.Close();
+                externalApiVM.reqStartTime = DateTime.Now;
+                using (Stream requestStream = request.GetRequestStream())
+                {
+                    requestStream.Write(bytes, 0, bytes.Length);
+                }
 
-                HttpWebResponse response;
-                response = (HttpWebResponse)request.GetResponse();
-                externalApiVM.reqEndTime = DateTime.Now;
-
-                Stream responseStream = response.GetResponseStream();
-                string responseStr = new StreamReader(responseStream).ReadToEnd();
-                externalApiVM.resBodyStr = responseStr;
-
+                string responseStr = string.Empty;
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        externalApiVM.reqEndTime = DateTime.Now;
+                        using (Stream responseStream = response.GetResponseStream())
+                        using (StreamReader reader = new StreamReader(responseStream))
+                        {
+                            responseStr = reader.ReadToEnd();
+                            externalApiVM.resBodyStr = responseStr;
+                        }
+                    }
+                }
                 return responseStr;
             }
             catch (Exception ex)

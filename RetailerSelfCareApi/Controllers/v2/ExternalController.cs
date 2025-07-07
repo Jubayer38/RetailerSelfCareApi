@@ -259,8 +259,10 @@ namespace RetailerSelfCareApi.Controllers.v2
             long userValidRes;
             try
             {
-                UserService userService = new();
-                userValidRes = await userService.ValidateExternalUsers(model.userName, model.password);
+                using(UserService userService = new())
+                {
+                    userValidRes = await userService.ValidateExternalUsers(model.userName, model.password);
+                }
             }
             catch (Exception ex)
             {
@@ -273,20 +275,22 @@ namespace RetailerSelfCareApi.Controllers.v2
                 try
                 {
                     model.userId = userValidRes;
-                    RechargeService rechargeService = new();
-                    var result = await rechargeService.UpdateEVPinStatus(model);
-
-                    if (result.Item1)
+                    using (RechargeService rechargeService = new())
                     {
-                        RetailerService retailerService = new();
-                        await retailerService.SendPushNotification(model.iTopUpNumber);
+                        var result = await rechargeService.UpdateEVPinStatus(model);
+
+                        if (result.Item1)
+                        {
+                            RetailerService retailerService = new();
+                            await retailerService.SendPushNotification(model.iTopUpNumber);
+                        }
+
+                        return Ok(new ExternalSubmitResponse()
+                        {
+                            success = result.Item1,
+                            message = result.Item2,
+                        });
                     }
-
-                    return Ok(new ExternalSubmitResponse()
-                    {
-                        success = result.Item1,
-                        message = result.Item2,
-                    });
                 }
                 catch (Exception ex)
                 {

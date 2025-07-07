@@ -219,8 +219,10 @@ namespace RetailerSelfCareApi.Controllers
                     year = reqMonth.Year.ToString()
                 };
 
-                lmsService = new LMSService();
-                pointHistory = await lmsService.PullLMSPointHistoryByMonth(reqBodyPrev);
+                using(lmsService = new LMSService())
+                {
+                    pointHistory = await lmsService.PullLMSPointHistoryByMonth(reqBodyPrev);
+                }
             }
 
             LMSPointHistReq reqBody = new()
@@ -232,11 +234,13 @@ namespace RetailerSelfCareApi.Controllers
                 year = DateTime.Now.Year.ToString()
             };
 
-            lmsService = new LMSService();
-            LMSPointHistory pointHistoryNow = await lmsService.PullLMSPointHistoryByMonth(reqBody);
+            using(lmsService = new LMSService())
+            {
+                LMSPointHistory pointHistoryNow = await lmsService.PullLMSPointHistoryByMonth(reqBody);
 
-            pointHistory.earnHistory.AddRange(pointHistoryNow.earnHistory);
-            pointHistory.redeemHistory.AddRange(pointHistoryNow.redeemHistory);
+                pointHistory.earnHistory.AddRange(pointHistoryNow.earnHistory);
+                pointHistory.redeemHistory.AddRange(pointHistoryNow.redeemHistory);
+            }
 
             LMSPointHistoryVM pointHistoryVM = new();
 

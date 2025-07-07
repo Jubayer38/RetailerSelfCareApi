@@ -429,8 +429,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                StockV2Service stockService = new(Connections.RetAppDbCS);
-                dt = await stockService.GetFilteredScList(reqModel);
+                using(StockV2Service stockService = new(Connections.RetAppDbCS))
+                {
+                    dt = await stockService.GetFilteredScList(reqModel);
+                }
             }
             catch (Exception ex)
             {

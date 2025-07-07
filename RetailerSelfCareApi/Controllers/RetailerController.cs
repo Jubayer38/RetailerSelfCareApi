@@ -248,12 +248,12 @@ namespace RetailerSelfCareApi.Controllers
         [Route("GetBPImagesByID")]
         public IActionResult GetBPImagesByID([FromBody] GetBPImagesRequest model)
         {
-
-            RetailerService NewRetailerService = new(Connections.RetAppDbCS);
             DataTable bestpractice = new();
 
-
-            bestpractice = NewRetailerService.BestPracticesImages(model);
+            using (RetailerService NewRetailerService = new(Connections.RetAppDbCS))
+            {
+                bestpractice = NewRetailerService.BestPracticesImages(model);
+            }
 
 
             List<string> bestpractices = new();
@@ -1531,13 +1531,15 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetFeedbackCategories))]
         public async Task<IActionResult> GetFeedbackCategories([FromBody] RetailerRequest model)
         {
-            RetailerService NewRetailerService = new(Connections.RetAppDbCS);
             int userId = UserSession.userId;
             DataTable operatorListDT = new();
 
             try
             {
-                operatorListDT = await NewRetailerService.GetFeedbackCategoryList(userId);
+                using (RetailerService NewRetailerService = new(Connections.RetAppDbCS))
+                {
+                    operatorListDT = await NewRetailerService.GetFeedbackCategoryList(userId);
+                }
             }
             catch (Exception ex)
             {

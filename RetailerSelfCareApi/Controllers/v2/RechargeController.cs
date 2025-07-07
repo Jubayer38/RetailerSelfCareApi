@@ -818,18 +818,20 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                 if (recharge.isSuccess)
                 {
-                    rechargeService = new();
                     bool logStatus = false;
                     try
                     {
-                        logStatus = await rechargeService.SaveTransactionLog(transObj);
+                        using (rechargeService = new())
+                        {
+                            logStatus = await rechargeService.SaveTransactionLog(transObj);
+                        }
                         if (!logStatus) { break; }
                     }
                     catch (Exception ex)
                     {
                         traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "SaveTransactionLog", ex);
                     }
-                };
+                }
             }
 
             List<RechargeInfo> rechargeInfo = rechargeRequest.rechargeList;

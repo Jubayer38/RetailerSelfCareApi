@@ -1874,13 +1874,15 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(GetFeedbackCategories))]
         public async Task<IActionResult> GetFeedbackCategories([FromBody] RetailerRequest model)
         {
-            RetailerV2Service retailerService = new();
             int userId = UserSession.userId;
             DataTable operatorListDT = new();
 
             try
             {
-                operatorListDT = await retailerService.GetFeedbackCategoryList(userId);
+                using (RetailerV2Service retailerService = new())
+                {
+                    operatorListDT = await retailerService.GetFeedbackCategoryList(userId);
+                }
             }
             catch (Exception ex)
             {
