@@ -218,24 +218,28 @@ namespace Application.Services
                 requestMethod = model.requestMethod
             };
 
-            HttpService httpService = new();
-            var pointAdjustObj = await httpService.CallExternalApi<LMSPointAdjustResp>(httpReq);
-            LMSPointAdjustResp pointAdjust = pointAdjustObj.Object;
-
-            pointAdjust.points = model.points;
-            pointAdjust.retailerCode = model.retailerCode;
-            pointAdjust.appPage = model.appPage;
-            pointAdjust.adjustmentType = model.adjustmentType;
-            pointAdjust.description = model.appPage.Replace("_", " ");
-
-            // Save LMS transaction into Database
-            await _repo.SaveTransaction(pointAdjust);
-
-            if (pointAdjust.statusCode == "0")
+            using (HttpService httpService = new())
             {
-                RedisCache redis = new();
-                string dataKey = "$." + model.retailerCode + "." + model.appPage;
-                await redis.UpdateCacheAsync(RedisCollectionNames.LMSPointsTrack, dataKey, DateTime.Now.Ticks.ToJsonString());
+                var pointAdjustObj = await httpService.CallExternalApi<LMSPointAdjustResp>(httpReq);
+                LMSPointAdjustResp pointAdjust = pointAdjustObj.Object;
+
+                pointAdjust.points = model.points;
+                pointAdjust.retailerCode = model.retailerCode;
+                pointAdjust.appPage = model.appPage;
+                pointAdjust.adjustmentType = model.adjustmentType;
+                pointAdjust.description = model.appPage.Replace("_", " ");
+
+                // Save LMS transaction into Database
+                await _repo.SaveTransaction(pointAdjust);
+
+                if (pointAdjust.statusCode == "0")
+                {
+                    using (RedisCache redis = new())
+                    {
+                        string dataKey = "$." + model.retailerCode + "." + model.appPage;
+                        await redis.UpdateCacheAsync(RedisCollectionNames.LMSPointsTrack, dataKey, DateTime.Now.Ticks.ToJsonString());
+                    }
+                }
             }
         }
 

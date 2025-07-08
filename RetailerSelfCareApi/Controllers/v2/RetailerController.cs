@@ -1942,12 +1942,14 @@ namespace RetailerSelfCareApi.Controllers.v2
         {
             model.userId = UserSession.userId;
 
-            RetailerV2Service retailerService = new();
             DataTable dt = new();
 
             try
             {
-                dt = await retailerService.GetProductRatingList(model);
+                using (RetailerV2Service retailerService = new())
+                {
+                    dt = await retailerService.GetProductRatingList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -4891,12 +4893,14 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(SaveDeviceToken))]
         public async Task<IActionResult> SaveDeviceToken([FromBody] DeviceTokenRequest deviceTokenRequest)
         {
-            RetailerV2Service retailerService = new();
             long tokenID = 0;
 
             try
             {
-                tokenID = await retailerService.SaveDeviceTokens(deviceTokenRequest);
+                using(RetailerV2Service retailerService = new())
+                {
+                    tokenID = await retailerService.SaveDeviceTokens(deviceTokenRequest);
+                }
             }
             catch (Exception ex)
             {

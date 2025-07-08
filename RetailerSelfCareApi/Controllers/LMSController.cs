@@ -172,28 +172,30 @@ namespace RetailerSelfCareApi.Controllers
                 requestMethod = "GetRewardList"
             };
 
-            HttpService httpService = new();
-            var rewardListObj = await httpService.CallExternalApi<LMSOffers>(httpReq);
-
-            IEnumerable<LMSOfferDetails> rewardList = rewardListObj.Object.rewardArray.Select(s => HelperMethod.ModelBinding<LMSOfferDetails>(s));
-
-            if (rewardList.Any())
+            using (HttpService httpService = new())
             {
-                return Ok(new ResponseMessage()
+                var rewardListObj = await httpService.CallExternalApi<LMSOffers>(httpReq);
+
+                IEnumerable<LMSOfferDetails> rewardList = rewardListObj.Object.rewardArray.Select(s => HelperMethod.ModelBinding<LMSOfferDetails>(s));
+
+                if (rewardList.Any())
                 {
-                    isError = false,
-                    data = rewardList,
-                    message = SharedResource.GetLocal("Success", Message.Success)
-                });
-            }
-            else
-            {
-                return Ok(new ResponseMessage()
+                    return Ok(new ResponseMessage()
+                    {
+                        isError = false,
+                        data = rewardList,
+                        message = SharedResource.GetLocal("Success", Message.Success)
+                    });
+                }
+                else
                 {
-                    isError = true,
-                    message = SharedResource.GetLocal("NoDataFound", Message.NoDataFound),
-                    data = new string[] { }
-                });
+                    return Ok(new ResponseMessage()
+                    {
+                        isError = true,
+                        message = SharedResource.GetLocal("NoDataFound", Message.NoDataFound),
+                        data = new string[] { }
+                    });
+                }
             }
 
         }

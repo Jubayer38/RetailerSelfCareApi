@@ -71,8 +71,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                stockService = new();
-                retailer = await stockService.CheckRetailerByCode(rechargeRequest.retailerCode, loginProvider);
+                using (stockService = new())
+                {
+                    retailer = await stockService.CheckRetailerByCode(rechargeRequest.retailerCode, loginProvider);
+                }
             }
             catch (Exception ex)
             {
@@ -108,14 +110,17 @@ namespace RetailerSelfCareApi.Controllers.v2
             };
 
             irisRechargeReq.request = req;
-            RechargeV2Service rechargeService = new();
+            RechargeV2Service rechargeService;
             IrisRechargeResponse irisResponse = new();
 
             string updateTime = "";
             try
             {
                 var userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
-                irisResponse = await rechargeService.IrisRechargeRequest(irisUrl, irisRechargeReq, rechargeRequest, "v2/IrisRecharge", userAgent);
+                using (rechargeService = new())
+                {
+                    irisResponse = await rechargeService.IrisRechargeRequest(irisUrl, irisRechargeReq, rechargeRequest, "v2/IrisRecharge", userAgent);
+                }
                 updateTime = DateTime.Now.ToEnUSDateString("hh:mm:ss tt, dd MMM yyyy"); // This time will save in ItopUpbalance table as a latest update time.
             }
             catch (Exception ex)
@@ -181,14 +186,17 @@ namespace RetailerSelfCareApi.Controllers.v2
                 ipAddress = HelperMethod.GetIPAddress()
             };
 
-            rechargeService = new();
             bool logStatus = false;
 
             if (status)
             {
                 try
                 {
-                    logStatus = await rechargeService.SaveTransactionLog(transObj);
+                    using (rechargeService = new())
+                    {
+                        // Save transaction log
+                        logStatus = await rechargeService.SaveTransactionLog(transObj);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -219,8 +227,11 @@ namespace RetailerSelfCareApi.Controllers.v2
                         UpdateTime = updateTime
                     };
 
-                    stockService = new();
-                    int res = await stockService.UpdateItopUpBalance(model);
+                    int res;
+                    using (stockService = new())
+                    {
+                        res = await stockService.UpdateItopUpBalance(model);
+                    }
                     if (res == 0)
                     {
                         traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "Unable to update Retailer Balance;", null);

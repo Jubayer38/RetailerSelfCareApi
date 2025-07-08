@@ -185,8 +185,10 @@ namespace RetailerSelfCareApi.Controllers
             DataTable scStock = new();
             try
             {
-                StockService bioStockService = new(Connections.RetAppDbCS);
-                scStock = bioStockService.GetSCStocksSummaryV2(retailer);
+                using (StockService bioStockService = new(Connections.RetAppDbCS))
+                {
+                    scStock = bioStockService.GetSCStocksSummaryV2(retailer);
+                }
             }
             catch (Exception ex)
             {
@@ -204,8 +206,10 @@ namespace RetailerSelfCareApi.Controllers
             DataTable scDetails = new();
             try
             {
-                StockService stockService = new(Connections.DMSCS);
-                scDetails = stockService.GetScStockDetails(scDetailsReq);
+                using (StockService stockService = new(Connections.DMSCS))
+                {
+                    scDetails = stockService.GetScStockDetails(scDetailsReq);
+                }
             }
             catch (Exception ex)
             {
@@ -332,14 +336,17 @@ namespace RetailerSelfCareApi.Controllers
         public async Task<IActionResult> GetStockSummary([FromBody] RetailerRequestV2 retailer)
         {
             List<StockSummaryModel> stockSummaries = [];
-            StockService stockService = new(Connections.RetAppDbCS);
+            StockService stockService;
 
             //SIM and SC
             DataTable simscStock = new();
 
             try
             {
-                simscStock = await stockService.GetSIMSCStocksSummary(retailer);
+                using(stockService = new(Connections.RetAppDbCS))
+                {
+                    simscStock = await stockService.GetSIMSCStocksSummary(retailer);
+                }
             }
             catch (Exception ex)
             {
@@ -353,12 +360,14 @@ namespace RetailerSelfCareApi.Controllers
             }
 
             //ITopUP - Not Current Balance 
-            stockService = new(Connections.RetAppDbCS);
             DataTable itopUpStock = new();
 
             try
             {
-                itopUpStock = await stockService.GetItopUpSummary(retailer);
+                using(stockService = new(Connections.RetAppDbCS))
+                {
+                    itopUpStock = await stockService.GetItopUpSummary(retailer);
+                }
             }
             catch (Exception ex)
             {

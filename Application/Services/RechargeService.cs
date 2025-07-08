@@ -188,8 +188,10 @@ namespace Application.Services
                     OriginMethodName = methodName
                 };
 
-                HttpService httpService = new();
-                irisResponse = await httpService.IRISRechargeRequest(rechargeXmlVM);
+                using(HttpService httpService = new())
+                {
+                    irisResponse = await httpService.IRISRechargeRequest(rechargeXmlVM);
+                }
 
                 if (irisResponse?.response?.statusCode is "0")
                 {

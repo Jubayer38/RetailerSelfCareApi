@@ -281,8 +281,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                         if (result.Item1)
                         {
-                            RetailerService retailerService = new();
-                            await retailerService.SendPushNotification(model.iTopUpNumber);
+                            using(RetailerService retailerService = new())
+                            {
+                                await retailerService.SendPushNotification(model.iTopUpNumber);
+                            }
                         }
 
                         return Ok(new ExternalSubmitResponse()

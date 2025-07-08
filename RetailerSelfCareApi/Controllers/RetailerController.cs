@@ -1317,8 +1317,11 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(SaveContact))]
         public async Task<IActionResult> SaveContact([FromBody] ContactSaveRequest contactModel)
         {
-            RetailerService rechargeService = new();
-            long res = await rechargeService.SaveContact(contactModel);
+            long res;
+            using (RetailerService rechargeService = new())
+            {
+                res = await rechargeService.SaveContact(contactModel);
+            }
 
             if (res > 0)
             {
@@ -5480,17 +5483,22 @@ namespace RetailerSelfCareApi.Controllers
             };
 
             var userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
-            StockService stockService = new(Connections.RetAppDbCS);
-            string resp = stockService.GetITopUpBalanceNew(rsoEligibility, xmlRequest, userAgent);
+            StockService stockService;
+            using (stockService = new(Connections.RetAppDbCS))
+            {
+                string resp = stockService.GetITopUpBalanceNew(rsoEligibility, xmlRequest, userAgent);
 
-            try
-            {
-                stockService = new StockService(Connections.RetAppDbCS);
-                stockService.FormatEvBalanceResponse(ref stockSummary, resp);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(HelperMethod.ExMsgBuild(ex, "FormatEvBalanceResponse"));
+                try
+                {
+                    using(stockService = new StockService(Connections.RetAppDbCS))
+                    {
+                        stockService.FormatEvBalanceResponse(ref stockSummary, resp);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(HelperMethod.ExMsgBuild(ex, "FormatEvBalanceResponse"));
+                }
             }
 
             _ = double.TryParse(stockSummary.amount, out double _amount);
@@ -5504,8 +5512,11 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                stockService = new StockService(Connections.RetAppDbCS);
-                int res = stockService.UpdateItopUpBalance(model);
+                int res;
+                using (stockService = new StockService(Connections.RetAppDbCS))
+                {
+                    res = stockService.UpdateItopUpBalance(model);
+                }
                 if (res == 0)
                 {
                     traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "Unable to update Balance;", null);
