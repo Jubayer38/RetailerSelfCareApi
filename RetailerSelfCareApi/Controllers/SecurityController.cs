@@ -728,7 +728,7 @@ namespace RetailerSelfCareApi.Controllers
             }
             else
             {
-                SecurityService _auth = new();
+                SecurityService _auth;
 
                 DeviceValidationRequest deviceValidReq = new()
                 {
@@ -739,8 +739,11 @@ namespace RetailerSelfCareApi.Controllers
 
                 DeviceValidationResponse result = new();
 
-                // Device Validation
-                result = await _auth.ValidateDevice(deviceValidReq);
+                using (_auth = new())
+                {
+                    // Validate device and get device info
+                    result = await _auth.ValidateDevice(deviceValidReq);
+                }
 
                 if (result.isSuccess)
                 {
@@ -776,9 +779,11 @@ namespace RetailerSelfCareApi.Controllers
                     return Ok(loginResp);
                 }
 
-
-                _auth = new SecurityService();
-                string encriptedPwd = CryptographyFile.Encrypt(login.password, true);
+                string encriptedPwd;
+                using (_auth = new SecurityService())
+                {
+                    encriptedPwd = CryptographyFile.Encrypt(login.password, true);
+                }
 
                 VMUserInfo vmModel = new()
                 {
@@ -790,7 +795,10 @@ namespace RetailerSelfCareApi.Controllers
                 // User validation
                 LoginUserInfoResponseV2 user = new();
 
-                user = await _auth.ValidateUser(vmModel);
+                using (_auth = new SecurityService())
+                {
+                    user = await _auth.ValidateUser(vmModel);
+                }
 
 
                 if (user.user_name == null)
@@ -844,8 +852,10 @@ namespace RetailerSelfCareApi.Controllers
                 //Save Login Attempts Data
                 await Task.Factory.StartNew(async () =>
                 {
-                    _auth = new();
-                    await _auth.SaveLoginAtmInfo(loginAtmInfo);
+                    using (_auth = new())
+                    {
+                        await _auth.SaveLoginAtmInfo(loginAtmInfo);
+                    }
                 });
 
                 //await Task.Factory.StartNew(async () =>

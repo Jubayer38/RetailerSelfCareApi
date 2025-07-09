@@ -5227,13 +5227,16 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(GetRSOMemo))]
         public async Task<IActionResult> GetRSOMemo([FromBody] RsoMemoRequest model)
         {
-            RetailerV2Service retailerService = new();
             int userId = UserSession.userId;
             DataTable memoDT = new();
 
             try
             {
-                memoDT = await retailerService.GetRSOMemo(model, userId);
+                using (RetailerV2Service retailerService = new())
+                {
+                    // Get RSO Memo from MySQL
+                    memoDT = await retailerService.GetRSOMemo(model, userId);
+                }
             }
             catch (Exception ex)
             {
@@ -5370,9 +5373,11 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                redis = new RedisCache();
-                string allDenoPackagesStr = await redis.GetCacheAsync(RedisCollectionNames.DenoDriveDetails);
-                allDenoPackages = JsonConvert.DeserializeObject<List<RechargePackagesRedis>>(allDenoPackagesStr)!;
+                using (redis = new RedisCache())
+                {
+                    string allDenoPackagesStr = await redis.GetCacheAsync(RedisCollectionNames.DenoDriveDetails);
+                    allDenoPackages = JsonConvert.DeserializeObject<List<RechargePackagesRedis>>(allDenoPackagesStr)!;
+                }
             }
             catch (Exception ex)
             {
@@ -5383,12 +5388,14 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                redis = new RedisCache();
-                string hasDenoIdsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerDenoDriveIds, deno.retailerCode);
-                string hasDenoIds = JsonConvert.DeserializeObject<dynamic>(hasDenoIdsStr)!;
-                if (!string.IsNullOrEmpty(hasDenoIds))
+                using (redis = new RedisCache())
                 {
-                    denoIds = hasDenoIds.Split(',').Select(s => Convert.ToInt64(s)).ToList();
+                    string hasDenoIdsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerDenoDriveIds, deno.retailerCode);
+                    string hasDenoIds = JsonConvert.DeserializeObject<dynamic>(hasDenoIdsStr)!;
+                    if (!string.IsNullOrEmpty(hasDenoIds))
+                    {
+                        denoIds = hasDenoIds.Split(',').Select(s => Convert.ToInt64(s)).ToList();
+                    }
                 }
             }
             catch (Exception ex)

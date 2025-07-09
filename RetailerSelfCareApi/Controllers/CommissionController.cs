@@ -690,12 +690,15 @@ namespace RetailerSelfCareApi.Controllers
                 td = lastDate;
             }
 
-            CommissionService commisionObj = new(Connections.RetAppDbCS);
+            CommissionService commisionObj;
             DataTable masterDt = new();
 
             try
             {
-                masterDt = await commisionObj.StatementSummary(request, fd, td);
+                using (commisionObj = new(Connections.RetAppDbCS))
+                {
+                    masterDt = await commisionObj.StatementSummary(request, fd, td);
+                }
             }
             catch (Exception ex)
             {
@@ -706,12 +709,14 @@ namespace RetailerSelfCareApi.Controllers
             {
                 var masterDr = masterDt.Rows[0];
 
-                commisionObj = new(Connections.RetAppDbCS);
                 DataTable details = new();
 
                 try
                 {
-                    details = await commisionObj.StatementDetails(request, fd, td);
+                    using (commisionObj = new(Connections.RetAppDbCS))
+                    {
+                        details = await commisionObj.StatementDetails(request, fd, td);
+                    }
                 }
                 catch (Exception ex)
                 {

@@ -56,9 +56,12 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route("CheckSimStatus")]
         public async Task<IActionResult> CheckSimStatus([FromBody] SimStatusRequestModel simStatus)
         {
-            LiftingV2Service ewHomeService = new(Connections.RetAppDbCS);
+            SimStatusModel simAvailablity;
             string url = ExternalKeys.CheckSimUrl;
-            SimStatusModel simAvailablity = await ewHomeService.CheckSimStatus(simStatus, url);
+            using(LiftingV2Service ewHomeService = new(Connections.RetAppDbCS))
+            {
+                simAvailablity = await ewHomeService.CheckSimStatus(simStatus, url);
+            }
 
             return new OkObjectResult(new ResponseMessage()
             {

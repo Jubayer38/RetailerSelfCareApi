@@ -508,8 +508,10 @@ namespace Infrastracture.Repositories
 
         public async Task RemoveLoginProviderFromRedis(string collectionName, List<string> keys)
         {
-            RedisCache redisCache = new();
-            await redisCache.MultiDeleteAsync(collectionName, keys);
+            using(RedisCache redisCache = new())
+            {
+                await redisCache.MultiDeleteAsync(collectionName, keys);
+            }
         }
 
         #endregion=============================| Asyncronous MISC Methods |=============================

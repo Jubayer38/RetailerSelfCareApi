@@ -43,8 +43,10 @@ namespace RetailerSelfCareApi.Controllers.v2
             DataTable scStock = new();
             try
             {
-                stockService = new(Connections.RetAppDbCS);
-                scStock = stockService.GetSCStocksSummaryV2(retailer);
+                using (stockService = new(Connections.RetAppDbCS))
+                {
+                    scStock = stockService.GetSCStocksSummaryV2(retailer);
+                }
             }
             catch (Exception ex)
             {
@@ -62,8 +64,10 @@ namespace RetailerSelfCareApi.Controllers.v2
             DataTable scDetails = new();
             try
             {
-                stockService = new();
-                scDetails = await stockService.GetScStockDetails(scDetailsReq);
+                using (stockService = new())
+                {
+                    scDetails = await stockService.GetScStockDetails(scDetailsReq);
+                }
             }
             catch (Exception ex)
             {
