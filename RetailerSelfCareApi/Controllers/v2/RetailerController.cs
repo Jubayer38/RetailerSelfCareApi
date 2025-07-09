@@ -305,8 +305,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                StockV2Service stockService = new();
-                retailer = await stockService.CheckRetailerByCode(retailerRequest.retailerCode, loginProvider);
+                using(StockV2Service stockService = new())
+                {
+                    retailer = await stockService.CheckRetailerByCode(retailerRequest.retailerCode, loginProvider);
+                }
             }
             catch (Exception ex)
             {
@@ -323,11 +325,14 @@ namespace RetailerSelfCareApi.Controllers.v2
                 });
             }
 
-            retailerService = new();
-            rsoEligibility = retailerService.GetITopUpStockEligibilityCheck(retailerRequest, out string msg);
+            using (retailerService = new())
+            {
+                rsoEligibility = retailerService.GetITopUpStockEligibilityCheck(retailerRequest, out string msg);
 
-            if (!string.IsNullOrWhiteSpace(msg))
-                throw new Exception(msg);
+
+                if (!string.IsNullOrWhiteSpace(msg))
+                    throw new Exception(msg);
+            }
 
             DataRow emptyDr = new DataTable().NewRow();
             StockSummaryModel stockSummary = new(emptyDr, "iTopUp");
@@ -733,9 +738,11 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                     try
                     {
-                        HttpService httpService = new(ExternalKeys.RaiseComplaintTitleRecommendedAiUrlTimeOut);
-                        var externalResponse = await httpService.CallExternalApi<RecommendedComplaintTitle>(httpReq);
-                        recommendedComplaintTitle = externalResponse.Object;
+                        using (HttpService httpService = new(ExternalKeys.RaiseComplaintTitleRecommendedAiUrlTimeOut))
+                        {
+                            var externalResponse = await httpService.CallExternalApi<RecommendedComplaintTitle>(httpReq);
+                            recommendedComplaintTitle = externalResponse.Object;
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -748,19 +755,21 @@ namespace RetailerSelfCareApi.Controllers.v2
                     }
 
                     //get details complaint title from db
-                    RetailerV2Service retailerService = new();
-                    var complaintTitleDetails = await retailerService.GetComplaintDetailsByTitleId(reqModel, recommendedComplaintTitle);
-                    if (complaintTitleDetails.Rows.Count == 0)
+                    using (RetailerV2Service retailerService = new())
                     {
-                        return new OkObjectResult(new ResponseMessage()
+                        var complaintTitleDetails = await retailerService.GetComplaintDetailsByTitleId(reqModel, recommendedComplaintTitle);
+                        if (complaintTitleDetails.Rows.Count == 0)
                         {
-                            isError = true,
-                            message = SharedResource.GetLocal("NoDataFound", Message.NoDataFound),
-                            data = null
-                        });
+                            return new OkObjectResult(new ResponseMessage()
+                            {
+                                isError = true,
+                                message = SharedResource.GetLocal("NoDataFound", Message.NoDataFound),
+                                data = null
+                            });
+                        }
+                        recommendedComplaintDetails = HelperMethod.ModelBinding<RecommendedComplaintCategoryResponse>(complaintTitleDetails.Rows[0], string.Empty, reqModel.lan);
+                        recommendedComplaintDetails.hasValidExternalData = true;
                     }
-                    recommendedComplaintDetails = HelperMethod.ModelBinding<RecommendedComplaintCategoryResponse>(complaintTitleDetails.Rows[0], string.Empty, reqModel.lan);
-                    recommendedComplaintDetails.hasValidExternalData = true;
 
                 }
                 catch (Exception ex)
@@ -1270,8 +1279,12 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route("GetRSOInformation")]
         public async Task<IActionResult> GetRSOInformation([FromBody] RetailerRequestV2 retailerRequest)
         {
-            RetailerV2Service retailerService = new();
-            DataTable dt = await retailerService.GetRSOInformation(retailerRequest);
+            DataTable dt;
+            using(RetailerV2Service retailerService = new())
+            {
+                dt = await retailerService.GetRSOInformation(retailerRequest);
+            }
+
             RSOProfile profile = dt.Rows.Count > 0 ? new RSOProfile(dt.Rows[0]) : null;
 
             return new OkObjectResult(new ResponseMessage()
@@ -1656,12 +1669,14 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(NotificationCount))]
         public async Task<IActionResult> NotificationCount([FromBody] RetailerRequest retailerRequest)
         {
-            RetailerV2Service retailerService = new();
             int notificationCount = 0;
 
             try
             {
-                notificationCount = await retailerService.GetNotificationCount(retailerRequest);
+                using (RetailerV2Service retailerService = new())
+                {
+                    notificationCount = await retailerService.GetNotificationCount(retailerRequest);
+                }
             }
             catch (Exception ex)
             {
@@ -3244,8 +3259,11 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(SaveContact))]
         public async Task<IActionResult> SaveContact([FromBody] ContactSaveRequest contactModel)
         {
-            RetailerV2Service rechargeService = new();
-            long res = await rechargeService.SaveContact(contactModel);
+            long res;
+            using(RetailerV2Service rechargeService = new())
+            {
+                res = await rechargeService.SaveContact(contactModel);
+            }
 
             if (res > 0)
             {
@@ -3601,12 +3619,14 @@ namespace RetailerSelfCareApi.Controllers.v2
                 retailerCode = communicationRequest.retailerCode
             };
 
-            RetailerV2Service retailerService = new();
             DataTable communications = new();
 
             try
             {
-                communications = await retailerService.GetCommunications(communicationRequest);
+                using(RetailerV2Service retailerService = new())
+                {
+                    communications = await retailerService.GetCommunications(communicationRequest);
+                }
             }
             catch (Exception ex)
             {
@@ -3628,8 +3648,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             return Ok(new ResponseMessage()
             {

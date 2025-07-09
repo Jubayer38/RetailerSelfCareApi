@@ -434,8 +434,10 @@ namespace RetailerSelfCareApi.Controllers
             string loginProvider = Request.HttpContext.Items["loginProviderId"] as string;
             try
             {
-                stockService = new();
-                retailer = await stockService.CheckRetailerByCode(rechargeRequest.retailerCode, loginProvider);
+                using (stockService = new())
+                {
+                    retailer = await stockService.CheckRetailerByCode(rechargeRequest.retailerCode, loginProvider);
+                }
             }
             catch (Exception ex)
             {
@@ -465,7 +467,7 @@ namespace RetailerSelfCareApi.Controllers
             string evUrl = ExternalKeys.EvURL;
             string paymentType = rechargeRequest.paymentType == (int)PaymentType.prepaid ? "EXRCTRFREQ" : "EXPPBREQ";
 
-            RechargeService rechargeService = new(Connections.RetAppDbCS);
+            RechargeService rechargeService;
 
             ItopUpXmlRequest xmlRequest = new()
             {
@@ -491,7 +493,12 @@ namespace RetailerSelfCareApi.Controllers
             try
             {
                 var userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
-                evResponse = rechargeService.EvRecharge(xmlRequest, rechargeRequest, "EvRecharge", userAgent);
+                using (rechargeService = new(Connections.RetAppDbCS))
+                {
+                    // Call the EV recharge service with the XML request and recharge request
+                    // The method will return an EvXmlResponse object containing the response from the EV service
+                    evResponse = rechargeService.EvRecharge(xmlRequest, rechargeRequest, "EvRecharge", userAgent);
+                }
             }
             catch (Exception ex)
             {
@@ -568,8 +575,10 @@ namespace RetailerSelfCareApi.Controllers
             {
                 try
                 {
-                    rechargeService = new(Connections.RetAppDbCS);
-                    logStatus = await rechargeService.SaveTransactionLog(transObj);
+                    using (rechargeService = new(Connections.RetAppDbCS))
+                    {
+                        logStatus = await rechargeService.SaveTransactionLog(transObj);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -588,8 +597,10 @@ namespace RetailerSelfCareApi.Controllers
                     adjustmentType = nameof(LmsAdjustmentType.CREDIT)
                 };
 
-                LMSService lmsService = new();
-                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+                using (LMSService lmsService = new())
+                {
+                    await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+                }
 
 
                 // EV response message and datetime parsing
@@ -618,8 +629,13 @@ namespace RetailerSelfCareApi.Controllers
                         UpdateTime = updateTime
                     };
 
-                    stockService = new(Connections.RetAppDbCS);
-                    int res = stockService.UpdateItopUpBalance(model);
+                    int res;
+                    using(stockService = new(Connections.RetAppDbCS))
+                    {
+                        // Update the retailer's iTopUp balance with the new amount and update time
+                        res = stockService.UpdateItopUpBalance(model);
+                    }
+
                     if (res == 0)
                     {
                         traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "Unable to update Retailer Balance;", null);

@@ -67,12 +67,15 @@ namespace RetailerSelfCareApi.Controllers
         public async Task<IActionResult> GetRetailerByRCode([FromBody] RetailerRequest retailer)
         {
             string traceMsg = string.Empty;
-            RetailerService retailerService = new();
+            RetailerService retailerService;
             DataTable retailers = new();
 
             try
             {
-                retailers = await retailerService.GetRetailerDetails(retailer);
+                using(retailerService = new())
+                {
+                    retailers = await retailerService.GetRetailerDetails(retailer);
+                }
             }
             catch (Exception ex)
             {
@@ -85,8 +88,10 @@ namespace RetailerSelfCareApi.Controllers
             string rating;
             try
             {
-                retailerService = new(Connections.RetAppDbCS);
-                rating = await retailerService.RetailerRating(retailer);
+                using (retailerService = new(Connections.RetAppDbCS))
+                {
+                    rating = await retailerService.RetailerRating(retailer);
+                }
             }
             catch (Exception ex)
             {
@@ -965,9 +970,11 @@ namespace RetailerSelfCareApi.Controllers
 
                 try
                 {
-                    retailerService = new RetailerService();
                     reqModel.status = "Pending";
-                    insertId = await retailerService.SaveRSORating(reqModel, userId);
+                    using (retailerService = new())
+                    {
+                        insertId = await retailerService.SaveRSORating(reqModel, userId);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -1464,14 +1471,15 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetRSOMemo))]
         public async Task<IActionResult> GetRSOMemo([FromBody] RsoMemoRequest model)
         {
-
-            RetailerService retailerService = new(Connections.DMSCS);
             int userId = UserSession.userId;
             DataTable memoDT = new();
 
             try
             {
-                memoDT = await retailerService.GetRSOMemo(model, userId);
+                using (RetailerService retailerService = new(Connections.DMSCS))
+                {
+                    memoDT = await retailerService.GetRSOMemo(model, userId);
+                }
             }
             catch (Exception ex)
             {
@@ -4359,15 +4367,23 @@ namespace RetailerSelfCareApi.Controllers
                 tranRequest.sortByDate = "DESC";
             }
 
-            RetailerService retailerService = new(Connections.RetAppDbCS);
-            DataTable datatable = retailerService.GetC2STransactions(tranRequest);
+            RetailerService retailerService;
+
+            DataTable datatable;
+
+            using (retailerService = new(Connections.RetAppDbCS))
+            {
+                datatable = retailerService.GetC2STransactions(tranRequest);
+            }
 
             DataTable postpaidTrans = new();
             try
             {
-                retailerService = new();
-                postpaidTrans = await retailerService.GetC2SPostpaidTransactions(tranRequest);
-                datatable.Merge(postpaidTrans, true, MissingSchemaAction.Ignore);
+                using (retailerService = new())
+                {
+                    postpaidTrans = await retailerService.GetC2SPostpaidTransactions(tranRequest);
+                    datatable.Merge(postpaidTrans, true, MissingSchemaAction.Ignore);
+                }
             }
             catch (Exception ex)
             {
@@ -4388,8 +4404,10 @@ namespace RetailerSelfCareApi.Controllers
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             if (!string.IsNullOrWhiteSpace(traceMsg))
             {

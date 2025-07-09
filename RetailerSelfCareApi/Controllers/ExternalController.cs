@@ -89,33 +89,37 @@ namespace RetailerSelfCareApi.Controllers
             {
                 try
                 {
-                    RetailerService service = new();
-                    var result = await service.UpdateRetailerInfoMySQL(retailerModel);
-
-                    #region===============| Call Biometric API for Status Update  |===============
-
-                    string bioStatusURL = BiometricKeys.BioRetailerStatusURL;
-
-                    RetailerInfoRequest bioStatusModel = new()
+                    using (RetailerService service = new())
                     {
-                        userName = BiometricKeys.BioRetailerStatusUserName,
-                        password = BiometricKeys.BioRetailerStatusCred,
-                        retailerCode = retailerModel.retailerCode,
-                        iTopUpNumber = retailerModel.iTopUpNumber,
-                        isActive = retailerModel.isActive,
-                        typeName = retailerModel.typeName
-                    };
+                        var result = await service.UpdateRetailerInfoMySQL(retailerModel);
 
-                    HttpService httpService = new();
-                    await httpService.UpdateBioRetailerStatus(bioStatusModel, bioStatusURL);
+                        #region===============| Call Biometric API for Status Update  |===============
 
-                    #endregion===============|  Call Biometric API for Status Update |===============
+                        string bioStatusURL = BiometricKeys.BioRetailerStatusURL;
 
-                    return Ok(new RACommonResponse()
-                    {
-                        result = result.Item1,
-                        message = result.Item2
-                    });
+                        RetailerInfoRequest bioStatusModel = new()
+                        {
+                            userName = BiometricKeys.BioRetailerStatusUserName,
+                            password = BiometricKeys.BioRetailerStatusCred,
+                            retailerCode = retailerModel.retailerCode,
+                            iTopUpNumber = retailerModel.iTopUpNumber,
+                            isActive = retailerModel.isActive,
+                            typeName = retailerModel.typeName
+                        };
+
+                        using(HttpService httpService = new())
+                        {
+                            await httpService.UpdateBioRetailerStatus(bioStatusModel, bioStatusURL);
+                        }
+
+                        #endregion===============|  Call Biometric API for Status Update |===============
+
+                        return Ok(new RACommonResponse()
+                        {
+                            result = result.Item1,
+                            message = result.Item2
+                        });
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -263,8 +267,10 @@ namespace RetailerSelfCareApi.Controllers
             long userValidRes;
             try
             {
-                UserService userService = new();
-                userValidRes = await userService.ValidateExternalUsers(model.userName, model.password);
+                using (UserService userService = new())
+                {
+                    userValidRes = await userService.ValidateExternalUsers(model.userName, model.password);
+                }
             }
             catch (Exception ex)
             {
@@ -277,20 +283,24 @@ namespace RetailerSelfCareApi.Controllers
                 try
                 {
                     model.userId = userValidRes;
-                    RechargeService rechargeService = new();
-                    var result = await rechargeService.UpdateEVPinStatus(model);
-
-                    if (result.Item1)
+                    using (RechargeService rechargeService = new())
                     {
-                        RetailerService retailerService = new();
-                        await retailerService.SendPushNotification(model.iTopUpNumber);
+                        var result = await rechargeService.UpdateEVPinStatus(model);
+
+                        if (result.Item1)
+                        {
+                            using (RetailerService retailerService = new())
+                            {
+                                await retailerService.SendPushNotification(model.iTopUpNumber);
+                            }
+                        }
+
+                        return Ok(new ExternalSubmitResponse()
+                        {
+                            success = result.Item1,
+                            message = result.Item2,
+                        });
                     }
-
-                    return Ok(new ExternalSubmitResponse()
-                    {
-                        success = result.Item1,
-                        message = result.Item2,
-                    });
                 }
                 catch (Exception ex)
                 {
@@ -328,14 +338,16 @@ namespace RetailerSelfCareApi.Controllers
             {
                 try
                 {
-                    RetailerService reService = new();
-                    var result = await reService.UpdateRaiseComplaintStatus(model);
-
-                    return Ok(new RACommonResponse()
+                    using (RetailerService reService = new())
                     {
-                        result = result.Item1,
-                        message = result.Item2
-                    });
+                        var result = await reService.UpdateRaiseComplaintStatus(model);
+
+                        return Ok(new RACommonResponse()
+                        {
+                            result = result.Item1,
+                            message = result.Item2
+                        });
+                    }
                 }
                 catch (Exception ex)
                 {

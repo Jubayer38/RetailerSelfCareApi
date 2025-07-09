@@ -304,43 +304,47 @@ namespace RetailerSelfCareApi.Controllers
                 requestMethod = "RedeemLMSReward"
             };
 
-            HttpService httpService = new();
-            var redeemRWDObj = await httpService.CallExternalApi<dynamic>(httpReq);
-            string redeemRespString = JsonConvert.SerializeObject(redeemRWDObj.Object, Formatting.None);
-
-            LMSRewardResp redeemResp = new();
-
-            try
+            using (HttpService httpService = new())
             {
-                redeemResp = JsonConvert.DeserializeObject<LMSRewardResp>(redeemRespString)!;
+                var redeemRWDObj = await httpService.CallExternalApi<dynamic>(httpReq);
+                string redeemRespString = JsonConvert.SerializeObject(redeemRWDObj.Object, Formatting.None);
 
-                await Task.Factory.StartNew(async () =>
+                LMSRewardResp redeemResp = new();
+
+                try
                 {
-                    LMSService lmsService = new();
-                    await lmsService.SaveRedeemTransaction(reqBody, redeemResp);
-                });
-            }
-            catch (Exception)
-            {
-                throw new Exception("LMS Response format not correct");
-            }
+                    redeemResp = JsonConvert.DeserializeObject<LMSRewardResp>(redeemRespString)!;
 
-            if (redeemResp.statusCode == "0")
-            {
-                return Ok(new ResponseMessage()
+                    await Task.Factory.StartNew(async () =>
+                    {
+                        using (LMSService lmsService = new())
+                        {
+                            await lmsService.SaveRedeemTransaction(reqBody, redeemResp);
+                        }
+                    });
+                }
+                catch (Exception)
                 {
-                    isError = false,
-                    data = redeemRWDObj.Object,
-                    message = SharedResource.GetLocal("Success", Message.Success)
-                });
-            }
-            else
-            {
-                return Ok(new ResponseMessage()
+                    throw new Exception("LMS Response format not correct");
+                }
+
+                if (redeemResp.statusCode == "0")
                 {
-                    isError = true,
-                    message = SharedResource.GetLocal("LMSRewardCouldNotRedeem", Message.Failed)
-                });
+                    return Ok(new ResponseMessage()
+                    {
+                        isError = false,
+                        data = redeemRWDObj.Object,
+                        message = SharedResource.GetLocal("Success", Message.Success)
+                    });
+                }
+                else
+                {
+                    return Ok(new ResponseMessage()
+                    {
+                        isError = true,
+                        message = SharedResource.GetLocal("LMSRewardCouldNotRedeem", Message.Failed)
+                    });
+                }
             }
 
         }

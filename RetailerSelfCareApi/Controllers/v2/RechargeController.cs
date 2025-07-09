@@ -948,12 +948,17 @@ namespace RetailerSelfCareApi.Controllers.v2
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             reqModel.status = 0;
-            rechargeService = new();
-            long insertedId = await rechargeService.SaveResetEVPinReqLog(reqModel);
+            long insertedId;
+            using (rechargeService = new())
+            {
+                insertedId = await rechargeService.SaveResetEVPinReqLog(reqModel);
+            }
 
             if (insertedId > 0)
             {
@@ -980,8 +985,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                         requestMethod = "v2/ResetEVPinReq"
                     };
 
-                    HttpService httpService = new();
-                    respMessage = await httpService.SubmitExternalRequest(httpModel);
+                    using (HttpService httpService = new())
+                    {
+                        respMessage = await httpService.SubmitExternalRequest(httpModel);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -1000,16 +1007,18 @@ namespace RetailerSelfCareApi.Controllers.v2
                     userId = UserSession.userId
                 };
 
-                rechargeService = new();
-                var result = await rechargeService.UpdateEVPinStatus(updateModel);
-
-                if (result.Item1)
+                using (rechargeService = new())
                 {
-                    return Ok(new ResponseMessage()
+                    var result = await rechargeService.UpdateEVPinStatus(updateModel);
+
+                    if (result.Item1)
                     {
-                        isError = false,
-                        message = respMessage.message,
-                    });
+                        return Ok(new ResponseMessage()
+                        {
+                            isError = false,
+                            message = respMessage.message,
+                        });
+                    }
                 }
             }
             else
@@ -1025,16 +1034,18 @@ namespace RetailerSelfCareApi.Controllers.v2
                     userId = UserSession.userId
                 };
 
-                rechargeService = new();
-                var result = await rechargeService.UpdateEVPinStatus(updateModel);
-
-                if (result.Item1)
+                using (rechargeService = new())
                 {
-                    return Ok(new ResponseMessage()
+                    var result = await rechargeService.UpdateEVPinStatus(updateModel);
+
+                    if (result.Item1)
                     {
-                        isError = true,
-                        message = respMessage.message,
-                    });
+                        return Ok(new ResponseMessage()
+                        {
+                            isError = true,
+                            message = respMessage.message,
+                        });
+                    }
                 }
             }
 

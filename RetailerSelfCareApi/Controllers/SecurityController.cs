@@ -51,9 +51,12 @@ namespace RetailerSelfCareApi.Controllers
                 lan = otprequest.lan
             };
 
-            SecurityService _auth = new();
+            RAOTPResponse otpObj;
 
-            RAOTPResponse otpObj = await _auth.GenerateOTPUA(_otprequest);
+            using (SecurityService _auth = new())
+            {
+                otpObj = await _auth.GenerateOTPUA(_otprequest);
+            }
 
             if (otpObj.result)
             {
