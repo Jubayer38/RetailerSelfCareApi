@@ -107,8 +107,11 @@ namespace RetailerSelfCareApi.Controllers
         [Route("TodaySalesMemo")]
         public async Task<IActionResult> TodaySalesMemo([FromBody] RetailerRequest retailerRequest)
         {
-            SalesService salesService = new(Connections.DMSCS);
-            DataTable todaysSales = await salesService.GetTodaySalesMemo(retailerRequest);
+            DataTable todaysSales;
+            using(SalesService salesService = new(Connections.DMSCS))
+            {
+                todaysSales = await salesService.GetTodaySalesMemo(retailerRequest);
+            }
             List<TodaysSalesMemoModel> todaysSalesMemo = todaysSales.AsEnumerable().Select(row => new TodaysSalesMemoModel(row)).ToList();
 
             return new OkObjectResult(new ResponseMessage()
@@ -214,11 +217,16 @@ namespace RetailerSelfCareApi.Controllers
                     break;
             }
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using(LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
-            SalesService salesService = new(Connections.DMSCS);
-            DataTable sales = await salesService.GetSalesDetails(salesDetails);
+            DataTable sales;
+            using (SalesService salesService = new(Connections.DMSCS))
+            {
+                sales = await salesService.GetSalesDetails(salesDetails);
+            }
             List<SalesDetailModel> salesDetailModels = sales.AsEnumerable().Select(row => new SalesDetailModel(row)).ToList();
 
             return Ok(new ResponseMessage()

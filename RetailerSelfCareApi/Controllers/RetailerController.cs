@@ -664,9 +664,11 @@ namespace RetailerSelfCareApi.Controllers
 
                 try
                 {
-                    redis = new RedisCache();
-                    var advertisementDetailsStr = await redis.GetCacheAsync(RedisCollectionNames.AdvertisementDetails);
-                    redisAppAdvertise = JsonConvert.DeserializeObject<List<AdvertisementDetailsRedis>>(advertisementDetailsStr)!;
+                    using (redis = new RedisCache())
+                    {
+                        var advertisementDetailsStr = await redis.GetCacheAsync(RedisCollectionNames.AdvertisementDetails);
+                        redisAppAdvertise = JsonConvert.DeserializeObject<List<AdvertisementDetailsRedis>>(advertisementDetailsStr)!;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -677,8 +679,11 @@ namespace RetailerSelfCareApi.Controllers
 
                 try
                 {
-                    redis = new RedisCache();
-                    string hasAdvIdsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerAdvertisementIds, retailerRequest.retailerCode);
+                    string hasAdvIdsStr;
+                    using (redis = new RedisCache())
+                    {
+                        hasAdvIdsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerAdvertisementIds, retailerRequest.retailerCode);
+                    }
                     string hasAdvIds = JsonConvert.DeserializeObject<dynamic>(hasAdvIdsStr)!;
                     if (!string.IsNullOrEmpty(hasAdvIds))
                     {
@@ -2307,12 +2312,14 @@ namespace RetailerSelfCareApi.Controllers
                 requestModel.sortType = requestModel.sortType.ToUpper();
             }
 
-            RetailerService ewHomeService = new(Connections.RetAppDbCS);
             DataTable datTable = new();
 
             try
             {
-                datTable = await ewHomeService.GetArchivedData(requestModel);
+                using(RetailerService ewHomeService = new(Connections.RetAppDbCS))
+                {
+                    datTable = await ewHomeService.GetArchivedData(requestModel);
+                }
             }
             catch (Exception ex)
             {
@@ -3212,7 +3219,6 @@ namespace RetailerSelfCareApi.Controllers
         public async Task<IActionResult> CreateCampaignByRetailer([FromBody] CreateCampaignByRetailerRequest model)
         {
             string traceMsg = string.Empty;
-            RetailerService retailerService = new();
 
             model.userId = UserSession.userId;
 
@@ -3220,7 +3226,10 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                campInsertResult = await retailerService.CampaignByRetailer(model);
+                using (RetailerService retailerService = new())
+                {
+                    campInsertResult = await retailerService.CampaignByRetailer(model);
+                }
             }
             catch (Exception ex)
             {
@@ -3246,7 +3255,6 @@ namespace RetailerSelfCareApi.Controllers
 
             for (var i = 0; i < model.targets.Count(); i++)
             {
-                RetailerService rs = new();
                 CampaignTargetListRequest target = model.targets[i];
 
                 CampaignTargetRequestModel campTarget = new();
@@ -3263,7 +3271,10 @@ namespace RetailerSelfCareApi.Controllers
 
                 try
                 {
-                    targetResult = await rs.InsertRetailerCampTarget(campTarget);
+                    using (RetailerService rs = new())
+                    {
+                        targetResult = await rs.InsertRetailerCampTarget(campTarget);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -3273,11 +3284,13 @@ namespace RetailerSelfCareApi.Controllers
 
                 if (targetResult < 0)
                 {
-                    rs = new();
 
                     try
                     {
-                        await rs.DeleteInsertedCampaign(campTarget.campaignId, campTarget.campEnrollId, Convert.ToInt32(campResultSplit[2]));
+                        using (RetailerService rs = new())
+                        {
+                            await rs.DeleteInsertedCampaign(campTarget.campaignId, campTarget.campEnrollId, Convert.ToInt32(campResultSplit[2]));
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -3432,12 +3445,14 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(SaveDeviceToken))]
         public async Task<IActionResult> SaveDeviceToken([FromBody] DeviceTokenRequest deviceTokenRequest)
         {
-            RetailerService retailerService = new();
             long tokenID = 0;
 
             try
             {
-                tokenID = await retailerService.SaveDeviceTokens(deviceTokenRequest);
+                using (RetailerService retailerService = new())
+                {
+                    tokenID = await retailerService.SaveDeviceTokens(deviceTokenRequest);
+                }
             }
             catch (Exception ex)
             {

@@ -1777,7 +1777,7 @@ namespace RetailerSelfCareApi.Controllers.v2
         {
             string traceMsg = string.Empty;
 
-            RetailerV2Service retailerService = new();
+            RetailerV2Service retailerService;
 
             if (string.IsNullOrEmpty(vorRequest.feedbackTypeId))
             {
@@ -1804,7 +1804,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                vorInsertResult = await retailerService.VORByRetailer(model);
+                using (retailerService = new())
+                {
+                    vorInsertResult = await retailerService.VORByRetailer(model);
+                }
             }
             catch (Exception ex)
             {
@@ -1817,10 +1820,13 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                 if (model.imageList != null && model.imageList.Count > 0)
                 {
-                    retailerService = new();
                     try
                     {
-                        await retailerService.DeleteTableRows(model.id, "RSLTBLVORFILES", "VOR_ID");
+                        using (retailerService = new())
+                        {
+                            // Delete previous images if any
+                            await retailerService.DeleteTableRows(model.id, "RSLTBLVORFILES", "VOR_ID");
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -1837,8 +1843,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                         try
                         {
-                            retailerService = new();
-                            res = await retailerService.SaveVorImage(model.id, base64Header, imgStr);
+                            using (retailerService = new())
+                            {
+                                res = await retailerService.SaveVorImage(model.id, base64Header, imgStr);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -2087,12 +2095,14 @@ namespace RetailerSelfCareApi.Controllers.v2
         public async Task<IActionResult> SubmitProductRating([FromBody] SubmitProductRating model)
         {
             model.userId = UserSession.userId;
-            RetailerV2Service retailerService = new();
             long rated = 0;
 
             try
             {
-                rated = await retailerService.SaveProductRating(model);
+                using (RetailerV2Service retailerService = new())
+                {
+                    rated = await retailerService.SaveProductRating(model);
+                }
             }
             catch (Exception ex)
             {
@@ -2111,8 +2121,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             return Ok(new ResponseMessage()
             {
@@ -3144,24 +3156,30 @@ namespace RetailerSelfCareApi.Controllers.v2
         public async Task<IActionResult> CampaignList([FromBody] CampaignRequestV3 model)
         {
             model.userId = UserSession.userId;
-            RetailerV2Service retailerService = new();
+            RetailerV2Service retailerService;
             DataTable campaigns = new();
 
             try
             {
-                campaigns = await retailerService.GetCampaignList(model);
+                using (retailerService = new())
+                {
+                    campaigns = await retailerService.GetCampaignList(model);
+                }
             }
             catch (Exception ex)
             {
                 throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCampaignList"));
             }
 
-            retailerService = new();
             DataTable selfCampaign = new();
 
             try
             {
-                selfCampaign = await retailerService.GetSelfCampaignList(model);
+                using (retailerService = new())
+                {
+                    // Get Self Campaign List
+                    selfCampaign = await retailerService.GetSelfCampaignList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -3185,8 +3203,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using(LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             return Ok(new ResponseMessage()
             {
@@ -3204,8 +3224,11 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(GetContactList))]
         public async Task<IActionResult> GetContactList([FromBody] RetailerRequest retailerRequest)
         {
-            RetailerV2Service retailerService = new();
-            DataTable contact = await retailerService.GetContactList(retailerRequest.retailerCode);
+            DataTable contact;
+            using (RetailerV2Service retailerService = new())
+            {
+                contact = await retailerService.GetContactList(retailerRequest.retailerCode);
+            }
             List<ContactModel> ContactList = contact.AsEnumerable().Select(row => new ContactModel(row)).ToList();
 
             return new OkObjectResult(new ResponseMessage()
@@ -4516,8 +4539,11 @@ namespace RetailerSelfCareApi.Controllers.v2
                     requestMethod = "InstallationProcess"
                 };
 
-                HttpService httpService = new();
-                BiometricAppInfo resp = await httpService.GetBiometricAppLatestUrl<dynamic>(httpModel);
+                BiometricAppInfo resp;
+                using (HttpService httpService = new())
+                {
+                    resp = await httpService.GetBiometricAppLatestUrl<dynamic>(httpModel);
+                }
 
                 var data = new
                 {
@@ -5039,11 +5065,15 @@ namespace RetailerSelfCareApi.Controllers.v2
             #region Get data from Oracle
             DataTable dataTable = new();
 
-            RetailerV2Service retailerService = new();
+            RetailerV2Service retailerService;
 
             try
             {
-                dataTable = await retailerService.GetC2CTransactions(tranRequest);
+                using(retailerService = new())
+                {
+                    // Get C2C Transactions from Oracle
+                    dataTable = await retailerService.GetC2CTransactions(tranRequest);
+                }
             }
             catch (Exception ex)
             {
@@ -5057,9 +5087,11 @@ namespace RetailerSelfCareApi.Controllers.v2
             DataTable otfTrans = new();
             try
             {
-                retailerService = new();
-                otfTrans = await retailerService.GetC2SOtfTransactions(tranRequest);
-                dataTable.Merge(otfTrans, true, MissingSchemaAction.Ignore);
+                using (retailerService = new())
+                {
+                    otfTrans = await retailerService.GetC2SOtfTransactions(tranRequest);
+                    dataTable.Merge(otfTrans, true, MissingSchemaAction.Ignore);
+                }
             }
             catch (Exception ex)
             {
@@ -5071,8 +5103,11 @@ namespace RetailerSelfCareApi.Controllers.v2
             #region Get data from API
 
             string retailerNumber = tranRequest.iTopUpNumber.Substring(1);
-            retailerService = new();
-            string rsoNumber = await retailerService.GetRSONumber(tranRequest.retailerCode);
+            string rsoNumber;
+            using (retailerService = new())
+            {
+                rsoNumber = await retailerService.GetRSONumber(tranRequest.retailerCode);
+            }
 
             C2CRechargeHistReq xmlRequest = new()
             {
@@ -5091,18 +5126,20 @@ namespace RetailerSelfCareApi.Controllers.v2
                 Receiver_Msisdn = retailerNumber
             };
 
-            retailerService = new();
-
-            var resp = await retailerService.GetC2CRechrgHist(xmlRequest, tranRequest);
-
-            List<C2CRechrgHistResp> rechargeHistToday = resp.Item1.Where(r => !string.IsNullOrWhiteSpace(r.date) && DateTime.ParseExact(r.date, "dd/MM/yy HH:mm:ss", CultureInfo.InvariantCulture).Date == DateTime.Today).ToList();
-
-            traceMsg = HelperMethod.BuildTraceMessage(traceMsg, resp.Item2, null);
-
-            if (!string.IsNullOrWhiteSpace(traceMsg))
+            List<C2CRechrgHistResp> rechargeHistToday;
+            using (retailerService = new())
             {
-                LoggerService _logger = new();
-                _logger.WriteTraceMessageInText(tranRequest, "v2/C2CTransactions", traceMsg);
+                var resp = await retailerService.GetC2CRechrgHist(xmlRequest, tranRequest);
+
+                rechargeHistToday = resp.Item1.Where(r => !string.IsNullOrWhiteSpace(r.date) && DateTime.ParseExact(r.date, "dd/MM/yy HH:mm:ss", CultureInfo.InvariantCulture).Date == DateTime.Today).ToList();
+
+                traceMsg = HelperMethod.BuildTraceMessage(traceMsg, resp.Item2, null);
+
+                if (!string.IsNullOrWhiteSpace(traceMsg))
+                {
+                    LoggerService _logger = new();
+                    _logger.WriteTraceMessageInText(tranRequest, "v2/C2CTransactions", traceMsg);
+                }
             }
 
             #endregion Get data from API

@@ -79,13 +79,15 @@ namespace RetailerSelfCareApi.Controllers
 
         }
 
-
         [HttpPost]
         [Route(nameof(GetLMSTelcoOffers))]
         public async Task<IActionResult> GetLMSTelcoOffers([FromBody] RetailerRequestV2 model)
         {
-            LMSService lmsService = new();
-            List<LMSPartner> lmsPartners = await lmsService.GetLmsPartners(model);
+            List<LMSPartner> lmsPartners = [];
+            using (LMSService lmsService = new())
+            {
+                lmsPartners = await lmsService.GetLmsPartners(model);
+            }
 
             LMSPartner telcoPartner = lmsPartners.Where(l => l.partnerCategory.Equals("telco", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
@@ -106,28 +108,30 @@ namespace RetailerSelfCareApi.Controllers
                 requestMethod = "GetLmsTelcoOffers"
             };
 
-            HttpService httpService = new();
-            var rewardListObj = await httpService.CallExternalApi<LMSOffers>(httpReq);
-
-            IEnumerable<LMSOfferDetails> rewardList = rewardListObj.Object.rewardArray.Select(s => HelperMethod.ModelBinding<LMSOfferDetails>(s, true));
-
-            if (rewardList.Any())
+            using (HttpService httpService = new())
             {
-                return Ok(new ResponseMessage()
+                var rewardListObj = await httpService.CallExternalApi<LMSOffers>(httpReq);
+
+                IEnumerable<LMSOfferDetails> rewardList = rewardListObj.Object.rewardArray.Select(s => HelperMethod.ModelBinding<LMSOfferDetails>(s, true));
+
+                if (rewardList.Any())
                 {
-                    isError = false,
-                    data = rewardList,
-                    message = SharedResource.GetLocal("Success", Message.Success)
-                });
-            }
-            else
-            {
-                return Ok(new ResponseMessage()
+                    return Ok(new ResponseMessage()
+                    {
+                        isError = false,
+                        data = rewardList,
+                        message = SharedResource.GetLocal("Success", Message.Success)
+                    });
+                }
+                else
                 {
-                    isError = true,
-                    message = SharedResource.GetLocal("NoDataFound", Message.NoDataFound),
-                    data = new string[] { }
-                });
+                    return Ok(new ResponseMessage()
+                    {
+                        isError = true,
+                        message = SharedResource.GetLocal("NoDataFound", Message.NoDataFound),
+                        data = new string[] { }
+                    });
+                }
             }
 
         }

@@ -353,8 +353,11 @@ namespace RetailerSelfCareApi.Controllers.v2
                 IrisOfferRequestNew offerRequest = new();
                 requestModel.Adapt(offerRequest);
 
-                RechargeV2Service rechargeService = new();
-                OfferResponseModelNew responseModel = await rechargeService.IRISOfferRequest(offerRequest);
+                OfferResponseModelNew responseModel;
+                using(RechargeV2Service rechargeService = new())
+                {
+                    responseModel = await rechargeService.IRISOfferRequest(offerRequest);
+                }
 
                 if (responseModel.statusCode != "0")
                 {
@@ -375,8 +378,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                 IEnumerable<string> offerList = responseModel.OfferList.Select((o, i) => i + 1 + "." + (regex.IsMatch(o.description) ? regex.Match(o.description).Groups[1].Value.Trim() : o.description));
                 string offers = string.Join("\n", offerList);
 
-                RetailerV2Service retailerService = new();
-                string result = await retailerService.SendSMS(requestModel, offers);
+                using (RetailerV2Service retailerService = new())
+                {
+                    string result = await retailerService.SendSMS(requestModel, offers);
+                }
 
                 return new OkObjectResult(new ResponseMessage()
                 {

@@ -85,55 +85,62 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(DeviceValidation))]
         public async Task<IActionResult> DeviceValidation([FromBody] DeviceValidationRequest deviceValidation)
         {
-            SecurityService _auth = new();
-
-            DeviceValidationResponse result = await _auth.ValidateDevice(deviceValidation);
+            DeviceValidationResponse result;
+            using (SecurityService _auth = new())
+            {
+                result = await _auth.ValidateDevice(deviceValidation);
+            }
 
             if (result.isSuccess)
             {
                 if (result.isPrimary && !result.isRegistered)
                 {
-                    _auth = new();
-                    var generatePWDRes = await _auth.GenerateNewPWD();
-
-                    if (generatePWDRes.Item2)
+                    SecurityService _auth;
+                    using (_auth = new())
                     {
-                        try
-                        {
-                            _auth = new();
-                            string generatePWD = generatePWDRes.Item1;
-                            var res = await _auth.SavePassword(deviceValidation.iTopUpNumber, generatePWD);
+                        var generatePWDRes = await _auth.GenerateNewPWD();
 
-                            if (res.result)
+                        if (generatePWDRes.Item2)
+                        {
+                            try
                             {
-                                return Ok(new DeviceValidationResponse()
+                                string generatePWD = generatePWDRes.Item1;
+                                using (_auth = new())
                                 {
-                                    isSuccess = true,
-                                    isPrimary = result.isPrimary,
-                                    isRegistered = result.isRegistered,
-                                    isSimSeller = result.isSimSeller,
-                                    responseMessage = SharedResource.GetLocal("PWDSentToMobile", ResponseMessages.CredPSentToMobile)
-                                });
+                                    var res = await _auth.SavePassword(deviceValidation.iTopUpNumber, generatePWD);
+
+                                    if (res.result)
+                                    {
+                                        return Ok(new DeviceValidationResponse()
+                                        {
+                                            isSuccess = true,
+                                            isPrimary = result.isPrimary,
+                                            isRegistered = result.isRegistered,
+                                            isSimSeller = result.isSimSeller,
+                                            responseMessage = SharedResource.GetLocal("PWDSentToMobile", ResponseMessages.CredPSentToMobile)
+                                        });
+                                    }
+
+                                    return Ok(new DeviceValidationResponse()
+                                    {
+                                        isSuccess = false,
+                                        responseMessage = SharedResource.GetLocal(res.message, res.message)
+                                    });
+                                }
                             }
-
-                            return Ok(new DeviceValidationResponse()
+                            catch (Exception ex)
                             {
-                                isSuccess = false,
-                                responseMessage = SharedResource.GetLocal(res.message, res.message)
-                            });
+                                string errMsg = HelperMethod.ExMsgBuild(ex, "SavePassword");
+                                throw new Exception(errMsg);
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            string errMsg = HelperMethod.ExMsgBuild(ex, "SavePassword");
-                            throw new Exception(errMsg);
-                        }
-                    }
 
-                    return Ok(new DeviceValidationResponse()
-                    {
-                        isSuccess = false,
-                        responseMessage = SharedResource.GetLocal(generatePWDRes.Item3, generatePWDRes.Item4)
-                    });
+                        return Ok(new DeviceValidationResponse()
+                        {
+                            isSuccess = false,
+                            responseMessage = SharedResource.GetLocal(generatePWDRes.Item3, generatePWDRes.Item4)
+                        });
+                    }
                 }
 
                 return Ok(new DeviceValidationResponse()
@@ -484,7 +491,7 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(RegisterWithOTPValidation))]
         public async Task<IActionResult> RegisterWithOTPValidation([FromBody] OTPLoginRequests login)
         {
-            SecurityService _auth = new();
+            SecurityService _auth;
 
             int.TryParse(login.versionName.Replace(".", string.Empty), out int _versionName);
             if (ApiManager.IsApkVersionBlockAsync(login.versionCode, _versionName, login.appToken))
@@ -511,7 +518,12 @@ namespace RetailerSelfCareApi.Controllers
                     moduleName = "Device Registration"
                 };
 
-                LoginUserInfoResponseV2 user = await _auth.ValidateOTPGetUser(vmModel);
+                LoginUserInfoResponseV2 user;
+                using (_auth = new())
+                {
+                    user = await _auth.ValidateOTPGetUser(vmModel);
+                }
+
                 if (user.user_name == null)
                 {
                     return Ok(new LogInResponse()
@@ -563,14 +575,21 @@ namespace RetailerSelfCareApi.Controllers
                     deviceId = login.deviceId,
                     lan = login.lan
                 };
-                _auth = new SecurityService ();
-                DeviceValidationResponse result = await _auth.ValidateDevice(deviceValidReq);
+
+                DeviceValidationResponse result;
+                using (_auth = new SecurityService())
+                {
+                    result = await _auth.ValidateDevice(deviceValidReq);
+                }
+
                 if (result.isSuccess)
                 {
                     try
                     {
-                        _auth = new();
-                        saveDeviceResp = await _auth.SaveDeviceInfo(deviceInfo);
+                        using (_auth = new())
+                        {
+                            saveDeviceResp = await _auth.SaveDeviceInfo(deviceInfo);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -617,14 +636,18 @@ namespace RetailerSelfCareApi.Controllers
 
                 await Task.Factory.StartNew(async () =>
                 {
-                    _auth = new();
-                    await _auth.SaveLoginAtmInfo(loginAtmInfo);
+                    using (_auth = new())
+                    {
+                        await _auth.SaveLoginAtmInfo(loginAtmInfo);
+                    }
                 });
 
                 await Task.Factory.StartNew(async () =>
                 {
-                    _auth = new();
-                    await _auth.UpsertLoginProviderIntoRedis(user.user_name, login.deviceId, loginProvider);
+                    using (_auth = new())
+                    {
+                        await _auth.UpsertLoginProviderIntoRedis(user.user_name, login.deviceId, loginProvider);
+                    }
                 });
 
 

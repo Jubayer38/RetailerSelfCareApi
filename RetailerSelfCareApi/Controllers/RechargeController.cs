@@ -1045,8 +1045,10 @@ namespace RetailerSelfCareApi.Controllers
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using(LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             string evPinChangeURL = ExternalKeys.EvPinChangeUrl;
 
@@ -1069,8 +1071,10 @@ namespace RetailerSelfCareApi.Controllers
             try
             {
                 var userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
-                rechargeService = new();
-                evPinChangeResponse = await rechargeService.SubmitEvPinChangeReq(xmlRequest, userAgent);
+                using(rechargeService = new())
+                {
+                    evPinChangeResponse = await rechargeService.SubmitEvPinChangeReq(xmlRequest, userAgent);
+                }
                 changeDate = DateTime.Now;
             }
             catch (Exception ex)
@@ -1086,8 +1090,10 @@ namespace RetailerSelfCareApi.Controllers
                 // Update pin change successfull time in ev pin log table
                 try
                 {
-                    rechargeService = new();
-                    await rechargeService.UpdateEvPinResetSuccessDate(model, changeDate);
+                    using(rechargeService = new())
+                    {
+                        await rechargeService.UpdateEvPinResetSuccessDate(model, changeDate);
+                    }
                 }
                 catch (Exception ex)
                 {

@@ -160,10 +160,12 @@ namespace RetailerSelfCareApi.Controllers.v2
             EvXmlResponse itopupSock = new();
             RetailerSessionCheck retailer = new();
 
-            stockService = new();
             string loginProvider = Request.HttpContext.Items["loginProviderId"] as string;
 
-            retailer = await stockService.CheckRetailerByCode(detailRequest.retailerCode, loginProvider);
+            using (stockService = new())
+            {
+                retailer = await stockService.CheckRetailerByCode(detailRequest.retailerCode, loginProvider);
+            }
 
             if (string.IsNullOrEmpty(loginProvider) || !retailer.isSessionValid)
             {
@@ -176,14 +178,20 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             if (detailRequest.itemCode == 1)//SC
             {
-                stockService = new();
-                DataTable scDetails = await stockService.GetScStockDetails(detailRequest);
+                DataTable scDetails = new();
+                using (stockService = new())
+                {
+                    scDetails = await stockService.GetScStockDetails(detailRequest);
+                }
                 stockDetials = scDetails.AsEnumerable().Select(row => new StockDetialsModel(row)).ToList();
             }
             else if (detailRequest.itemCode == 2)//SIM
             {
-                stockService = new(Connections.RetAppDbCS);
-                DataTable simDetails = stockService.GetSimStockDetails(detailRequest);
+                DataTable simDetails = new();
+                using (stockService = new(Connections.RetAppDbCS))
+                {
+                    simDetails = stockService.GetSimStockDetails(detailRequest);
+                }
                 stockDetials = simDetails.AsEnumerable().Select(row => new StockDetialsModel(row)).ToList();
             }
             else if (detailRequest.itemCode == 3)//ITopUp Current Balance
@@ -205,14 +213,19 @@ namespace RetailerSelfCareApi.Controllers.v2
                     Language1 = "0"
                 };
 
-                stockService = new();
-                itopupSock = stockService.GetITOPUPStockSummary(xmlRequest, detailRequest);
-                traceMsg = itopupSock.message;
+                using (stockService = new())
+                {
+                    itopupSock = stockService.GetITOPUPStockSummary(xmlRequest, detailRequest);
+                    traceMsg = itopupSock.message;
+                }
 
-                stockService = new();
-                StockDetialsModel stockDetail = stockService.StockDetialModelMaker(itopupSock);
+                StockDetialsModel stockDetail;
+                using (stockService = new())
+                {
+                    stockDetail = stockService.StockDetialModelMaker(itopupSock);
+                    stockDetials.Add(stockDetail);
+                }
 
-                stockDetials.Add(stockDetail);
                 status = itopupSock.txnStatus.Equals("200");
 
                 if (status)
@@ -230,8 +243,11 @@ namespace RetailerSelfCareApi.Controllers.v2
                             UpdateTime = dateTime
                         };
 
-                        stockService = new();
-                        int res = await stockService.UpdateItopUpBalance(model);
+                        int res;
+                        using (stockService = new())
+                        {
+                            res = await stockService.UpdateItopUpBalance(model);
+                        }
                         if (res == 0)
                         {
                             traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "Unable to update Retailer Balance;", null);
