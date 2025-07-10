@@ -39,9 +39,12 @@ namespace RetailerSelfCareApi.Controllers
         [Route("RechargeOffers")]
         public IActionResult GetRechargeOffers([FromBody] OfferRequest offer)
         {
-            RechargeService rechargeService = new(Connections.RetAppDbCS);
             offer.rechargeType = (int)OfferType.RechargeOffer;
-            DataTable offers = rechargeService.GetRechargeOffers(offer);
+            DataTable offers;
+            using(RechargeService rechargeService = new(Connections.RetAppDbCS))
+            {
+                offers = rechargeService.GetRechargeOffers(offer);
+            }
 
             List<RechargePackageModel> rechargePackageModels = offers.AsEnumerable().Select(row => HelperMethod.ModelBinding<RechargePackageModel>(row, "", offer.lan)).ToList();
 
@@ -400,8 +403,10 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                RechargeService retailerService = new();
-                dt = await retailerService.GetRetailerEvPinResetHistory(requestModel);
+                using (RechargeService retailerService = new())
+                {
+                    dt = await retailerService.GetRetailerEvPinResetHistory(requestModel);
+                }
             }
             catch (Exception ex)
             {

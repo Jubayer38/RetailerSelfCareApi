@@ -164,8 +164,11 @@ namespace RetailerSelfCareApi.Controllers
         [Route("GetSCExpiry")]
         public IActionResult SCExpires([FromBody] RetailerRequest request)
         {
-            StockService rechargeService = new(Connections.RetAppDbCS);
-            DataTable scDetails = rechargeService.ScExpire(request.retailerCode);
+            DataTable scDetails;
+            using (StockService rechargeService = new(Connections.RetAppDbCS))
+            {
+                scDetails = rechargeService.ScExpire(request.retailerCode);
+            }
             List<ScExpireModel> scExpireModels = scDetails.AsEnumerable().Select(row => new ScExpireModel(row)).ToList();
 
             return new OkObjectResult(new ResponseMessage()

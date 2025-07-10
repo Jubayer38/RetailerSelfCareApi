@@ -626,12 +626,15 @@ namespace RetailerSelfCareApi.Controllers
 
         private static async Task<CommissionModel> ProcessDailyCommission(CommissionRequest commission)
         {
-            CommissionService commissionService = new(Connections.RetAppDbCS);
+            CommissionService commissionService;
             DataTable commSummary = new();
 
             try
             {
-                commSummary = await commissionService.GetDailyCommSummary(commission);
+                using (commissionService = new(Connections.RetAppDbCS))
+                {
+                    commSummary = await commissionService.GetDailyCommSummary(commission);
+                }
             }
             catch (Exception ex)
             {
@@ -647,12 +650,14 @@ namespace RetailerSelfCareApi.Controllers
                     commission.sortByAmount = commission.sortByAmount.ToUpper();
                 }
 
-                commissionService = new(Connections.RetAppDbCS);
                 DataTable commDetails = new();
 
                 try
                 {
-                    commDetails = await commissionService.GetDailyCommDetails(commission);
+                    using (commissionService = new(Connections.RetAppDbCS))
+                    {
+                        commDetails = await commissionService.GetDailyCommDetails(commission);
+                    }
                 }
                 catch (Exception ex)
                 {

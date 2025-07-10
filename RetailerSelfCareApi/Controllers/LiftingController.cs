@@ -34,8 +34,11 @@ namespace RetailerSelfCareApi.Controllers
         [Route("ProductCategory")]
         public async Task<IActionResult> ProductCategory([FromBody] ProductCategoryRequest categoryRequest)
         {
-            LiftingService liftingService = new(Connections.DMSCS);
-            DataTable lifting = await liftingService.ProductCategory(categoryRequest);
+            DataTable lifting;
+            using (LiftingService liftingService = new(Connections.DMSCS))
+            {
+                lifting = await liftingService.ProductCategory(categoryRequest);
+            }
 
             List<ProductCategoryModel> liftings = lifting.AsEnumerable().Select(row => new ProductCategoryModel(row)).ToList();
 

@@ -69,12 +69,15 @@ namespace RetailerSelfCareApi.Controllers.v2
         public async Task<IActionResult> GetRetailerByRCode([FromBody] RetailerRequest retailer)
         {
             string traceMsg = string.Empty;
-            RetailerV2Service retailerService = new();
+            RetailerV2Service retailerService;
             DataTable retailers = new();
 
             try
             {
-                retailers = await retailerService.GetRetailerDetails(retailer);
+                using(retailerService = new())
+                {
+                    retailers = await retailerService.GetRetailerDetails(retailer);
+                }
             }
             catch (Exception ex)
             {
@@ -87,8 +90,10 @@ namespace RetailerSelfCareApi.Controllers.v2
             string rating;
             try
             {
-                retailerService = new();
-                rating = await retailerService.RetailerRating(retailer);
+                using (retailerService = new())
+                {
+                    rating = await retailerService.RetailerRating(retailer);
+                }
             }
             catch (Exception ex)
             {
@@ -530,9 +535,11 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                 try
                 {
-                    redis = new RedisCache();
-                    var advertisementDetailsStr = await redis.GetCacheAsync(RedisCollectionNames.AdvertisementDetails);
-                    redisAppAdvertise = JsonConvert.DeserializeObject<List<AdvertisementDetailsRedis>>(advertisementDetailsStr)!;
+                    using(redis = new RedisCache())
+                    {
+                        var advertisementDetailsStr = await redis.GetCacheAsync(RedisCollectionNames.AdvertisementDetails);
+                        redisAppAdvertise = JsonConvert.DeserializeObject<List<AdvertisementDetailsRedis>>(advertisementDetailsStr)!;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -543,12 +550,14 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                 try
                 {
-                    redis = new RedisCache();
-                    string hasAdvIdsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerAdvertisementIds, retailerRequest.retailerCode);
-                    string hasAdvIds = JsonConvert.DeserializeObject<dynamic>(hasAdvIdsStr)!;
-                    if (!string.IsNullOrEmpty(hasAdvIds))
+                    using (redis = new RedisCache())
                     {
-                        advertisementIds = hasAdvIds.Split(',').Select(s => Convert.ToInt64(s)).ToList();
+                        string hasAdvIdsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerAdvertisementIds, retailerRequest.retailerCode);
+                        string hasAdvIds = JsonConvert.DeserializeObject<dynamic>(hasAdvIdsStr)!;
+                        if (!string.IsNullOrEmpty(hasAdvIds))
+                        {
+                            advertisementIds = hasAdvIds.Split(',').Select(s => Convert.ToInt64(s)).ToList();
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -599,12 +608,15 @@ namespace RetailerSelfCareApi.Controllers.v2
                 disclaimerRequest.lan = disclaimerRequest.lan.ToLower();
             }
 
-            RetailerV2Service retailerService = new();
             DataTable dtResp = new();
 
             try
             {
-                dtResp = await retailerService.GetDisclaimerNotices(disclaimerRequest.lan);
+                using (RetailerV2Service retailerService = new())
+                {
+                    // Get disclaimer notices from database
+                    dtResp = await retailerService.GetDisclaimerNotices(disclaimerRequest.lan);
+                }
             }
             catch (Exception ex)
             {
@@ -1381,12 +1393,14 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(GetTickerMessage))]
         public async Task<IActionResult> GetTickerMessage([FromBody] RetailerRequestV2 tickerRequest)
         {
-            RetailerV2Service retailerService = new();
             DataTable dtResp = new();
 
             try
             {
-                dtResp = await retailerService.GetTickerMessages(tickerRequest);
+                using (RetailerV2Service retailerService = new())
+                {
+                    dtResp = await retailerService.GetTickerMessages(tickerRequest);
+                }
             }
             catch (Exception ex)
             {
@@ -1404,8 +1418,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
 
             if (dtResp.Rows.Count > 0)
@@ -2005,11 +2021,18 @@ namespace RetailerSelfCareApi.Controllers.v2
             string userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
             model.userAgent = userAgent;
 
-            RechargeV2Service rechargeService = new();
-            OfferResponseModelNew irisOffers = await rechargeService.IRISOfferRequest(model);
+            OfferResponseModelNew irisOffers;
 
-            RetailerV2Service retailerService = new();
-            DataTable dt = await retailerService.GetAllIRISProductRating(model, userId);
+            using (RechargeV2Service rechargeService = new())
+            {
+                irisOffers = await rechargeService.IRISOfferRequest(model);
+            }
+
+            DataTable dt;
+            using (RetailerV2Service retailerService = new())
+            {
+                dt = await retailerService.GetAllIRISProductRating(model, userId);
+            }
 
             List<ProductRatingVM> allRating = dt.AsEnumerable().Select(row => HelperMethod.ModelBinding<ProductRatingVM>(row, string.Empty, model.lan)).ToList();
 

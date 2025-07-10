@@ -40,8 +40,11 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route("GetSalesUpdate")]
         public async Task<IActionResult> GetSalesUpdate([FromBody] RetailerRequest retailerRequest)
         {
-            SalesV2Service salesService = new();
-            DataTable salesUpdate = await salesService.GetSalesUpdate(retailerRequest);
+            DataTable salesUpdate;
+            using (SalesV2Service salesService = new())
+            {
+                salesUpdate = await salesService.GetSalesUpdate(retailerRequest);
+            }
             List<SalesUpdateModel> salesUpdates = salesUpdate.AsEnumerable().Select(row => new SalesUpdateModel(row)).ToList();
 
             return new OkObjectResult(new ResponseMessage()

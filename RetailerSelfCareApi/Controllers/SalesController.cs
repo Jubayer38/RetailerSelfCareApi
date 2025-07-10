@@ -93,8 +93,12 @@ namespace RetailerSelfCareApi.Controllers
         [Route("ThreeDaysMemo")]
         public async Task<IActionResult> ThreeDaysMemo([FromBody] RetailerRequest retailerRequest)
         {
-            SalesService salesService = new(Connections.DMSCS);
-            DataTable SalesMemo = await salesService.GetThreeDaysSalesMemo(retailerRequest);
+            DataTable SalesMemo;
+            using (SalesService salesService = new(Connections.DMSCS))
+            {
+                SalesMemo = await salesService.GetThreeDaysSalesMemo(retailerRequest);
+            }
+
             List<SalesMemoModel> SalesMemos = SalesMemo.AsEnumerable().Select(row => new SalesMemoModel(row)).ToList();
 
             return new OkObjectResult(new ResponseMessage()

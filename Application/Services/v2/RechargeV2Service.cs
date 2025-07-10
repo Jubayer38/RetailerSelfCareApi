@@ -350,8 +350,10 @@ namespace Application.Services.v2
             DataTable retailer = new();
             try
             {
-                stockService = new();
-                retailer = await stockService.GetRetailerByCode(rechargeRequest.retailerCode);
+                using (stockService = new())
+                {
+                    retailer = await stockService.GetRetailerByCode(rechargeRequest.retailerCode);
+                }
             }
             catch (Exception ex)
             {
@@ -359,12 +361,15 @@ namespace Application.Services.v2
                 throw new Exception(errMsg);
             }
 
-            stockService = new();
-            string retMsisdn = stockService.GetRetailerMSISDN(retailer);
+            string retMsisdn;
+            using (stockService = new())
+            {
+                retMsisdn = stockService.GetRetailerMSISDN(retailer);
+            }
             string evUrl = ExternalKeys.EvURL;
             string paymentType = rechargeRequest.paymentType == (int)PaymentType.prepaid ? "EXRCTRFREQ" : "EXPPBREQ";
 
-            RechargeV2Service rechargeService = new();
+            RechargeV2Service rechargeService;
 
             ItopUpXmlRequest xmlRequest = new()
             {
@@ -389,7 +394,10 @@ namespace Application.Services.v2
 
             try
             {
-                evResponse = rechargeService.EvRecharge(xmlRequest, rechargeRequest, "DigitalServiceEvRecharge", userAgent);
+                using(rechargeService = new())
+                {
+                    evResponse = rechargeService.EvRecharge(xmlRequest, rechargeRequest, "DigitalServiceEvRecharge", userAgent);
+                }
             }
             catch (Exception ex)
             {
@@ -461,14 +469,16 @@ namespace Application.Services.v2
                 ipAddress = HelperMethod.GetIPAddress()
             };
 
-            rechargeService = new();
             bool logStatus = false;
 
             if (status)
             {
                 try
                 {
-                    logStatus = await rechargeService.SaveTransactionLog(transObj);
+                    using(rechargeService = new())
+                    {
+                        logStatus = await rechargeService.SaveTransactionLog(transObj);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -503,8 +513,11 @@ namespace Application.Services.v2
                         UpdateTime = updateTime
                     };
 
-                    stockService = new();
-                    int res = await stockService.UpdateItopUpBalance(model);
+                    int res;
+                    using (stockService = new())
+                    {
+                        res = await stockService.UpdateItopUpBalance(model);
+                    }
                     if (res == 0)
                     {
                         traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "Unable to update Retailer Balance;", null);
@@ -837,8 +850,10 @@ namespace Application.Services.v2
                     OriginMethodName = thisMethodName
                 };
 
-                HttpService httpService = new();
-                irisResponse = await httpService.GetIRISOffers(rechargeXmlVM);
+                using(HttpService httpService = new())
+                {
+                    irisResponse = await httpService.GetIRISOffers(rechargeXmlVM);
+                }
 
                 if (irisResponse?.response?.statusCode == "0")
                 {

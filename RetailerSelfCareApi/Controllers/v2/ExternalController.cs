@@ -148,8 +148,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                UserService userService = new();
-                userValidRes = await userService.ValidateExternalUsers(reqModel.userName, reqModel.password);
+                using (UserService userService = new())
+                {
+                    userValidRes = await userService.ValidateExternalUsers(reqModel.userName, reqModel.password);
+                }
             }
             catch (Exception ex)
             {
@@ -194,8 +196,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                     long isBulkDataInsert;
                     try
                     {
-                        liftingService = new();
-                        isBulkDataInsert = await liftingService.SaveUsingOracleBulkCopy(dt);
+                        using (liftingService = new())
+                        {
+                            isBulkDataInsert = await liftingService.SaveUsingOracleBulkCopy(dt);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -204,8 +208,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                     if (isBulkDataInsert > 0)
                     {
-                        liftingService = new();
-                        _ = liftingService.UpdateStockRequisitionDeliveredOrder();
+                        using (liftingService = new())
+                        {
+                            _ = await liftingService.UpdateStockRequisitionDeliveredOrder();
+                        }
 
                         return Ok(new ResponseMessage()
                         {

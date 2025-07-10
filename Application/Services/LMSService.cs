@@ -146,44 +146,50 @@ namespace Application.Services
         {
             try
             {
-                RedisCache redis = new();
-                var pointsTrackStr = await redis.GetCacheAsync(RedisCollectionNames.LMSPointsTrack, model.retailerCode);
-
-                if (!string.IsNullOrWhiteSpace(pointsTrackStr))
+                RedisCache redis;
+                using (redis = new())
                 {
-                    var pointsAchTrack = JsonConvert.DeserializeObject<dynamic>(pointsTrackStr)!;
-                    DateTime pageLastUpdateDT = new(1970, 01, 01);
-                    try
-                    {
-                        pageLastUpdateDT = new DateTime((long)pointsAchTrack[model.appPage]);
-                    }
-                    catch (Exception)
-                    {
-                        //redis = new RedisCache();
-                        //string dataKey = "$." + model.retailerCode + "." + model.appPage;
-                        //await redis.UpdateCacheAsync(RedisCollectionNames.LMSPointsTrack, dataKey, DateTime.Now.Ticks.ToJsonString());
-                    }
+                    var pointsTrackStr = await redis.GetCacheAsync(RedisCollectionNames.LMSPointsTrack, model.retailerCode);
 
-                    //check if the date is yestarday
-                    if (DateTime.Now.Date > pageLastUpdateDT.Date)
+
+                    if (!string.IsNullOrWhiteSpace(pointsTrackStr))
                     {
+                        var pointsAchTrack = JsonConvert.DeserializeObject<dynamic>(pointsTrackStr)!;
+                        DateTime pageLastUpdateDT = new(1970, 01, 01);
+                        try
+                        {
+                            pageLastUpdateDT = new DateTime((long)pointsAchTrack[model.appPage]);
+                        }
+                        catch (Exception)
+                        {
+                            //redis = new RedisCache();
+                            //string dataKey = "$." + model.retailerCode + "." + model.appPage;
+                            //await redis.UpdateCacheAsync(RedisCollectionNames.LMSPointsTrack, dataKey, DateTime.Now.Ticks.ToJsonString());
+                        }
+
+                        //check if the date is yestarday
+                        if (DateTime.Now.Date > pageLastUpdateDT.Date)
+                        {
+                            await ExecuteTransaction(model);
+                        }
+                    }
+                    else
+                    {
+                        var jsonObj = new Dictionary<string, object>
+                        {
+                            [model.retailerCode] = new Dictionary<string, object>
+                            {
+                                [model.appPage] = DateTime.Now.Ticks
+                            }
+                        };
+
+                        using (redis = new RedisCache())
+                        {
+                            await redis.SetCacheAsync(RedisCollectionNames.LMSPointsTrack, jsonObj.ToJsonString());
+                        }
+
                         await ExecuteTransaction(model);
                     }
-                }
-                else
-                {
-                    var jsonObj = new Dictionary<string, object>
-                    {
-                        [model.retailerCode] = new Dictionary<string, object>
-                        {
-                            [model.appPage] = DateTime.Now.Ticks
-                        }
-                    };
-
-                    redis = new RedisCache();
-                    await redis.SetCacheAsync(RedisCollectionNames.LMSPointsTrack, jsonObj.ToJsonString());
-
-                    await ExecuteTransaction(model);
                 }
             }
             catch (Exception ex)

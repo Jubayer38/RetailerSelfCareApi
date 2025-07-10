@@ -1147,14 +1147,19 @@ namespace RetailerSelfCareApi.Controllers.v2
         {
             string userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
             offerRequest.userAgent = userAgent;
-            RechargeV2Service rechargeService = new();
-            OfferResponseModelNew responseModel = await rechargeService.IRISOfferRequestV2(offerRequest);
+            OfferResponseModelNew responseModel;
+            using(RechargeV2Service rechargeService = new())
+            {
+                responseModel = await rechargeService.IRISOfferRequestV2(offerRequest);
+            }
 
             if (!string.IsNullOrWhiteSpace(offerRequest.amount))
             {
-                RetailerV2Service retailerService = new();
-                List<OfferModelNew> rechargeOffers = await retailerService.GetAdminsRechargeOffers(offerRequest);
-                responseModel.OfferList.AddRange(rechargeOffers);
+                using (RetailerV2Service retailerService = new())
+                {
+                    List<OfferModelNew> rechargeOffers = await retailerService.GetAdminsRechargeOffers(offerRequest);
+                    responseModel.OfferList.AddRange(rechargeOffers);
+                }
             }
 
             if (responseModel.statusCode != "0")

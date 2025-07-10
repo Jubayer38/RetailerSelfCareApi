@@ -1242,8 +1242,11 @@ namespace RetailerSelfCareApi.Controllers
         {
             try
             {
-                RetailerService retailerService = new(Connections.RetAppDbCS);
-                DataTable dataTable = retailerService.RetailerDenoReport(searchRequest);
+                DataTable dataTable;
+                using (RetailerService retailerService = new(Connections.RetAppDbCS))
+                {
+                    dataTable = retailerService.RetailerDenoReport(searchRequest);
+                }
 
                 DenoDetailsModel denoDetails = new();
                 if (dataTable.Rows.Count > 0)
@@ -5120,12 +5123,14 @@ namespace RetailerSelfCareApi.Controllers
         public async Task<IActionResult> SubmitProductRating([FromBody] SubmitProductRating model)
         {
             model.userId = UserSession.userId;
-            RetailerService retailerService = new(Connections.RetAppDbCS);
             long rated = 0;
 
             try
             {
-                rated = await retailerService.SaveProductRating(model);
+                using(RetailerService retailerService = new(Connections.RetAppDbCS))
+                {
+                    rated = await retailerService.SaveProductRating(model);
+                }
             }
             catch (Exception ex)
             {
@@ -5144,8 +5149,10 @@ namespace RetailerSelfCareApi.Controllers
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using(LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             return Ok(new ResponseMessage()
             {
@@ -5236,8 +5243,11 @@ namespace RetailerSelfCareApi.Controllers
         [Route("DeleteContactNumber")]
         public async Task<IActionResult> DeleteContactNumber([FromBody] ContactDeleteRequest deleteRequest)
         {
-            RetailerService retailerService = new();
-            int res = await retailerService.DeleteContact(deleteRequest.contactId);
+            int res;
+            using(RetailerService retailerService = new())
+            {
+                res = await retailerService.DeleteContact(deleteRequest.contactId);
+            }
 
             string msg = res > 0 ?
                 SharedResource.GetLocal("Success", Message.Success) :
