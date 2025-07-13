@@ -561,11 +561,14 @@ namespace RetailerSelfCareApi.Controllers
             #region Get data from Oracle
             DataTable dataTable = new();
 
-            RetailerService retailerService = new(Connections.RetAppDbCS);
+            RetailerService retailerService;
 
             try
             {
-                dataTable = retailerService.GetC2CTransactions(tranRequest);
+                using (retailerService = new(Connections.RetAppDbCS))
+                {
+                    dataTable = retailerService.GetC2CTransactions(tranRequest);
+                }
             }
             catch (Exception ex)
             {
@@ -579,9 +582,11 @@ namespace RetailerSelfCareApi.Controllers
             DataTable otfTrans = new();
             try
             {
-                retailerService = new();
-                otfTrans = await retailerService.GetC2SOtfTransactions(tranRequest);
-                dataTable.Merge(otfTrans, true, MissingSchemaAction.Ignore);
+                using (retailerService = new())
+                {
+                    otfTrans = await retailerService.GetC2SOtfTransactions(tranRequest);
+                    dataTable.Merge(otfTrans, true, MissingSchemaAction.Ignore);
+                }
             }
             catch (Exception ex)
             {
@@ -593,8 +598,11 @@ namespace RetailerSelfCareApi.Controllers
             #region Get data from API
 
             string retailerNumber = tranRequest.iTopUpNumber.Substring(1);
-            retailerService = new();
-            string rsoNumber = await retailerService.GetRSONumber(tranRequest.retailerCode);
+            string rsoNumber;
+            using (retailerService = new())
+            {
+                rsoNumber = await retailerService.GetRSONumber(tranRequest.retailerCode);
+            }
 
             C2CRechargeHistReq xmlRequest = new()
             {
@@ -613,13 +621,16 @@ namespace RetailerSelfCareApi.Controllers
                 Receiver_Msisdn = retailerNumber
             };
 
-            retailerService = new();
+            List<C2CRechrgHistResp> rechargeHistToday = [];
 
-            var resp = await retailerService.GetC2CRechrgHist(xmlRequest, tranRequest);
+            using (retailerService = new())
+            {
+                var resp = await retailerService.GetC2CRechrgHist(xmlRequest, tranRequest);
 
-            List<C2CRechrgHistResp> rechargeHistToday = resp.Item1.Where(r => !string.IsNullOrWhiteSpace(r.date) && DateTime.ParseExact(r.date, "dd/MM/yy HH:mm:ss", CultureInfo.InvariantCulture).Date == DateTime.Today).ToList();
+                rechargeHistToday = resp.Item1.Where(r => !string.IsNullOrWhiteSpace(r.date) && DateTime.ParseExact(r.date, "dd/MM/yy HH:mm:ss", CultureInfo.InvariantCulture).Date == DateTime.Today).ToList();
 
-            traceMsg = HelperMethod.BuildTraceMessage(traceMsg, resp.Item2, null);
+                traceMsg = HelperMethod.BuildTraceMessage(traceMsg, resp.Item2, null);
+            }
 
             if (!string.IsNullOrWhiteSpace(traceMsg))
             {
@@ -1656,11 +1667,18 @@ namespace RetailerSelfCareApi.Controllers
             string userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
             model.userAgent = userAgent;
 
-            RechargeService rechargeService = new();
-            OfferResponseModelNew irisOffers = await rechargeService.IRISOfferRequest(model);
+            OfferResponseModelNew irisOffers;
 
-            RetailerService retailerService = new(Connections.RetAppDbCS);
-            DataTable dt = await retailerService.GetAllIRISProductRating(model, userId);
+            using (RechargeService rechargeService = new())
+            {
+                irisOffers = await rechargeService.IRISOfferRequest(model);
+            }
+
+            DataTable dt;
+            using (RetailerService retailerService = new(Connections.RetAppDbCS))
+            {
+                dt = await retailerService.GetAllIRISProductRating(model, userId);
+            }
 
             List<ProductRatingVM> allRating = dt.AsEnumerable().Select(row => HelperMethod.ModelBinding<ProductRatingVM>(row, string.Empty, model.lan)).ToList();
 
@@ -2536,24 +2554,29 @@ namespace RetailerSelfCareApi.Controllers
         public async Task<IActionResult> GetCampCompareList([FromBody] CampaignRequestV3 model)
         {
             model.userId = UserSession.userId;
-            RetailerService retailerService = new();
+            RetailerService retailerService;
             DataTable campaigns = new();
 
             try
             {
-                campaigns = await retailerService.GetCampaignList(model);
+                using (retailerService = new())
+                {
+                    campaigns = await retailerService.GetCampaignList(model);
+                }
             }
             catch (Exception ex)
             {
                 throw new Exception(HelperMethod.ExMsgBuild(ex, "GetCampaignList"));
             }
 
-            retailerService = new();
             DataTable selfCampaign = new();
 
             try
             {
-                selfCampaign = await retailerService.GetSelfCampaignList(model);
+                using (retailerService = new())
+                {
+                    selfCampaign = await retailerService.GetSelfCampaignList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -3490,8 +3513,11 @@ namespace RetailerSelfCareApi.Controllers
                 throw new Exception(msg);
             }
 
-            RetailerService retailerService = new();
-            string callingTime = await retailerService.GetRegionWisePopupCallingTime(retailerRequest.iTopUpNumber);
+            string callingTime;
+            using (RetailerService retailerService = new())
+            {
+                callingTime = await retailerService.GetRegionWisePopupCallingTime(retailerRequest.iTopUpNumber);
+            }
 
             var data = new
             {
@@ -4436,12 +4462,14 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetTickerMessage))]
         public async Task<IActionResult> GetTickerMessage([FromBody] RetailerRequestV2 tickerRequest)
         {
-            RetailerService retailerService = new();
             DataTable dtResp = new();
 
             try
             {
-                dtResp = await retailerService.GetTickerMessages(tickerRequest);
+                using(RetailerService retailerService = new())
+                {
+                    dtResp = await retailerService.GetTickerMessages(tickerRequest);
+                }
             }
             catch (Exception ex)
             {
@@ -4459,8 +4487,10 @@ namespace RetailerSelfCareApi.Controllers
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
 
             if (dtResp.Rows.Count > 0)
@@ -4579,17 +4609,21 @@ namespace RetailerSelfCareApi.Controllers
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
-
-            RetailerService retailerService = new();
+            RetailerService retailerService;
             int userId = UserSession.userId;
             long insertId = 0;
 
             try
             {
-                insertId = await retailerService.SaveDigitalService(model, userId);
+                using (retailerService = new())
+                {
+                    insertId = await retailerService.SaveDigitalService(model, userId);
+                }
             }
             catch (Exception ex)
             {
@@ -4601,15 +4635,19 @@ namespace RetailerSelfCareApi.Controllers
                 try
                 {
                     var userAgent = HttpContext.Request?.Headers.UserAgent.ToString();
-                    RechargeService rechargeService = new();
-                    var resData = await rechargeService.DigitalServiceEvRecharge(model, userAgent);
-                    rechargeResponse = resData.message;
-                    traceMsg = string.IsNullOrEmpty(traceMsg) ? resData.message : traceMsg + " || " + resData.message;
+                    using (RechargeService rechargeService = new())
+                    {
+                        var resData = await rechargeService.DigitalServiceEvRecharge(model, userAgent);
+                        rechargeResponse = resData.message;
+                        traceMsg = string.IsNullOrEmpty(traceMsg) ? resData.message : traceMsg + " || " + resData.message;
+                    }
                 }
                 catch (Exception ex)
                 {
-                    retailerService = new(Connections.RetAppDbCS);
-                    await retailerService.DeleteTableRows(insertId, "RSLTBLDIGITALSERVICE", "DIGITAL_SERVICE_ID");
+                    using (retailerService = new(Connections.RetAppDbCS))
+                    {
+                        await retailerService.DeleteTableRows(insertId, "RSLTBLDIGITALSERVICE", "DIGITAL_SERVICE_ID");
+                    }
 
                     return Ok(new ResponseMessage()
                     {
@@ -4623,8 +4661,10 @@ namespace RetailerSelfCareApi.Controllers
             {
                 try
                 {
-                    retailerService = new();
-                    await retailerService.DigitalServiceSmsSendToUser(model.productId, model.subscriberNumber);
+                    using (retailerService = new())
+                    {
+                        await retailerService.DigitalServiceSmsSendToUser(model.productId, model.subscriberNumber);
+                    }
                 }
                 catch (Exception ex)
                 {

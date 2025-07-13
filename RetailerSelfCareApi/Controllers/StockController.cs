@@ -314,8 +314,10 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                StockService stockService = new(Connections.RetAppDbCS);
-                dt = await stockService.GetSCSalesHistory(reqModel);
+                using(StockService stockService = new(Connections.RetAppDbCS))
+                {
+                    dt = await stockService.GetSCSalesHistory(reqModel);
+                }
             }
             catch (Exception ex)
             {

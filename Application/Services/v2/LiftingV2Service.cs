@@ -78,8 +78,10 @@ namespace Application.Services.v2
             {
                 if (!string.IsNullOrEmpty(simStatus.msisdn))
                 {
-                    HttpService httpService = new();
-                    return await httpService.CallCheckSimStatusApi(simStatus, url);
+                    using (HttpService httpService = new())
+                    {
+                        return await httpService.CallCheckSimStatusApi(simStatus, url);
+                    }
                 }
 
                 return await _repo.CheckSimStatusByserialNo(simStatus);

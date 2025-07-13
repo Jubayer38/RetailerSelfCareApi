@@ -148,31 +148,37 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                redis = new RedisCache();
-                var redPkgDetailsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerSalesSummary, retailer.retailerCode);
-
-                if (!string.IsNullOrEmpty(redPkgDetailsStr))
+                using (redis = new RedisCache())
                 {
-                    summary = JsonConvert.DeserializeObject<List<SalesSummaryModel>>(redPkgDetailsStr)!;
-                }
-                else
-                {
-                    SalesService salesService = new(Connections.DMSCS);
-                    DataTable sales = new();
+                    var redPkgDetailsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerSalesSummary, retailer.retailerCode);
 
-                    try
+                    if (!string.IsNullOrEmpty(redPkgDetailsStr))
                     {
-                        sales = await salesService.GetSalesSummaryV2(retailer);
+                        summary = JsonConvert.DeserializeObject<List<SalesSummaryModel>>(redPkgDetailsStr)!;
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSalesSummaryV2"));
+                        DataTable sales = new();
+
+                        try
+                        {
+                            using (SalesService salesService = new(Connections.DMSCS))
+                            {
+                                sales = await salesService.GetSalesSummaryV2(retailer);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(HelperMethod.ExMsgBuild(ex, "GetSalesSummaryV2"));
+                        }
+
+                        summary = sales.AsEnumerable().Select(row => HelperMethod.ModelBinding<SalesSummaryModel>(row)).ToList();
+
+                        using (redis = new RedisCache())
+                        {
+                            await redis.SetCacheAsync(RedisCollectionNames.RetailerSalesSummary, retailer.retailerCode, summary.ToJsonString());
+                        }
                     }
-
-                    summary = sales.AsEnumerable().Select(row => HelperMethod.ModelBinding<SalesSummaryModel>(row)).ToList();
-
-                    redis = new RedisCache();
-                    await redis.SetCacheAsync(RedisCollectionNames.RetailerSalesSummary, retailer.retailerCode, summary.ToJsonString());
                 }
             }
             catch (Exception ex)

@@ -596,8 +596,11 @@ namespace Application.Services.v2
                 requestMethod = "StarTrekStatusCheck"
             };
 
-            HttpService httpService = new();
-            StarTrekResponse resp = await httpService.StarTrekStatusCheckingRequest(httpModel);
+            StarTrekResponse resp;
+            using (HttpService httpService = new())
+            {
+                resp = await httpService.StarTrekStatusCheckingRequest(httpModel);
+            }
             if (resp?.included.Count <= 0)
                 return isStartTrek;
 
@@ -633,8 +636,10 @@ namespace Application.Services.v2
                     OriginMethodName = thisMethodName
                 };
 
-                HttpService httpService = new();
-                irisResponse = await httpService.GetIRISOffers(rechargeXmlVM);
+                using(HttpService httpService = new())
+                {
+                    irisResponse = await httpService.GetIRISOffers(rechargeXmlVM);
+                }
 
                 if (irisResponse?.response?.statusCode == "0")
                 {

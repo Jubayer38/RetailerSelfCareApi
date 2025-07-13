@@ -84,8 +84,10 @@ namespace RetailerSelfCareApi.Controllers
             long res = 0;
             try
             {
-                liftingService = new(Connections.RetAppDbCS);
-                res = await liftingService.GetExistRequest(liftingRequest);
+                using (liftingService = new(Connections.RetAppDbCS))
+                {
+                    res = await liftingService.GetExistRequest(liftingRequest);
+                }
             }
             catch (Exception ex)
             {
@@ -110,8 +112,10 @@ namespace RetailerSelfCareApi.Controllers
             long lifting = 0;
             try
             {
-                liftingService = new(Connections.RetAppDbCS);
-                lifting = await liftingService.SaveLiftingV3(liftingRequest);
+                using (liftingService = new(Connections.RetAppDbCS))
+                {
+                    lifting = await liftingService.SaveLiftingV3(liftingRequest);
+                }
             }
             catch (Exception ex)
             {
@@ -146,8 +150,10 @@ namespace RetailerSelfCareApi.Controllers
                         requestMethod = "Lifting"
                     };
 
-                    HttpService httpService = new();
-                    rcExtSubmit = await httpService.SubmitExternalRequest(httpModel);
+                    using (HttpService httpService = new())
+                    {
+                        rcExtSubmit = await httpService.SubmitExternalRequest(httpModel);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -172,8 +178,10 @@ namespace RetailerSelfCareApi.Controllers
 
                 try
                 {
-                    liftingService = new(Connections.RetAppDbCS);
-                    long resp = await liftingService.UpdateStockRequestStatus(ul);
+                    using (liftingService = new(Connections.RetAppDbCS))
+                    {
+                        long resp = await liftingService.UpdateStockRequestStatus(ul);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -204,8 +212,10 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                LiftingService liftingService = new(Connections.RetAppDbCS);
-                lifting = await liftingService.LiftingHistoryV3(liftingRequest);
+                using (LiftingService liftingService = new(Connections.RetAppDbCS))
+                {
+                    lifting = await liftingService.LiftingHistoryV3(liftingRequest);
+                }
             }
             catch (Exception ex)
             {

@@ -538,8 +538,10 @@ namespace RetailerSelfCareApi.Controllers
             string isUpdated = string.Empty;
             try
             {
-                redis = new RedisCache();
-                isUpdated = await redis.GetCacheAsync(RedisCollectionNames.RetailerTarVsAchvStatus, reqModel.retailerCode);
+                using (redis = new RedisCache())
+                {
+                    isUpdated = await redis.GetCacheAsync(RedisCollectionNames.RetailerTarVsAchvStatus, reqModel.retailerCode);
+                }
             }
             catch (Exception ex)
             {
@@ -548,21 +550,26 @@ namespace RetailerSelfCareApi.Controllers
 
             if (!string.IsNullOrWhiteSpace(isUpdated))
             {
-                redis = new RedisCache();
-                string tarVsAchvsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerTarVsAchvSummary, reqModel.retailerCode);
-                if (!string.IsNullOrWhiteSpace(tarVsAchvsStr))
+                using (redis = new RedisCache())
                 {
-                    tarVsAchvs = JsonConvert.DeserializeObject<List<TarVsAchvSummaryModel>>(tarVsAchvsStr)!;
+                    string tarVsAchvsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerTarVsAchvSummary, reqModel.retailerCode);
+
+                    if (!string.IsNullOrWhiteSpace(tarVsAchvsStr))
+                    {
+                        tarVsAchvs = JsonConvert.DeserializeObject<List<TarVsAchvSummaryModel>>(tarVsAchvsStr)!;
+                    }
                 }
             }
             else
             {
-                CommissionService tarVsAchvService = new(Connections.RetAppDbCS);
                 DataTable tarVsAchvDT = new();
 
                 try
                 {
-                    tarVsAchvDT = await tarVsAchvService.TarVsAchvSummary(reqModel);
+                    using (CommissionService tarVsAchvService = new(Connections.RetAppDbCS))
+                    {
+                        tarVsAchvDT = await tarVsAchvService.TarVsAchvSummary(reqModel);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -571,11 +578,15 @@ namespace RetailerSelfCareApi.Controllers
 
                 tarVsAchvs = tarVsAchvDT.AsEnumerable().Select(row => HelperMethod.ModelBinding<TarVsAchvSummaryModel>(row)).ToList();
 
-                redis = new RedisCache();
-                await redis.SetCacheAsync(RedisCollectionNames.RetailerTarVsAchvStatus, reqModel.retailerCode, "1");
+                using (redis = new RedisCache())
+                {
+                    await redis.SetCacheAsync(RedisCollectionNames.RetailerTarVsAchvStatus, reqModel.retailerCode, "1");
+                }
 
-                redis = new RedisCache();
-                await redis.SetCacheAsync(RedisCollectionNames.RetailerTarVsAchvSummary, reqModel.retailerCode, tarVsAchvs.ToJsonString());
+                using (redis = new RedisCache())
+                {
+                    await redis.SetCacheAsync(RedisCollectionNames.RetailerTarVsAchvSummary, reqModel.retailerCode, tarVsAchvs.ToJsonString());
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(traceMsg))

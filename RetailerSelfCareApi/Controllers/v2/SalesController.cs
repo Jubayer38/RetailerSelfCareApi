@@ -82,8 +82,12 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route("GetSalesRoutePerformance")]
         public async Task<IActionResult> GetSalesRoutePerformance([FromBody] RetailerRequest retailerRequest)
         {
-            SalesV2Service salesService = new();
-            DataTable salesRoutePerform = await salesService.GetSalesRoutePerformance(retailerRequest);
+            DataTable salesRoutePerform;
+            using (SalesV2Service salesService = new())
+            {
+                salesRoutePerform = await salesService.GetSalesRoutePerformance(retailerRequest);
+            }
+
             List<SalesPerformModel> salesRoutePerforms = salesRoutePerform.AsEnumerable().Select(row => new SalesPerformModel(row)).ToList();
 
             return new OkObjectResult(new ResponseMessage()

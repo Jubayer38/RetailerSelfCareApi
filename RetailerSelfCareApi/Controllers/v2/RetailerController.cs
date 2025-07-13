@@ -2082,7 +2082,6 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(ProductTypeList))]
         public async Task<IActionResult> ProductTypeList([FromBody] RetailerRequest model)
         {
-            RetailerV2Service retailerService = new();
             DataTable dt = new();
             ProductTypeModel type = new();
             List<ProductTypeModel> types = [];
@@ -2095,7 +2094,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                dt = await retailerService.GetProductTypeList();
+                using(RetailerV2Service retailerService = new())
+                {
+                    dt = await retailerService.GetProductTypeList();
+                }
             }
             catch (Exception ex)
             {
@@ -2451,14 +2453,17 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(GetSelfCampDates))]
         public async Task<IActionResult> GetSelfCampDates([FromBody] SelfCampDatesRequest model)
         {
-            RetailerV2Service NewRetailerService = new();
+            RetailerV2Service NewRetailerService;
 
             string ids = string.Join(",", model.targetIdList);
             DataTable dt = new();
 
             try
             {
-                dt = await NewRetailerService.GetCampRetailerDates(model, ids);
+                using(NewRetailerService = new())
+                {
+                    dt = await NewRetailerService.GetCampRetailerDates(model, ids);
+                }
             }
             catch (Exception ex)
             {
@@ -3085,7 +3090,7 @@ namespace RetailerSelfCareApi.Controllers.v2
         public async Task<IActionResult> CreateCampaignByRetailer([FromBody] CreateCampaignByRetailerRequest model)
         {
             string traceMsg = string.Empty;
-            RetailerV2Service retailerService = new();
+            RetailerV2Service retailerService;
 
             model.userId = UserSession.userId;
 
@@ -3093,7 +3098,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                campInsertResult = await retailerService.CampaignByRetailer(model);
+                using(retailerService = new())
+                {
+                    campInsertResult = await retailerService.CampaignByRetailer(model);
+                }
             }
             catch (Exception ex)
             {
@@ -3136,7 +3144,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                 try
                 {
-                    targetResult = await retailerService.InsertRetailerCampTarget(campTarget);
+                    using (retailerService = new())
+                    {
+                        targetResult = await retailerService.InsertRetailerCampTarget(campTarget);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -3146,11 +3157,12 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                 if (targetResult < 0)
                 {
-                    retailerService = new();
-
                     try
                     {
-                        await retailerService.DeleteInsertedCampaign(campTarget.campaignId, campTarget.campEnrollId, Convert.ToInt32(campResultSplit[2]));
+                        using (retailerService = new())
+                        {
+                            await retailerService.DeleteInsertedCampaign(campTarget.campaignId, campTarget.campEnrollId, Convert.ToInt32(campResultSplit[2]));
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -3319,8 +3331,11 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route("DeleteContactNumber")]
         public async Task<IActionResult> DeleteContactNumber([FromBody] ContactDeleteRequest deleteRequest)
         {
-            RetailerV2Service retailerService = new();
-            int res = await retailerService.DeleteContact(deleteRequest.contactId);
+            int res;
+            using(RetailerV2Service retailerService = new())
+            {
+                res = await retailerService.DeleteContact(deleteRequest.contactId);
+            }
 
             string msg = res > 0 ?
                 SharedResource.GetLocal("Success", Message.Success) :
