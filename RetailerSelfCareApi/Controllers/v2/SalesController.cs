@@ -103,8 +103,11 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route("ThreeDaysMemo")]
         public async Task<IActionResult> ThreeDaysSalesMemo([FromBody] RetailerRequest retailerRequest)
         {
-            SalesV2Service salesService = new(Connections.RetAppDbCS);
-            DataTable SalesMemo = await salesService.GetThreeDaysSalesMemo(retailerRequest);
+            DataTable SalesMemo;
+            using (SalesV2Service salesService = new(Connections.RetAppDbCS))
+            {
+                SalesMemo = await salesService.GetThreeDaysSalesMemo(retailerRequest);
+            }
             List<SalesMemoModel> SalesMemos = SalesMemo.AsEnumerable().Select(row => new SalesMemoModel(row)).ToList();
 
             return new OkObjectResult(new ResponseMessage()
@@ -251,11 +254,16 @@ namespace RetailerSelfCareApi.Controllers.v2
                     break;
             }
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
-            SalesV2Service salesService = new(Connections.RetAppDbCS);
-            DataTable sales = await salesService.GetSalesDetails(salesDetails);
+            DataTable sales;
+            using (SalesV2Service salesService = new(Connections.RetAppDbCS))
+            {
+                sales = await salesService.GetSalesDetails(salesDetails);
+            }
             List<SalesDetailModel> salesDetailModels = sales.AsEnumerable().Select(row => new SalesDetailModel(row)).ToList();
 
             return Ok(new ResponseMessage()

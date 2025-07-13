@@ -217,8 +217,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                     _ = Task.Run(async () =>
                     {
-                        retailerService = new();
-                        await retailerService.SaveNdSendFileWithResize(imageModel, retailer.retailerCode);
+                        using (retailerService = new())
+                        {
+                            await retailerService.SaveNdSendFileWithResize(imageModel, retailer.retailerCode);
+                        }
                     });
                 }
 
@@ -228,8 +230,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                 }
             }
 
-            retailerService = new();
-            bestPracticeId = await retailerService.RetailerBestPractice(retailer, userId);
+            using (retailerService = new())
+            {
+                bestPracticeId = await retailerService.RetailerBestPractice(retailer, userId);
+            }
 
             if (!string.IsNullOrWhiteSpace(traceMsg))
             {
@@ -712,9 +716,11 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(SubmitGamificationResponse))]
         public async Task<IActionResult> SubmitGamificationResponse([FromBody] GamificationResponseReq reqModel)
         {
-            RetailerV2Service retailerService = new();
-
-            long res = await retailerService.SaveGamificationResponse(reqModel);
+            long res;
+            using(RetailerV2Service retailerService = new())
+            {
+                res = await retailerService.SaveGamificationResponse(reqModel);
+            }
 
             return new OkObjectResult(new ResponseMessage()
             {
@@ -859,8 +865,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                RetailerV2Service retailerService = new();
-                dt = await retailerService.GetComplaintTitleList(reqModel);
+                using (RetailerV2Service retailerService = new())
+                {
+                    dt = await retailerService.GetComplaintTitleList(reqModel);
+                }
             }
             catch (Exception ex)
             {
@@ -1323,9 +1331,11 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                retailerService = new();
                 reqModel.status = "Pending";
-                insertId = await retailerService.SaveRSORating(reqModel, userId);
+                using (retailerService = new())
+                {
+                    insertId = await retailerService.SaveRSORating(reqModel, userId);
+                }
             }
             catch (Exception ex)
             {
@@ -1520,12 +1530,14 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route("Notifications")]
         public async Task<IActionResult> Notifications([FromBody] RetailerRequestV2 notificationRequest)
         {
-            RetailerV2Service retailerService = new();
             DataTable dataTable = new();
 
             try
             {
-                dataTable = await retailerService.GetNotifications(notificationRequest);
+                using (RetailerV2Service retailerService = new())
+                {
+                    dataTable = await retailerService.GetNotifications(notificationRequest);
+                }
             }
             catch (Exception ex)
             {
@@ -1578,8 +1590,11 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                     try
                     {
-                        redis = new RedisCache();
-                        string flashPopUpRedis = await redis.GetCacheAsync(RedisCollectionNames.FlashPopUpDetails);
+                        string flashPopUpRedis;
+                        using (redis = new RedisCache())
+                        {
+                            flashPopUpRedis = await redis.GetCacheAsync(RedisCollectionNames.FlashPopUpDetails);
+                        }
                         flashPopUpsRedis = JsonConvert.DeserializeObject<List<NotificationDetailsRedis>>(flashPopUpRedis)!;
                     }
                     catch (Exception ex)
@@ -1591,8 +1606,11 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                     try
                     {
-                        redis = new RedisCache();
-                        string hasFlashPopUpsIdsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerFlashPopUpIds, flashPopUpRequest.retailerCode);
+                        string hasFlashPopUpsIdsStr;
+                        using (redis = new RedisCache())
+                        {
+                            hasFlashPopUpsIdsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerFlashPopUpIds, flashPopUpRequest.retailerCode);
+                        }
                         string hasFlashPopUpIds = JsonConvert.DeserializeObject<dynamic>(hasFlashPopUpsIdsStr)!;
                         if (!string.IsNullOrWhiteSpace(hasFlashPopUpIds))
                         {
@@ -3127,7 +3145,6 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             for (var i = 0; i < model.targets.Count; i++)
             {
-                retailerService = new();
                 CampaignTargetListRequest target = model.targets[i];
 
                 CampaignTargetRequestModel campTarget = new();
@@ -3370,8 +3387,11 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                redis = new RedisCache();
-                string QAListStr = await redis.GetCacheAsync(RedisCollectionNames.QuickAccessList);
+                string QAListStr;
+                using (redis = new RedisCache())
+                {
+                    QAListStr = await redis.GetCacheAsync(RedisCollectionNames.QuickAccessList);
+                }
                 IEnumerable<QuickAccessRedisModel> quickAccessRedis = JsonConvert.DeserializeObject<IEnumerable<QuickAccessRedisModel>>(QAListStr);
                 quickAccessList = quickAccessRedis.Select(q => q.Adapt<QuickAccessModel>().SetIcon(quickAccessRequest.isDark));
             }
@@ -3386,8 +3406,10 @@ namespace RetailerSelfCareApi.Controllers.v2
             {
                 try
                 {
-                    redis = new RedisCache();
-                    retailerQAListStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerQuickAccess, quickAccessRequest.deviceId);
+                    using (redis = new RedisCache())
+                    {
+                        retailerQAListStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerQuickAccess, quickAccessRequest.deviceId);
+                    }
                     if (!string.IsNullOrWhiteSpace(retailerQAListStr))
                     {
                         qaList = JsonConvert.DeserializeObject<RetailerQAListRedis>(retailerQAListStr)!;
@@ -3401,32 +3423,38 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                 if (string.IsNullOrWhiteSpace(qaList.ActiveQAList) || string.IsNullOrWhiteSpace(qaList.InActiveQAList))
                 {
-                    RetailerV2Service retailerService = new();
+                    RetailerV2Service retailerService;
 
                     //pulling retailer wise active QA string
                     try
                     {
-                        qaList.ActiveQAList = await retailerService.GetActiveQAListIDs(quickAccessRequest);
+                        using (retailerService = new())
+                        {
+                            qaList.ActiveQAList = await retailerService.GetActiveQAListIDs(quickAccessRequest);
+                        }
                     }
                     catch (Exception ex)
                     {
                         throw new Exception(HelperMethod.ExMsgBuild(ex, "GetActiveQAList"));
                     }
 
-                    retailerService = new();
-
                     //pulling retailer wise inactive QA list
                     try
                     {
-                        qaList.InActiveQAList = await retailerService.GetInActiveQAListIDs(quickAccessRequest);
+                        using (retailerService = new())
+                        {
+                            qaList.InActiveQAList = await retailerService.GetInActiveQAListIDs(quickAccessRequest);
+                        }
                     }
                     catch (Exception ex)
                     {
                         throw new Exception(HelperMethod.ExMsgBuild(ex, "GetInActiveQAList"));
                     }
 
-                    redis = new RedisCache();
-                    await redis.SetCacheAsync(RedisCollectionNames.RetailerQuickAccess, quickAccessRequest.deviceId, qaList.ToJsonString());
+                    using (redis = new RedisCache())
+                    {
+                        await redis.SetCacheAsync(RedisCollectionNames.RetailerQuickAccess, quickAccessRequest.deviceId, qaList.ToJsonString());
+                    }
                 }
                 else
                 {
@@ -3520,8 +3548,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                     if (hasUpdate)
                     {
-                        redis = new RedisCache();
-                        await redis.SetCacheAsync(RedisCollectionNames.RetailerQuickAccess, quickAccessRequest.deviceId, qaList.ToJsonString());
+                        using (redis = new RedisCache())
+                        {
+                            await redis.SetCacheAsync(RedisCollectionNames.RetailerQuickAccess, quickAccessRequest.deviceId, qaList.ToJsonString());
+                        }
                     }
                 }
             }
@@ -4142,12 +4172,14 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(GetSecondaryDeviceList))]
         public async Task<IActionResult> GetSecondaryDeviceList([FromBody] RetailerRequest getSecondaryDeviceListRequest)
         {
-            RetailerV2Service retailerService = new();
             DataTable deviceList = new();
 
             try
             {
-                deviceList = await retailerService.SecondaryDeviceList(getSecondaryDeviceListRequest);
+                using (RetailerV2Service retailerService = new())
+                {
+                    deviceList = await retailerService.SecondaryDeviceList(getSecondaryDeviceListRequest);
+                }
             }
             catch (Exception ex)
             {

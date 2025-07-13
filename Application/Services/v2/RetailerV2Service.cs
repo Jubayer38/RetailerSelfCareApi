@@ -599,8 +599,10 @@ namespace Application.Services.v2
                             requestUrl = url
                         };
 
-                        HttpService httpService = new();
-                        _ = httpService.CallExternalApi<dynamic>(httpReqModel);
+                        using(HttpService httpService = new())
+                        {
+                            _ = httpService.CallExternalApi<dynamic>(httpReqModel);
+                        }
 
                     }
                 }
@@ -1235,8 +1237,10 @@ namespace Application.Services.v2
                     requestMethod = "SendPushNotificationTemp"
                 };
 
-                HttpService httpService = new();
-                await httpService.SendFcmNotificationViaWebApi<dynamic>(httpReqModel);
+                using(HttpService httpService = new())
+                {
+                    await httpService.SendFcmNotificationViaWebApi<dynamic>(httpReqModel);
+                }
             }
         }
 

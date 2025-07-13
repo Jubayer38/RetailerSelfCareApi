@@ -2254,8 +2254,10 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                RedisCache redis = new();
-                bool result = await redis.SetCacheAsync(RedisCollectionNames.RetailerQuickAccess, model.deviceId, retQAList.ToJsonString());
+                using(RedisCache redis = new())
+                {
+                    bool result = await redis.SetCacheAsync(RedisCollectionNames.RetailerQuickAccess, model.deviceId, retQAList.ToJsonString());
+                }
             }
             catch (Exception ex)
             {
@@ -2263,12 +2265,14 @@ namespace RetailerSelfCareApi.Controllers
             }
 
 
-            RetailerService retailerService = new(Connections.RetAppDbCS);
             int insertResult = 0;
 
             try
             {
-                insertResult = await retailerService.UpdateQuickAccessOrder(model);
+                using (RetailerService retailerService = new(Connections.RetAppDbCS))
+                {
+                    insertResult = await retailerService.UpdateQuickAccessOrder(model);
+                }
             }
             catch (Exception ex)
             {
@@ -2993,12 +2997,14 @@ namespace RetailerSelfCareApi.Controllers
                 case "Ext":
                     try
                     {
-                        RetailerService retailerService = new();
                         int result = 0;
 
                         try
                         {
-                            result = await retailerService.CancelExtCampaignEnroll(model);
+                            using (RetailerService retailerService = new())
+                            {
+                                result = await retailerService.CancelExtCampaignEnroll(model);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -3019,12 +3025,14 @@ namespace RetailerSelfCareApi.Controllers
                 case "Self":
                     try
                     {
-                        RetailerService NewRetailerService = new();
                         int result = 0;
 
                         try
                         {
-                            result = await NewRetailerService.CancelSelfCampaignEnroll(model);
+                            using (RetailerService NewRetailerService = new())
+                            {
+                                result = await NewRetailerService.CancelSelfCampaignEnroll(model);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -3366,13 +3374,14 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetDigitalServiceHistory))]
         public async Task<IActionResult> GetDigitalServiceHistory([FromBody] DigitalServiceHistoryRequest model)
         {
-            RetailerService retailerService = new();
-
             DataTable dt = new();
 
             try
             {
-                dt = await retailerService.GetDigitalServiceHistory(model);
+                using (RetailerService retailerService = new())
+                {
+                    dt = await retailerService.GetDigitalServiceHistory(model);
+                }
             }
             catch (Exception ex)
             {
@@ -3388,7 +3397,6 @@ namespace RetailerSelfCareApi.Controllers
                 message = SharedResource.GetLocal("Success", Message.Success),
                 data = digitalServiceHistoryResponse
             });
-
         }
 
 
@@ -4738,8 +4746,10 @@ namespace RetailerSelfCareApi.Controllers
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             return Ok(new ResponseMessage()
             {

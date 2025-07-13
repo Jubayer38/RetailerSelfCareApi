@@ -429,8 +429,11 @@ namespace RetailerSelfCareApi.Controllers
         public async Task<IActionResult> LmsFaqs([FromBody] RetailerRequestV2 reqModel)
         {
             int featureType = (int)LmsTermsFaq.Faq;
-            LMSService lmsService = new();
-            List<LmsTermsFaqs> listData = await lmsService.GetLmsTermsConditionsAndFaqs(featureType, reqModel.lan);
+            List<LmsTermsFaqs> listData;
+            using(LMSService lmsService = new())
+            {
+                listData = await lmsService.GetLmsTermsConditionsAndFaqs(featureType, reqModel.lan);
+            }
 
             return Ok(new ResponseMessage()
             {
