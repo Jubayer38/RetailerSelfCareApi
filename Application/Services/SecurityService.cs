@@ -128,8 +128,12 @@ namespace Application.Services
         public async Task UpsertLoginProviderIntoRedis(string retailerCode, string deviceId, string loginProvider)
         {
             string dataKey = retailerCode + "_" + deviceId;
-            RedisCache redis = new();
-            string hasLoginProvider = await redis.GetCacheAsync(RedisCollectionNames.RetailerChkInGuids, dataKey);
+            RedisCache redis;
+            string hasLoginProvider;
+            using (redis = new RedisCache())
+            {
+                hasLoginProvider = await redis.GetCacheAsync(RedisCollectionNames.RetailerChkInGuids, dataKey);
+            }
             if (!string.IsNullOrWhiteSpace(hasLoginProvider))
             {
                 using(redis = new RedisCache())

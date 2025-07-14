@@ -2941,12 +2941,15 @@ namespace RetailerSelfCareApi.Controllers.v2
                 model.endDate = tillDate;
             }
 
-            RetailerV2Service retailerService = new();
+            RetailerV2Service retailerService;
             DataTable kpidt = new();
 
             try
             {
-                kpidt = await retailerService.GetCampHistoryKPIList(model);
+                using (retailerService = new())
+                {
+                    kpidt = await retailerService.GetCampHistoryKPIList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -2955,12 +2958,14 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             List<CampaignHistoryKPI> campKpiList = kpidt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignHistoryKPI>(row)).ToList();
 
-            retailerService = new();
             DataTable campDT = new();
 
             try
             {
-                campDT = await retailerService.GetCampHistoryList(model);
+                using (retailerService = new())
+                {
+                    campDT = await retailerService.GetCampHistoryList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -2969,12 +2974,14 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             List<CampaignHistoryModel> campHistoryList = campDT.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignHistoryModel, CampaignHistoryKPI>(row, campKpiList)).ToList();
 
-            retailerService = new();
             string historyUpdateTill = "";
 
             try
             {
-                historyUpdateTill = await retailerService.GetCampHistoryUpdateTill(model);
+                using (retailerService = new())
+                {
+                    historyUpdateTill = await retailerService.GetCampHistoryUpdateTill(model);
+                }
             }
             catch (Exception ex)
             {
@@ -2982,12 +2989,15 @@ namespace RetailerSelfCareApi.Controllers.v2
             }
 
             //Self Campaign Section
-            RetailerV2Service reService = new();
+            RetailerV2Service reService;
             DataTable selfKPIdt = new();
 
             try
             {
-                selfKPIdt = await reService.GetSelfCampHistoryKPIList(model);
+                using (reService = new())
+                {
+                    selfKPIdt = await reService.GetSelfCampHistoryKPIList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -2999,12 +3009,14 @@ namespace RetailerSelfCareApi.Controllers.v2
             if (model.dateField == "START_DATE") model.dateField = "FROM_DATE";
             if (model.dateField == "END_DATE") model.dateField = "TO_DATE";
 
-            reService = new();
             DataTable selfCampDT = new();
 
             try
             {
-                selfCampDT = await reService.GetSelfCampHistoryList(model);
+                using (reService = new())
+                {
+                    selfCampDT = await reService.GetSelfCampHistoryList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -3014,13 +3026,15 @@ namespace RetailerSelfCareApi.Controllers.v2
             List<CampaignHistoryModel> selfCampHistoryList = selfCampDT.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignHistoryModel, CampaignHistoryKPI>(row, campSelfKpiList)).ToList();
 
             campHistoryList.AddRange(selfCampHistoryList);
-            reService = new();
 
             string selfHistoryUpdateTill = "";
 
             try
             {
-                selfHistoryUpdateTill = await reService.GetSelfCampHistoryUpdateTill(model);
+                using (reService = new())
+                {
+                    selfHistoryUpdateTill = await reService.GetSelfCampHistoryUpdateTill(model);
+                }
             }
             catch (Exception ex)
             {
@@ -3072,13 +3086,16 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(GetSelfKPIDetails))]
         public async Task<IActionResult> GetSelfKPIDetails([FromBody] CampaignKPIRequest model)
         {
-            RetailerV2Service retailerService = new();
+            RetailerV2Service retailerService;
             string ids = string.Join(",", model.targetIdList);
             DataTable kpiDT = new();
 
             try
             {
-                kpiDT = await retailerService.GetCampKPIDetails(model, ids);
+                using (retailerService = new())
+                {
+                    kpiDT = await retailerService.GetCampKPIDetails(model, ids);
+                }
             }
             catch (Exception ex)
             {
@@ -3786,8 +3803,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                RetailerV2Service retailerService = new();
-                dataTable = await retailerService.GetBTSLocation(model.retailerCode);
+                using(RetailerV2Service retailerService = new())
+                {
+                    dataTable = await retailerService.GetBTSLocation(model.retailerCode);
+                }
             }
             catch (Exception ex)
             {
@@ -3807,8 +3826,10 @@ namespace RetailerSelfCareApi.Controllers.v2
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             return Ok(new ResponseMessage()
             {

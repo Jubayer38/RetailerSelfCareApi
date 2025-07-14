@@ -272,9 +272,12 @@ namespace RetailerSelfCareApi.Controllers
         public async Task<IActionResult> SubmitSCSalesData([FromBody] SCSalesRequest reqModel)
         {
             string traceMsg = string.Empty;
+            long res;
 
-            StockService stockService = new(Connections.RetAppDbCS);
-            long res = await stockService.SubmitScratchCardData(reqModel);
+            using (StockService stockService = new(Connections.RetAppDbCS))
+            {
+                res = await stockService.SubmitScratchCardData(reqModel);
+            }
 
             if (res > 0)
             {

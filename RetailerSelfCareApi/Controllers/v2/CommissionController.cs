@@ -536,8 +536,10 @@ namespace RetailerSelfCareApi.Controllers.v2
             string isUpdated = string.Empty;
             try
             {
-                redis = new RedisCache();
-                isUpdated = await redis.GetCacheAsync(RedisCollectionNames.RetailerTarVsAchvStatus, reqModel.retailerCode);
+                using(redis = new RedisCache())
+                {
+                    isUpdated = await redis.GetCacheAsync(RedisCollectionNames.RetailerTarVsAchvStatus, reqModel.retailerCode);
+                }
             }
             catch (Exception ex)
             {
@@ -546,8 +548,11 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             if (!string.IsNullOrWhiteSpace(isUpdated))
             {
-                redis = new RedisCache();
-                string tarVsAchvsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerTarVsAchvSummary, reqModel.retailerCode);
+                string tarVsAchvsStr;
+                using(redis = new RedisCache())
+                {
+                    tarVsAchvsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerTarVsAchvSummary, reqModel.retailerCode);
+                }
                 if (!string.IsNullOrWhiteSpace(tarVsAchvsStr))
                 {
                     tarVsAchvs = JsonConvert.DeserializeObject<List<TarVsAchvSummaryModel>>(tarVsAchvsStr)!;
@@ -555,12 +560,14 @@ namespace RetailerSelfCareApi.Controllers.v2
             }
             else
             {
-                CommissionV2Service tarVsAchvService = new();
                 DataTable tarVsAchvDT = new();
 
                 try
                 {
-                    tarVsAchvDT = await tarVsAchvService.TarVsAchvSummary(reqModel);
+                    using (CommissionV2Service tarVsAchvService = new())
+                    {
+                        tarVsAchvDT = await tarVsAchvService.TarVsAchvSummary(reqModel);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -569,11 +576,15 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                 tarVsAchvs = tarVsAchvDT.AsEnumerable().Select(row => HelperMethod.ModelBinding<TarVsAchvSummaryModel>(row)).ToList();
 
-                redis = new RedisCache();
-                await redis.SetCacheAsync(RedisCollectionNames.RetailerTarVsAchvStatus, reqModel.retailerCode, "1");
+                using (redis = new RedisCache())
+                {
+                    await redis.SetCacheAsync(RedisCollectionNames.RetailerTarVsAchvStatus, reqModel.retailerCode, "1");
+                }
 
-                redis = new RedisCache();
-                await redis.SetCacheAsync(RedisCollectionNames.RetailerTarVsAchvSummary, reqModel.retailerCode, tarVsAchvs.ToJsonString());
+                using (redis = new RedisCache())
+                {
+                    await redis.SetCacheAsync(RedisCollectionNames.RetailerTarVsAchvSummary, reqModel.retailerCode, tarVsAchvs.ToJsonString());
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(traceMsg))
@@ -624,12 +635,15 @@ namespace RetailerSelfCareApi.Controllers.v2
 
         private static async Task<CommissionModel> ProcessDailyCommission(CommissionRequest commission)
         {
-            CommissionV2Service commissionService = new();
+            CommissionV2Service commissionService;
             DataTable commSummary = new();
 
             try
             {
-                commSummary = await commissionService.GetDailyCommSummary(commission);
+                using (commissionService = new ())
+                {
+                    commSummary = await commissionService.GetDailyCommSummary(commission);
+                }
             }
             catch (Exception ex)
             {
@@ -650,7 +664,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                 try
                 {
-                    commDetails = await commissionService.GetDailyCommissionDetails(commission);
+                    using (commissionService = new())
+                    {
+                        commDetails = await commissionService.GetDailyCommissionDetails(commission);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -688,12 +705,15 @@ namespace RetailerSelfCareApi.Controllers.v2
                 td = lastDate;
             }
 
-            CommissionV2Service commisionObj = new();
+            CommissionV2Service commisionObj;
             DataTable masterDt = new();
 
             try
             {
-                masterDt = await commisionObj.StatementSummary(request, fd, td);
+                using (commisionObj = new())
+                {
+                    masterDt = await commisionObj.StatementSummary(request, fd, td);
+                }
             }
             catch (Exception ex)
             {
@@ -703,13 +723,14 @@ namespace RetailerSelfCareApi.Controllers.v2
             if (masterDt.Rows.Count > 0)
             {
                 var masterDr = masterDt.Rows[0];
-
-                commisionObj = new();
                 DataTable details = new();
 
                 try
                 {
-                    details = await commisionObj.StatementDetails(request, fd, td);
+                    using (commisionObj = new())
+                    {
+                        details = await commisionObj.StatementDetails(request, fd, td);
+                    }
                 }
                 catch (Exception ex)
                 {

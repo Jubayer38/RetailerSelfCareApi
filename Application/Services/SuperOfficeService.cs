@@ -57,10 +57,14 @@ namespace Application.Services
                     requestMethod = "SubmitTicketToSuperOffice"
                 };
 
-                HttpService httpService = new();
-                var soReturnObj = await httpService.CallExternalApi<SOResponse>(httpReq);
+                string soReturnStr;
 
-                string soReturnStr = JsonConvert.SerializeObject(soReturnObj.Object, Newtonsoft.Json.Formatting.None);
+                using (HttpService httpService = new())
+                {
+                    var soReturnObj = await httpService.CallExternalApi<SOResponse>(httpReq);
+
+                    soReturnStr = JsonConvert.SerializeObject(soReturnObj.Object, Newtonsoft.Json.Formatting.None);
+                }
 
                 SOResponse soResponse = JsonConvert.DeserializeObject<SOResponse>(soReturnStr)!;
 
