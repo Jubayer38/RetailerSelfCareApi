@@ -369,8 +369,10 @@ namespace RetailerSelfCareApi.Controllers
             long userValidRes;
             try
             {
-                UserService userService = new();
-                userValidRes = await userService.ValidateExternalUsers(model.userName, model.password);
+                using(UserService userService = new())
+                {
+                    userValidRes = await userService.ValidateExternalUsers(model.userName, model.password);
+                }
             }
             catch (Exception ex)
             {
@@ -382,14 +384,16 @@ namespace RetailerSelfCareApi.Controllers
             {
                 try
                 {
-                    RetailerService retailerService = new();
-                    var result = await retailerService.UpdateDigitalServiceStatus(model);
-
-                    return Ok(new ExternalSubmitResponse()
+                    using (RetailerService retailerService = new())
                     {
-                        success = result.Item1,
-                        message = result.Item2,
-                    });
+                        var result = await retailerService.UpdateDigitalServiceStatus(model);
+
+                        return Ok(new ExternalSubmitResponse()
+                        {
+                            success = result.Item1,
+                            message = result.Item2,
+                        });
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -402,6 +406,5 @@ namespace RetailerSelfCareApi.Controllers
                 throw new Exception("Invalid user.");
             }
         }
-
     }
 }

@@ -214,15 +214,18 @@ namespace Application.Services
             request.ContentType = "text/plain; encoding='utf-8'";
             request.ContentLength = bytes.Length;
             request.Method = "POST";
-            Stream requestStream = request.GetRequestStream();
-            requestStream.Write(bytes, 0, bytes.Length);
-            requestStream.Close();
-            HttpWebResponse response;
-            response = (HttpWebResponse)request.GetResponse();
-
-            Stream responseStream = response.GetResponseStream();
-            string responseStr = new StreamReader(responseStream).ReadToEnd();
-            return responseStr;
+            using(Stream requestStream = request.GetRequestStream())
+            {
+                requestStream.Write(bytes, 0, bytes.Length);
+            }
+            using(HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            {
+                using(Stream responseStream = response.GetResponseStream())
+                {
+                    string responseStr = new StreamReader(responseStream).ReadToEnd();
+                    return responseStr;
+                }
+            }
         }
 
 
@@ -266,13 +269,14 @@ namespace Application.Services
             Stream requestStream = await request.GetRequestStreamAsync();
             await requestStream.WriteAsync(bytes);
             requestStream.Close();
-            HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-
-            if (response.StatusCode == HttpStatusCode.OK)
+            using(HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
             {
-                Stream responseStream = response.GetResponseStream();
-                string responseStr = await new StreamReader(responseStream).ReadToEndAsync();
-                return responseStr;
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    Stream responseStream = response.GetResponseStream();
+                    string responseStr = await new StreamReader(responseStream).ReadToEndAsync();
+                    return responseStr;
+                }
             }
 
             return null;

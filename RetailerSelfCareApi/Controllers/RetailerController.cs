@@ -209,29 +209,34 @@ namespace RetailerSelfCareApi.Controllers
         {
             string traceMsg = string.Empty;
 
-            RetailerService retailerService = new(Connections.RetAppDbCS);
+            RetailerService retailerService;
             int userId = UserSession.userId;
             int bestPracticeId = 0;
 
-            bestPracticeId = retailerService.RetailerBestPractice(retailer, userId);
+            using (retailerService = new(Connections.RetAppDbCS))
+            {
+                bestPracticeId = retailerService.RetailerBestPractice(retailer, userId);
+            }
 
 
             if (retailer.images != null && retailer.images.Count > 0)
             {
-                retailerService = new(Connections.RetAppDbCS);
-
-                await retailerService.DeleteTableRows(bestPracticeId, "RSLTBLBESTPRACTICEFILES", "BEST_PRACTICE_ID");
-
+                using (retailerService = new(Connections.RetAppDbCS))
+                {
+                    await retailerService.DeleteTableRows(bestPracticeId, "RSLTBLBESTPRACTICEFILES", "BEST_PRACTICE_ID");
+                }
 
                 for (int i = 0; i < retailer.images.Count; i++)
                 {
-                    retailerService = new(Connections.RetAppDbCS);
                     string imgStr = retailer.images[i];
 
                     FileExtensionModel attatchType = SaveFileHelper.GetFileExtension(imgStr);
 
                     string base64Header = "data:" + attatchType.MimeType + ";base64,";
-                    _ = retailerService.SaveBestPracticeImage(bestPracticeId, base64Header, imgStr);
+                    using(retailerService = new(Connections.RetAppDbCS))
+                    {
+                        _ = retailerService.SaveBestPracticeImage(bestPracticeId, base64Header, imgStr);
+                    }
                 }
             }
 
@@ -259,7 +264,6 @@ namespace RetailerSelfCareApi.Controllers
             {
                 bestpractice = NewRetailerService.BestPracticesImages(model);
             }
-
 
             List<string> bestpractices = new();
 
@@ -370,8 +374,10 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                stockService = new StockService();
-                retailer = await stockService.CheckRetailerByCode(offerRequest.retailerCode, loginProvider);
+                using (stockService = new StockService())
+                {
+                    retailer = await stockService.CheckRetailerByCode(offerRequest.retailerCode, loginProvider);
+                }
             }
             catch (Exception ex)
             {
@@ -392,18 +398,18 @@ namespace RetailerSelfCareApi.Controllers
             Dictionary<string, string> result = [];
 
             //Pull Stock Details
-            RetailerService retailerService = new(Connections.RetAppDbCS);
             RSOEligibility rsoEligibility = new();
-            rsoEligibility = retailerService.GetITopUpStockEligibilityCheck(retailerRequest, out string msg);
-
-            traceMsg = HelperMethod.BuildTraceMessage(traceMsg, msg, null);
+            using (RetailerService retailerService = new(Connections.RetAppDbCS))
+            {
+                rsoEligibility = retailerService.GetITopUpStockEligibilityCheck(retailerRequest, out string msg);
+                traceMsg = HelperMethod.BuildTraceMessage(traceMsg, msg, null);
+            }
 
             DataRow emptyDr = new DataTable().NewRow();
             StockSummaryModel stockSummary = new(emptyDr, "iTopUp");
 
             if (rsoEligibility.IsEligible == 1)
             {
-                retailerService = new RetailerService(Connections.RetAppDbCS);
                 rsoEligibility.iTopUpNumber = retailerRequest.iTopUpNumber;
                 rsoEligibility.retailerCode = retailerRequest.retailerCode;
 
@@ -502,8 +508,11 @@ namespace RetailerSelfCareApi.Controllers
         [Route("GetRSONumber")]
         public async Task<IActionResult> GetRSONumber([FromBody] RetailerRequestV2 retailerRequest)
         {
-            RetailerService retailerService = new();
-            string rsoNumber = await retailerService.GetRSONumber(retailerRequest.retailerCode);
+            string rsoNumber;
+            using (RetailerService retailerService = new())
+            {
+                rsoNumber = await retailerService.GetRSONumber(retailerRequest.retailerCode);
+            }
             var resp = new { rsoNumber };
 
             if (!string.IsNullOrEmpty(rsoNumber))
@@ -1068,12 +1077,15 @@ namespace RetailerSelfCareApi.Controllers
         {
             try
             {
-                RetailerService ewHomeService = new();
                 DataTable dataTable = new();
 
                 try
                 {
-                    dataTable = await ewHomeService.GetNotifications(notificationRequest);
+                    using(RetailerService ewHomeService = new())
+                    {
+                        // Get Notifications from Oracle DB
+                        dataTable = await ewHomeService.GetNotifications(notificationRequest);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -2606,15 +2618,15 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetSelfCampDates))]
         public async Task<IActionResult> GetSelfCampDates([FromBody] SelfCampDatesRequest model)
         {
-
-            RetailerService NewRetailerService = new();
-
             string ids = string.Join(",", model.targetIdList);
             DataTable dt = new();
 
             try
             {
-                dt = await NewRetailerService.GetCampRetailerDates(model, ids);
+                using(RetailerService NewRetailerService = new())
+                {
+                    dt = await NewRetailerService.GetCampRetailerDates(model, ids);
+                }
             }
             catch (Exception ex)
             {
@@ -2640,12 +2652,14 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetSelfRewardList))]
         public async Task<IActionResult> GetSelfRewardList([FromBody] SelfCampaignRewardRequest model)
         {
-            RetailerService retailerService = new();
             DataTable rewardDT = new();
 
             try
             {
-                rewardDT = await retailerService.GetSelfRewardList(model);
+                using (RetailerService retailerService = new())
+                {
+                    rewardDT = await retailerService.GetSelfRewardList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -2669,13 +2683,15 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetSelfCampDayList))]
         public async Task<IActionResult> GetSelfCampDayList([FromBody] GetSelfCampDayListRequest model)
         {
-            RetailerService retailerService = new();
             string ids = string.Join(",", model.targetIdList);
             DataTable dt = new();
 
             try
             {
-                dt = await retailerService.GetSelfCampDayList(model.retailerCode, ids);
+                using (RetailerService retailerService = new())
+                {
+                    dt = await retailerService.GetSelfCampDayList(model.retailerCode, ids);
+                }
             }
             catch (Exception ex)
             {
@@ -4268,28 +4284,36 @@ namespace RetailerSelfCareApi.Controllers
 
                 if (!string.IsNullOrWhiteSpace(model.retailerCode))
                 {
-                    redis = new RedisCache();
-                    string result = await redis.GetCacheAsync(RedisCollectionNames.RetailerAdvertisementIds, model.retailerCode);
-                    string retailerAdvertId = result ?? JsonConvert.DeserializeObject<string>(result)!;
-                    _hasAdvert = !string.IsNullOrWhiteSpace(retailerAdvertId);
+                    using(redis = new RedisCache())
+                    {
+                        string result = await redis.GetCacheAsync(RedisCollectionNames.RetailerAdvertisementIds, model.retailerCode);
+                        string retailerAdvertId = result ?? JsonConvert.DeserializeObject<string>(result)!;
+                        _hasAdvert = !string.IsNullOrWhiteSpace(retailerAdvertId);
+                    }
                 }
 
                 try
                 {
-                    redis = new RedisCache();
-                    string appSettingsInfo = await redis.GetCacheAsync(RedisCollectionNames.AppSettingsInfo);
+                    string appSettingsInfo;
+                    using(redis = new RedisCache())
+                    {
+                        appSettingsInfo = await redis.GetCacheAsync(RedisCollectionNames.AppSettingsInfo);
+                    }
                     if (!string.IsNullOrWhiteSpace(appSettingsInfo))
                     {
                         appSettingsResp = JsonConvert.DeserializeObject<AppFeatureSettings>(appSettingsInfo)!;
                     }
                     else
                     {
-                        RetailerService retailerService = new();
                         DataTable dt = new();
 
                         try
                         {
-                            dt = await retailerService.GetAppSettingsInfo();
+                            using (RetailerService retailerService = new())
+                            {
+                                // Get App Settings Info from MySQL DB
+                                dt = await retailerService.GetAppSettingsInfo();
+                            }
                         }
                         catch (Exception exp)
                         {
@@ -4304,12 +4328,14 @@ namespace RetailerSelfCareApi.Controllers
                 catch (Exception ex)
                 {
                     traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "", ex);
-                    RetailerService retailerService = new();
                     DataTable dt = new();
 
                     try
                     {
-                        dt = await retailerService.GetAppSettingsInfo();
+                        using (RetailerService retailerService = new())
+                        {
+                            dt = await retailerService.GetAppSettingsInfo();
+                        }
                     }
                     catch (Exception exp)
                     {
@@ -4321,8 +4347,11 @@ namespace RetailerSelfCareApi.Controllers
 
                 try
                 {
-                    redis = new RedisCache();
-                    string bnrIDTimes = await redis.GetCacheAsync(RedisCollectionNames.BannerIdTimeMySQL);
+                    string bnrIDTimes;
+                    using (redis = new RedisCache())
+                    {
+                        bnrIDTimes = await redis.GetCacheAsync(RedisCollectionNames.BannerIdTimeMySQL);
+                    }
 
                     if (!string.IsNullOrWhiteSpace(bnrIDTimes))
                     {
@@ -4764,12 +4793,14 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(BestPracticesHistory))]
         public async Task<IActionResult> BestPracticesHistory([FromBody] RetailerRequestV2 retailer)
         {
-            RetailerService retailerService = new(Connections.RetAppDbCS);
             DataTable bestpractice = new();
 
             try
             {
-                bestpractice = await retailerService.BestPracticesHistory(retailer);
+                using(RetailerService retailerService = new(Connections.RetAppDbCS))
+                {
+                    bestpractice = await retailerService.BestPracticesHistory(retailer);
+                }
             }
             catch (Exception ex)
             {
@@ -4789,8 +4820,10 @@ namespace RetailerSelfCareApi.Controllers
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using (LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             return Ok(new ResponseMessage()
             {
@@ -5129,8 +5162,10 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                RetailerService retailerService = new(Connections.RetAppDbCS);
-                dataTable = await retailerService.GetBTSLocation(model.retailerCode);
+                using(RetailerService retailerService = new(Connections.RetAppDbCS))
+                {
+                    dataTable = await retailerService.GetBTSLocation(model.retailerCode);
+                }
             }
             catch (Exception ex)
             {
@@ -5150,8 +5185,10 @@ namespace RetailerSelfCareApi.Controllers
                 adjustmentType = nameof(LmsAdjustmentType.CREDIT)
             };
 
-            LMSService lmsService = new();
-            await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            using(LMSService lmsService = new())
+            {
+                await lmsService.AdjustRetailerLMSPoints(pointAdjustReq);
+            }
 
             return Ok(new ResponseMessage()
             {

@@ -132,13 +132,17 @@ namespace Application.Services
             string hasLoginProvider = await redis.GetCacheAsync(RedisCollectionNames.RetailerChkInGuids, dataKey);
             if (!string.IsNullOrWhiteSpace(hasLoginProvider))
             {
-                redis = new RedisCache();
-                await redis.UpdateCacheAsync(RedisCollectionNames.RetailerChkInGuids, dataKey, loginProvider.ToJsonString());
+                using(redis = new RedisCache())
+                {
+                    await redis.UpdateCacheAsync(RedisCollectionNames.RetailerChkInGuids, dataKey, loginProvider.ToJsonString());
+                }
             }
             else
             {
-                redis = new RedisCache();
-                await redis.SetCacheAsync(RedisCollectionNames.RetailerChkInGuids, dataKey, loginProvider.ToJsonString());
+                using(redis = new RedisCache())
+                {
+                    await redis.SetCacheAsync(RedisCollectionNames.RetailerChkInGuids, dataKey, loginProvider.ToJsonString());
+                }
             }
         }
 
