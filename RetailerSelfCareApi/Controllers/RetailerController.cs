@@ -185,21 +185,24 @@ namespace RetailerSelfCareApi.Controllers
             RetailerService ewHomeService;
             DataTable faq = new();
 
-            ewHomeService = new RetailerService(Connections.RetAppDbCS);
-            faq = ewHomeService.GetFAQ();
+            using(ewHomeService = new RetailerService(Connections.RetAppDbCS))
+            {
+                faq = ewHomeService.GetFAQ();
+            }
 
             List<FAQModel> fAQModels = faq.AsEnumerable().Select(row => HelperMethod.ModelBinding<FAQModel>(row)).ToList();
 
-            ewHomeService = new RetailerService(Connections.RetAppDbCS);
-            dynamic faqs = ewHomeService.GetFAQModel(fAQModels);
-
-
-            return new OkObjectResult(new ResponseMessage()
+            using (ewHomeService = new RetailerService(Connections.RetAppDbCS))
             {
-                isError = false,
-                message = SharedResource.GetLocal("Success", Message.Success),
-                data = faqs
-            });
+                dynamic faqs = ewHomeService.GetFAQModel(fAQModels);
+
+                return new OkObjectResult(new ResponseMessage()
+                {
+                    isError = false,
+                    message = SharedResource.GetLocal("Success", Message.Success),
+                    data = faqs
+                });
+            }
 
         }
 
@@ -303,8 +306,10 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                StockService newStockService = new();
-                retailer = await newStockService.CheckRetailerByCode(retailerRequest.retailerCode, loginProvider);
+                using(StockService newStockService = new())
+                {
+                    retailer = await newStockService.CheckRetailerByCode(retailerRequest.retailerCode, loginProvider);
+                }
             }
             catch (Exception ex)
             {
@@ -321,11 +326,13 @@ namespace RetailerSelfCareApi.Controllers
                 });
             }
 
-            retailerService = new(Connections.RetAppDbCS);
-            rsoEligibility = retailerService.GetITopUpStockEligibilityCheck(retailerRequest, out string msg);
+            using (retailerService = new(Connections.RetAppDbCS))
+            {
+                rsoEligibility = retailerService.GetITopUpStockEligibilityCheck(retailerRequest, out string msg);
 
-            if (!string.IsNullOrWhiteSpace(msg))
-                throw new Exception(msg);
+                if (!string.IsNullOrWhiteSpace(msg))
+                    throw new Exception(msg);
+            }
 
             DataRow emptyDr = new DataTable().NewRow();
             StockSummaryModel stockSummary = new(emptyDr, "iTopUp");
@@ -1042,8 +1049,10 @@ namespace RetailerSelfCareApi.Controllers
 
                 try
                 {
-                    RetailerService retailerService = new();
-                    dt = await retailerService.GetRSORatingHistory(model);
+                    using(RetailerService retailerService = new())
+                    {
+                        dt = await retailerService.GetRSORatingHistory(model);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -1327,8 +1336,11 @@ namespace RetailerSelfCareApi.Controllers
                     requestMethod = "InstallationProcess"
                 };
 
-                HttpService httpService = new();
-                BiometricAppInfo resp = await httpService.GetBiometricAppLatestUrl<dynamic>(httpModel);
+                BiometricAppInfo resp;
+                using(HttpService httpService = new())
+                {
+                    resp = await httpService.GetBiometricAppLatestUrl<dynamic>(httpModel);
+                }
 
                 var data = new
                 {
@@ -1547,15 +1559,17 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetRSOFeedback))]
         public async Task<IActionResult> GetRSOFeedback([FromBody] RsoMemoRequest model)
         {
-            RetailerService NewRetailerService = new(Connections.DMSCS);
-
             int userId = UserSession.userId;
 
             DataTable feedbackDT = new();
 
             try
             {
-                feedbackDT = await NewRetailerService.GetRSOFeedback(model, userId);
+                using(RetailerService NewRetailerService = new(Connections.DMSCS))
+                {
+                    // Get RSO Feedback
+                    feedbackDT = await NewRetailerService.GetRSOFeedback(model, userId);
+                }
             }
             catch (Exception ex)
             {
@@ -1645,12 +1659,14 @@ namespace RetailerSelfCareApi.Controllers
         {
             model.userId = UserSession.userId;
 
-            RetailerService NewRetailerService = new(Connections.RetAppDbCS);
             DataTable dt = new();
 
             try
             {
-                dt = await NewRetailerService.GetProductRatingList(model);
+                using (RetailerService NewRetailerService = new(Connections.RetAppDbCS))
+                {
+                    dt = await NewRetailerService.GetProductRatingList(model);
+                }
             }
             catch (Exception ex)
             {
@@ -3579,24 +3595,26 @@ namespace RetailerSelfCareApi.Controllers
                 userId = logout.userId
             };
 
-            RetailerService retailerService = new();
-            var result = await retailerService.LogoutDevice(model);
+            using (RetailerService retailerService = new())
+            {
+                var result = await retailerService.LogoutDevice(model);
 
-            if (result > 0)
-            {
-                return Ok(new ResponseMessage()
+                if (result > 0)
                 {
-                    isError = false,
-                    message = SharedResource.GetLocal("LogoutSuccess", Message.LogoutSuccess)
-                });
-            }
-            else
-            {
-                return Ok(new ResponseMessage()
+                    return Ok(new ResponseMessage()
+                    {
+                        isError = false,
+                        message = SharedResource.GetLocal("LogoutSuccess", Message.LogoutSuccess)
+                    });
+                }
+                else
                 {
-                    isError = true,
-                    message = SharedResource.GetLocal("LogoutFailed", Message.LogoutFailed)
-                });
+                    return Ok(new ResponseMessage()
+                    {
+                        isError = true,
+                        message = SharedResource.GetLocal("LogoutFailed", Message.LogoutFailed)
+                    });
+                }
             }
         }
 
@@ -5548,12 +5566,17 @@ namespace RetailerSelfCareApi.Controllers
         public async Task<IActionResult> GamificationBanners([FromBody] RetailerRequest reqModel)
         {
             string traceMsg = string.Empty;
-            RedisCache redis = new();
+            RedisCache redis;
             List<GamificationBannerRedis> bannerList = [];
 
             try
             {
-                string allBannersStr = await redis.GetCacheAsync(RedisCollectionNames.GamificationBannerDetails);
+                string allBannersStr;
+
+                using (redis = new RedisCache())
+                {
+                    allBannersStr = await redis.GetCacheAsync(RedisCollectionNames.GamificationBannerDetails);
+                }
                 bannerList = JsonConvert.DeserializeObject<List<GamificationBannerRedis>>(allBannersStr);
             }
             catch (Exception ex)
@@ -5565,8 +5588,11 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                redis = new RedisCache();
-                string hasBnrIdsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerGamificationBannerIds, reqModel.retailerCode);
+                string hasBnrIdsStr;
+                using (redis = new RedisCache())
+                {
+                    hasBnrIdsStr = await redis.GetCacheAsync(RedisCollectionNames.RetailerGamificationBannerIds, reqModel.retailerCode);
+                }
                 string hasBnrIds = JsonConvert.DeserializeObject<dynamic>(hasBnrIdsStr)!;
                 if (!string.IsNullOrEmpty(hasBnrIds))
                 {
@@ -5600,9 +5626,11 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(SubmitGamificationResponse))]
         public async Task<IActionResult> SubmitGamificationResponse([FromBody] GamificationResponseReq reqModel)
         {
-            RetailerService retailerService = new();
-
-            long res = await retailerService.SaveGamificationResponse(reqModel);
+            long res;
+            using (RetailerService retailerService = new())
+            {
+                res = await retailerService.SaveGamificationResponse(reqModel);
+            }
 
             return new OkObjectResult(new ResponseMessage()
             {

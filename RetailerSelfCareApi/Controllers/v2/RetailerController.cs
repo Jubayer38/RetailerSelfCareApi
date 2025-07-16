@@ -122,8 +122,12 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route("UpdateRetailer")]
         public async Task<IActionResult> UpdateRetailer([FromBody] RetailerDetailsRequest retailer)
         {
-            RetailerV2Service retailerService = new();
-            long retailers = await retailerService.UpdateRetailer(retailer);
+            long retailers;
+            using(RetailerV2Service retailerService = new())
+            {
+                retailers = await retailerService.UpdateRetailer(retailer);
+            }
+
             bool isSuccess = retailers > 0;
 
             return new OkObjectResult(new ResponseMessage()
@@ -139,8 +143,11 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route("CustomerFeedback")]
         public async Task<IActionResult> CustomerFeedback([FromBody] RetailerRequest retailer)
         {
-            RetailerV2Service retailerService = new();
-            DataTable customerFeedback = await retailerService.CustomerFeedback(retailer);
+            DataTable customerFeedback;
+            using (RetailerV2Service retailerService = new())
+            {
+                customerFeedback = await retailerService.CustomerFeedback(retailer);
+            }
             List<CustomerFeedback> customerFeedbacks = customerFeedback.AsEnumerable().Select(cf => new CustomerFeedback(cf)).ToList();
 
 
@@ -160,22 +167,26 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route("FaqList")]
         public async Task<IActionResult> FaqList([FromBody] RetailerRequest retailerRequest)
         {
-            RetailerV2Service retailerService = new();
+            RetailerV2Service retailerService;
             DataTable faq = new();
-
-            faq = await retailerService.GetFAQ();
+            using (retailerService = new())
+            {
+                faq = await retailerService.GetFAQ();
+            }
 
             List<FAQModel> fAQModels = faq.AsEnumerable().Select(row => HelperMethod.ModelBinding<FAQModel>(row)).ToList();
 
-            retailerService = new();
-            dynamic faqs = retailerService.GetFAQModel(fAQModels);
-
-            return new OkObjectResult(new ResponseMessage()
+            using (retailerService = new())
             {
-                isError = false,
-                message = SharedResource.GetLocal("Success", Message.Success),
-                data = faqs
-            });
+                dynamic faqs = retailerService.GetFAQModel(fAQModels);
+
+                return new OkObjectResult(new ResponseMessage()
+                {
+                    isError = false,
+                    message = SharedResource.GetLocal("Success", Message.Success),
+                    data = faqs
+                });
+            }
         }
 
         #endregion=======================|     Self-services     |======================
@@ -1961,13 +1972,15 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(GetOperatorList))]
         public async Task<IActionResult> GetOperatorList([FromBody] RetailerRequest model)
         {
-            RetailerV2Service retailerService = new();
             int userId = UserSession.userId;
             DataTable operatorListDT = new();
 
             try
             {
-                operatorListDT = await retailerService.GetOperatorList(userId);
+                using (RetailerV2Service retailerService = new())
+                {
+                    operatorListDT = await retailerService.GetOperatorList(userId);
+                }
             }
             catch (Exception ex)
             {
@@ -2603,12 +2616,15 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                     try
                     {
-                        RetailerV2Service retailerService = new();
+                        RetailerV2Service retailerService;
                         DataTable kpidt = new();
 
                         try
                         {
-                            kpidt = await retailerService.GetCampaignKPIList(model);
+                            using (retailerService = new())
+                            {
+                                kpidt = await retailerService.GetCampaignKPIList(model);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -2617,12 +2633,14 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                         List<CampaignKPIListModel> campKpiList = kpidt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignKPIListModel>(row)).ToList();
 
-                        retailerService = new();
                         DataTable rewardt = new();
 
                         try
                         {
-                            rewardt = await retailerService.GetCampaignRewardList(model);
+                            using (retailerService = new())
+                            {
+                                rewardt = await retailerService.GetCampaignRewardList(model);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -2632,12 +2650,14 @@ namespace RetailerSelfCareApi.Controllers.v2
                         string baseURL = ExternalKeys.ImageVirtualDirPath;
                         List<CampaignRewardListModel> campRewardList = rewardt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignRewardListModel>(row, "", baseURL)).ToList();
 
-                        retailerService = new();
                         DataTable campMoreDetails = new();
 
                         try
                         {
-                            campMoreDetails = await retailerService.GetCampFurtherDetails(model);
+                            using (retailerService = new())
+                            {
+                                campMoreDetails = await retailerService.GetCampFurtherDetails(model);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -2673,12 +2693,15 @@ namespace RetailerSelfCareApi.Controllers.v2
                 case "Self":
                     try
                     {
-                        RetailerV2Service NewRetailerService = new();
+                        RetailerV2Service NewRetailerService;
                         DataTable kpidt = new();
 
                         try
                         {
-                            kpidt = await NewRetailerService.GetSelfCampaignKPIList(model);
+                            using (NewRetailerService = new())
+                            {
+                                kpidt = await NewRetailerService.GetSelfCampaignKPIList(model);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -2687,12 +2710,14 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                         List<CampaignKPIListModel> campKpiList = kpidt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignKPIListModel>(row)).ToList();
 
-                        NewRetailerService = new();
                         DataTable rewardt = new();
 
                         try
                         {
-                            rewardt = await NewRetailerService.GetSelfCampaignRewardList(model);
+                            using (NewRetailerService = new())
+                            {
+                                rewardt = await NewRetailerService.GetSelfCampaignRewardList(model);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -2701,12 +2726,14 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                         List<CampaignRewardListModel> campRewardList = rewardt.AsEnumerable().Select(row => HelperMethod.ModelBinding<CampaignRewardListModel>(row, "")).ToList();
 
-                        NewRetailerService = new();
                         DataTable campMoreDetails = new();
 
                         try
                         {
-                            campMoreDetails = await NewRetailerService.GetSelfCampFurtherDetails(model);
+                            using (NewRetailerService = new())
+                            {
+                                campMoreDetails = await NewRetailerService.GetSelfCampFurtherDetails(model);
+                            }
                         }
                         catch (Exception ex)
                         {

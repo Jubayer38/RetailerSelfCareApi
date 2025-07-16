@@ -119,8 +119,10 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                surveyService = new();
-                questionList = await surveyService.GetAllQuestionsByID(id);
+                using(surveyService = new())
+                {
+                    questionList = await surveyService.GetAllQuestionsByID(id);
+                }
             }
             catch (Exception ex)
             {

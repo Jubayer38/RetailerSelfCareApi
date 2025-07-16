@@ -408,8 +408,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                RechargeV2Service retailerService = new();
-                dt = await retailerService.GetRetailerEvPinResetHistory(requestModel);
+                using(RechargeV2Service retailerService = new())
+                {
+                    dt = await retailerService.GetRetailerEvPinResetHistory(requestModel);
+                }
             }
             catch (Exception ex)
             {

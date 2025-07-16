@@ -201,17 +201,20 @@ namespace RetailerSelfCareApi.Controllers
             }
             else
             {
-                SecurityService _auth = new();
+                SecurityService _auth;
 
-                var validationResult = await _auth.IsPasswordFormatValid(login.newPassword, login.lan);
-                if (validationResult.Item1 == false)
+                using (_auth = new())
                 {
-                    return Ok(new LogInResponse
+                    var validationResult = await _auth.IsPasswordFormatValid(login.newPassword, login.lan);
+                    if (validationResult.Item1 == false)
                     {
-                        isAuthenticate = validationResult.Item1,
-                        authenticationMessage = validationResult.Item2,
-                        hasUpdate = false,
-                    });
+                        return Ok(new LogInResponse
+                        {
+                            isAuthenticate = validationResult.Item1,
+                            authenticationMessage = validationResult.Item2,
+                            hasUpdate = false,
+                        });
+                    }
                 }
 
                 string encriptedOldPwd = CryptographyFile.Encrypt(login.oldPassword, true);
@@ -224,11 +227,13 @@ namespace RetailerSelfCareApi.Controllers
                     deviceId = null
                 };
 
-                _auth = new();
                 LoginUserInfoResponseV2 user = new();
                 try
                 {
-                    user = await _auth.ValidateUser(vmModel);
+                    using (_auth = new())
+                    {
+                        user = await _auth.ValidateUser(vmModel);
+                    }
 
                     if (user.user_name == null)
                     {
@@ -287,14 +292,21 @@ namespace RetailerSelfCareApi.Controllers
                     deviceId = login.deviceId,
                     lan = login.lan
                 };
-                _auth = new SecurityService();
-                DeviceValidationResponse result = await _auth.ValidateDevice(deviceValidReq);
+
+                DeviceValidationResponse result;
+                using (_auth = new SecurityService())
+                {
+                    result = await _auth.ValidateDevice(deviceValidReq);
+                }
 
                 if (result.isSuccess)
                 {
                     try
                     {
-                        saveDeviceResp = await _auth.SaveDeviceInfo(deviceInfo);
+                        using (_auth = new SecurityService())
+                        {
+                            saveDeviceResp = await _auth.SaveDeviceInfo(deviceInfo);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -319,16 +331,19 @@ namespace RetailerSelfCareApi.Controllers
                 {
                     try
                     {
-                        var respChangePwd = await _auth.ChangePassword(user.user_name, login.oldPassword, login.newPassword, ResponseMessages.InvalidUserName);
-
-                        if (!respChangePwd.result)
+                        using (_auth = new SecurityService())
                         {
-                            return Ok(new LogInResponse()
+                            var respChangePwd = await _auth.ChangePassword(user.user_name, login.oldPassword, login.newPassword, ResponseMessages.InvalidUserName);
+
+                            if (!respChangePwd.result)
                             {
-                                isAuthenticate = false,
-                                authenticationMessage = SharedResource.GetLocal(respChangePwd.message, respChangePwd.message),
-                                hasUpdate = false,
-                            });
+                                return Ok(new LogInResponse()
+                                {
+                                    isAuthenticate = false,
+                                    authenticationMessage = SharedResource.GetLocal(respChangePwd.message, respChangePwd.message),
+                                    hasUpdate = false,
+                                });
+                            }
                         }
                     }
                     catch (Exception ex)

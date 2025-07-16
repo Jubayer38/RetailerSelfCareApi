@@ -141,8 +141,11 @@ namespace RetailerSelfCareApi.Controllers
         [Route(nameof(GetLMSPartnerOfferCategories))]
         public async Task<IActionResult> GetLMSPartnerOfferCategories([FromBody] RetailerRequestV2 model)
         {
-            LMSService lmsService = new();
-            List<LMSPartner> lmsPartners = await lmsService.GetLmsPartners(model);
+            List<LMSPartner> lmsPartners;
+            using (LMSService lmsService = new())
+            {
+                lmsPartners = await lmsService.GetLmsPartners(model);
+            }
 
             var partnerCategories = lmsPartners.Select(s => new { s.partnerCategory, s.partnerCategoryID }).Where(w => w.partnerCategory.ToLower() != "telco").Distinct();
 

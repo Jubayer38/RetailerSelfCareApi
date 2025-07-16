@@ -374,8 +374,10 @@ namespace Application.Services
             DataTable retailer = new();
             try
             {
-                stockService = new(Connections.RetAppDbCS);
-                retailer = stockService.GetRetailerByCode(rechargeRequest.retailerCode);
+                using(stockService = new(Connections.RetAppDbCS))
+                {
+                    retailer = stockService.GetRetailerByCode(rechargeRequest.retailerCode);
+                }
             }
             catch (Exception ex)
             {
@@ -383,12 +385,13 @@ namespace Application.Services
                 throw new Exception(errMsg);
             }
 
-            stockService = new(Connections.RetAppDbCS);
-            string retMsisdn = stockService.GetRetailerMSISDN(retailer);
+            string retMsisdn;
+            using (stockService = new(Connections.RetAppDbCS))
+            {
+                retMsisdn = stockService.GetRetailerMSISDN(retailer);
+            }
             string evUrl = ExternalKeys.EvURL;
             string paymentType = rechargeRequest.paymentType == (int)PaymentType.prepaid ? "EXRCTRFREQ" : "EXPPBREQ";
-
-            RechargeService newRechargeService = new(Connections.RetAppDbCS);
 
             ItopUpXmlRequest xmlRequest = new()
             {
@@ -409,11 +412,15 @@ namespace Application.Services
                 Selector = "1"
             };
 
+            RechargeService newRechargeService;
             EvXmlResponse evResponse = new();
 
             try
             {
-                evResponse = newRechargeService.EvRecharge(xmlRequest, rechargeRequest, "DigitalServiceEvRecharge", userAgent);
+                using (newRechargeService = new(Connections.RetAppDbCS))
+                {
+                    evResponse = newRechargeService.EvRecharge(xmlRequest, rechargeRequest, "DigitalServiceEvRecharge", userAgent);
+                }
             }
             catch (Exception ex)
             {
@@ -485,14 +492,16 @@ namespace Application.Services
                 ipAddress = HelperMethod.GetIPAddress()
             };
 
-            newRechargeService = new(Connections.RetAppDbCS);
             bool logStatus = false;
 
             if (status)
             {
                 try
                 {
-                    logStatus = await newRechargeService.SaveTransactionLog(transObj);
+                    using(newRechargeService = new(Connections.RetAppDbCS))
+                    {
+                        logStatus = await newRechargeService.SaveTransactionLog(transObj);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -504,7 +513,6 @@ namespace Application.Services
                 string amount = "", updateTime = "";
                 try
                 {
-                    stockService = new(Connections.RetAppDbCS);
                     amount = HelperMethod.FormatEvBalanceResponse(evResponse.message);
 
                     DateTime _dateTime = DateTime.ParseExact(evResponse.date, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
@@ -527,8 +535,11 @@ namespace Application.Services
                         UpdateTime = updateTime
                     };
 
-                    stockService = new(Connections.RetAppDbCS);
-                    int res = stockService.UpdateItopUpBalance(model);
+                    int res;
+                    using (stockService = new(Connections.RetAppDbCS))
+                    {
+                        res = stockService.UpdateItopUpBalance(model);
+                    }
                     if (res == 0)
                     {
                         traceMsg = HelperMethod.BuildTraceMessage(traceMsg, "Unable to update Retailer Balance;", null);
@@ -573,8 +584,10 @@ namespace Application.Services
                     RequestUrl = irisUrl
                 };
 
-                HttpService httpService = new();
-                irisResponse = await httpService.GetIRISOffers(rechargeXmlVM);
+                using(HttpService httpService = new())
+                {
+                    irisResponse = await httpService.GetIRISOffers(rechargeXmlVM);
+                }
 
                 if (irisResponse?.response?.statusCode == "0")
                 {

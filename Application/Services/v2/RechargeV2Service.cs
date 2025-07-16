@@ -490,8 +490,10 @@ namespace Application.Services.v2
                 string amount = "", updateTime = "";
                 try
                 {
-                    stockService = new();
-                    amount = HelperMethod.FormatEvBalanceResponse(evResponse.message);
+                    using(stockService = new())
+                    {
+                        amount = HelperMethod.FormatEvBalanceResponse(evResponse.message);
+                    }
 
                     DateTime _dateTime = DateTime.ParseExact(evResponse.date, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
                     updateTime = _dateTime.ToEnUSDateString("hh:mm:ss tt, dd MMM yyyy");
