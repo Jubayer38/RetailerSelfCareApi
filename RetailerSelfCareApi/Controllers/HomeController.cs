@@ -172,16 +172,20 @@ namespace RetailerSelfCareApi.Controllers
 
             try
             {
-                surveyService = new();
-                await surveyService.DeleteSurveyResponse(surveyId, retailerCode);
+                using (surveyService = new())
+                {
+                    await surveyService.DeleteSurveyResponse(surveyId, retailerCode);
+                }
             }
             catch (Exception ex)
             {
                 throw new Exception(HelperMethod.ExMsgBuild(ex, "DeleteSurveyResponse"));
             }
 
-            surveyService = new();
-            _ = await surveyService.InsertSurveyResponse(respList, retailerCode, UserSession.userId);
+            using (surveyService = new())
+            {
+                _ = await surveyService.InsertSurveyResponse(respList, retailerCode, UserSession.userId);
+            }
 
             return Json(new ResponseMessage() { isError = false, message = SharedResource.GetLocal("Success", Message.Success) });
         }

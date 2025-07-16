@@ -4404,7 +4404,7 @@ namespace RetailerSelfCareApi.Controllers.v2
         [Route(nameof(BulkDeviceSetting))]
         public async Task<IActionResult> BulkDeviceSetting([FromBody] BulkDeviceStatusRequest deviceStatusRequest)
         {
-            RetailerV2Service retailerService = new();
+            RetailerV2Service retailerService;
 
             RetailerRequest deviceListModed = new()
             {
@@ -4416,7 +4416,10 @@ namespace RetailerSelfCareApi.Controllers.v2
 
             try
             {
-                deviceList = await retailerService.SecondaryDeviceList(deviceListModed);
+                using(retailerService = new())
+                {
+                    deviceList = await retailerService.SecondaryDeviceList(deviceListModed);
+                }
             }
             catch (Exception ex)
             {
@@ -4438,8 +4441,6 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                         foreach (var id in secondaryDeviceList)
                         {
-                            retailerService = new();
-
                             DeviceStatusRequest model = new()
                             {
                                 retailerCode = deviceStatusRequest.retailerCode,
@@ -4448,11 +4449,14 @@ namespace RetailerSelfCareApi.Controllers.v2
                                 deviceStatus = 1
                             };
 
-                            var result = await retailerService.EnableDisableDevice(model);
-
-                            if (result > 0)
+                            using (retailerService = new())
                             {
-                                resultCount++;
+                                var result = await retailerService.EnableDisableDevice(model);
+
+                                if (result > 0)
+                                {
+                                    resultCount++;
+                                }
                             }
                         }
 
@@ -4499,8 +4503,6 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                         foreach (var id in secondaryDeviceList)
                         {
-                            retailerService = new();
-
                             DeviceStatusRequest model = new()
                             {
                                 retailerCode = deviceStatusRequest.retailerCode,
@@ -4509,11 +4511,15 @@ namespace RetailerSelfCareApi.Controllers.v2
                                 deviceStatus = 0
                             };
 
-                            var result = await retailerService.EnableDisableDevice(model);
 
-                            if (result > 0)
+                            using (retailerService = new())
                             {
-                                resultCount++;
+                                var result = await retailerService.EnableDisableDevice(model);
+
+                                if (result > 0)
+                                {
+                                    resultCount++;
+                                }
                             }
                         }
 
@@ -4560,19 +4566,21 @@ namespace RetailerSelfCareApi.Controllers.v2
 
                         foreach (var id in secondaryDeviceList)
                         {
-                            retailerService = new();
-
                             DeviceStatusRequest model = new()
                             {
                                 retailerCode = deviceStatusRequest.retailerCode,
                                 operationalDeviceId = id.DeviecId
                             };
 
-                            var result = await retailerService.DeregisterDevice(model);
 
-                            if (result > 0)
+                            using (retailerService = new())
                             {
-                                resultCount++;
+                                var result = await retailerService.DeregisterDevice(model);
+
+                                if (result > 0)
+                                {
+                                    resultCount++;
+                                }
                             }
                         }
 
@@ -4581,8 +4589,11 @@ namespace RetailerSelfCareApi.Controllers.v2
                             responseDictionary.Add("success", "True");
 
                             List<string> keyList = secondaryDeviceList.AsEnumerable().Select(x => deviceStatusRequest.retailerCode + "_" + x.DeviecId).ToList();
-                            RedisCache redis = new();
-                            await redis.RemoveLoginProviderFromRedis(RedisCollectionNames.RetailerChkInGuids, keyList);
+                            
+                            using(RedisCache redis = new())
+                            {
+                                await redis.RemoveLoginProviderFromRedis(RedisCollectionNames.RetailerChkInGuids, keyList);
+                            }
 
                             return Ok(new ResponseMessage()
                             {

@@ -659,7 +659,6 @@ namespace RetailerSelfCareApi.Controllers.v2
                     commission.sortByAmount = commission.sortByAmount.ToUpper();
                 }
 
-                commissionService = new();
                 DataTable commDetails = new();
 
                 try
